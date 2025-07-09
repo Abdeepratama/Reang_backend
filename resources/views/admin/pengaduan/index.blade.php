@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($pengaduans as $i => $item)
+            @foreach($items as $i => $item)
             <tr>
                 <td>{{ $i + 1 }}</td>
                 <td>{{ $item->jenis_laporan }}</td>

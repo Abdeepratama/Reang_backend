@@ -12,26 +12,23 @@
                 <a class="nav-link position-relative text-dark" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell fs-4"></i>
                     @if($jumlahNotifikasi > 0)
-                    <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
-                        {{ $jumlahNotifikasi }}
-                    </span>
+                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
+                            {{ $jumlahNotifikasi }}
+                            <span class="visually-hidden">unread notifications</span>
+                        </span>
                     @endif
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                    <li>
-                        <h6 class="dropdown-header">Notifikasi</h6>
-                    </li>
-
+                    <li><h6 class="dropdown-header">Notifikasi</h6></li>
                     @forelse($notifikasiAktivitas as $notif)
-                    <li>
-                        <a class="dropdown-item" href="{{ route('admin.notifikasi.baca.satu', $notif->id) }}">
-                            {{ $notif->keterangan }}
-                            <br>
-                            <small class="text-muted">{{ $notif->created_at->diffForHumans() }}</small>
-                        </a>
-                    </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.notifikasi.baca.satu', $notif->id) }}">
+                                {{ $notif->keterangan }}<br>
+                                <small class="text-muted">{{ $notif->created_at->diffForHumans() }}</small>
+                            </a>
+                        </li>
                     @empty
-                    <li><span class="dropdown-item text-muted">Tidak ada notifikasi</span></li>
+                        <li><span class="dropdown-item text-muted">Tidak ada notifikasi</span></li>
                     @endforelse
                 </ul>
             </li>

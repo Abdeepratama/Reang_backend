@@ -15,7 +15,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $item)
+            @foreach($items as $item)
             <tr>
                 <td>{{ $item->name }}</td>
                 <td>{{ $item->address }}</td>

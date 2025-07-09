@@ -3,57 +3,34 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\CRUDHelper;
 use App\Models\Sehat;
-use Illuminate\Http\Request;
-use App\Models\Aktivitas;
-
 
 class SehatController extends Controller
 {
-    public function index()
-    {
-        $sehat = Sehat::latest()->get();
-        return view('admin.sehat.index', compact('sehat'));
-    }
+    use CRUDHelper;
 
-    public function create()
+    public function __construct()
     {
-        return view('admin.sehat.create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
+        $this->model = Sehat::class;
+        $this->routePrefix = 'sehat';
+        $this->viewPrefix = 'sehat';
+        $this->aktivitasTipe = 'Rumah Sakit';
+        $this->aktivitasCreateMessage = 'Lokasi Rumah Sakit telah ditambahkan';
+        $this->validationRules = [
             'name' => 'required',
-        ]);
-
-        Aktivitas::create([
-        'keterangan' => 'Menambahkan Lokasi Rumah Sakit ' . $request->nama,
-        'tipe' => 'sehat',
-        ]);
-
-        Sehat::create($request->all());
-        return redirect()->route('admin.sehat.index')->with('success', 'Data berhasil ditambahkan.');
+            'address' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ];
     }
 
-    public function edit(Sehat $sehat)
+    public function edit($id)
     {
-        return view('admin.sehat.edit', compact('sehat'));
-    }
-
-    public function update(Request $request, Sehat $sehat)
-    {
-        $request->validate([
-            'name' => 'required',
+        $item = ($this->model)::findOrFail($id);
+        $varName = strtolower(class_basename($this->model)); // ibadah, pasar, dll
+        return view("admin.{$this->viewPrefix}.edit", [
+            $varName => $item,
         ]);
-
-        $sehat->update($request->all());
-        return redirect()->route('admin.sehat.index')->with('success', 'Data berhasil diperbarui.');
-    }
-
-    public function destroy(Sehat $sehat)
-    {
-        $sehat->delete();
-        return redirect()->route('admin.sehat.index')->with('success', 'Data berhasil dihapus.');
     }
 }

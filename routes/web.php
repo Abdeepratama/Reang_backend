@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\Admin\PasarController;
 use App\Http\Controllers\Admin\PlesirController;
 use App\Http\Controllers\Admin\PengaduanController;
-use App\Models\Aktivitas;
+use App\Models\NotifikasiAktivitas;
 
 // Halaman Awal
 Route::get('/', function () {
@@ -42,9 +42,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // ✅ Route untuk klik notifikasi
         Route::get('/notifikasi/baca/{id}', function ($id) {
-            $aktivitas = Aktivitas::findOrFail($id);
-            $aktivitas->update(['dibaca' => true]);
-            return redirect($aktivitas->url ?? route('admin.dashboard'));
+            $notifikasi = NotifikasiAktivitas::findOrFail($id);
+            $notifikasi->update(['dibaca' => true]);
+
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'url' => $notifikasi->url ?? route('admin.dashboard')
+                ]);
+            }
+
+            return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
         })->name('notifikasi.baca.satu');
     });
 });

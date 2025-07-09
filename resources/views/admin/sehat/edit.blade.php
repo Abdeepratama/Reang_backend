@@ -12,12 +12,12 @@
 
         <div class="mb-3">
             <label for="nama" class="form-label">Nama Tempat</label>
-            <input type="text" name="nama" class="form-control" value="{{ $sehat->nama }}" required>
+            <input type="text" name="name" class="form-control" value="{{ $sehat->name }}" required>
         </div>
 
         <div class="mb-3">
             <label for="alamat" class="form-label">Alamat</label>
-            <textarea name="alamat" class="form-control" rows="3" required>{{ $sehat->alamat }}</textarea>
+            <textarea name="address" class="form-control" rows="3" required>{{ $sehat->address }}</textarea>
         </div>
 
         <div class="mb-3">

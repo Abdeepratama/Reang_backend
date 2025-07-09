@@ -3,63 +3,34 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\CRUDHelper;
 use App\Models\Plesir;
-use Illuminate\Http\Request;
-use App\Models\Aktivitas;
-
 
 class PlesirController extends Controller
 {
-    public function index()
-    {
-        $data = Plesir::latest()->get();
-        return view('admin.plesir.index', compact('data'));
-    }
+    use CRUDHelper;
 
-    public function create()
+    public function __construct()
     {
-        return view('admin.plesir.create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
+        $this->model = Plesir::class;
+        $this->routePrefix = 'plesir';
+        $this->viewPrefix = 'plesir';
+        $this->aktivitasTipe = 'Lokasi Plesir';
+        $this->aktivitasCreateMessage = 'Lokasi Plesir telah ditambahkan';
+        $this->validationRules = [
             'name' => 'required',
+            'address' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
-        ]);
-
-        Aktivitas::create([
-        'keterangan' => 'Menambahkan Tempat Plesir ' . $request->nama,
-        'tipe' => 'plesir',
-        ]);
-
-        Plesir::create($request->all());
-
-        return redirect()->route('admin.plesir.index')->with('success', 'Data berhasil ditambahkan');
+        ];
     }
 
-    public function edit(Plesir $plesir)
+    public function edit($id)
     {
-        return view('admin.plesir.edit', compact('plesir'));
-    }
-
-    public function update(Request $request, Plesir $plesir)
-    {
-        $request->validate([
-            'name' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+        $item = ($this->model)::findOrFail($id);
+        $varName = strtolower(class_basename($this->model)); // ibadah, pasar, dll
+        return view("admin.{$this->viewPrefix}.edit", [
+            $varName => $item,
         ]);
-
-        $plesir->update($request->all());
-
-        return redirect()->route('admin.plesir.index')->with('success', 'Data berhasil diperbarui');
-    }
-
-    public function destroy(Plesir $plesir)
-    {
-        $plesir->delete();
-        return redirect()->route('admin.plesir.index')->with('success', 'Data berhasil dihapus');
     }
 }

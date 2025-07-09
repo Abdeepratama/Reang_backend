@@ -163,7 +163,7 @@
         </li>
     </ul>
 
-    <hr>
+    
     {{-- Dropdown Profil --}}
     <div class="dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">

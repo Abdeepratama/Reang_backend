@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Aktivitas;
+use App\Models\NotifikasiAktivitas;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +30,16 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('notifikasiAktivitas', $notifikasiAktivitas)
                 ->with('jumlahNotifikasi', $jumlahNotifikasi);
+        });
+
+        view()->composer('*', function ($view) {
+            $notifikasiAktivitas = NotifikasiAktivitas::where('dibaca', false)
+                ->orderByDesc('created_at')
+                ->take(10)
+                ->get();
+
+            $view->with('notifikasiAktivitas', $notifikasiAktivitas);
+            $view->with('jumlahNotifikasi', $notifikasiAktivitas->count());
         });
     }
 }
