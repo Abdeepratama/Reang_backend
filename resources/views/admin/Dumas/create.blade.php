@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('dumas.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -34,11 +34,6 @@
         <div class="mb-3">
             <label for="bukti_laporan" class="form-label">Bukti Laporan (Foto)</label>
             <input type="file" name="bukti_laporan" class="form-control" accept="image/*">
-        </div>
-
-        <div class="mb-3">
-            <label for="pernyataan" class="form-label">Pernyataan Pelapor</label>
-            <textarea name="pernyataan" class="form-control" rows="3"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Kirim Pengaduan</button>

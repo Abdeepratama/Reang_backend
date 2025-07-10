@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\IbadahController;
 use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\Admin\PasarController;
 use App\Http\Controllers\Admin\PlesirController;
-use App\Http\Controllers\Admin\PengaduanController;
+use App\Http\Controllers\Admin\DumasController;
 use App\Models\NotifikasiAktivitas;
 
 // Halaman Awal
@@ -38,7 +38,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/sehat', SehatController::class);
         Route::resource('/pasar', PasarController::class);
         Route::resource('/plesir', PlesirController::class);
-        Route::resource('/pengaduan', PengaduanController::class);
+        Route::resource('/dumas', DumasController::class);
 
         // ✅ Route untuk klik notifikasi
         Route::get('/notifikasi/baca/{id}', function ($id) {

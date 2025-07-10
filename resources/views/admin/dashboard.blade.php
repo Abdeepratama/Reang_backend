@@ -28,7 +28,7 @@
                             {{ $stats['jumlah_ibadah'] > 0 ? $stats['jumlah_ibadah'] . ' lokasi' : 'Belum ada' }}
                         </h2>
                     </div>
-                    <i class="bi bi-house-door fs-1"></i>
+                    <i class="fas fa-mosque fs-2"></i>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
                             {{ $stats['jumlah_plesir'] > 0 ? $stats['jumlah_plesir'] . ' lokasi' : 'Belum ada' }}
                         </h2>
                     </div>
-                    <i class="bi bi-image fs-1"></i>
+                    <i class="bi bi-geo-alt-fill fs-1"></i>
                 </div>
             </div>
         </div>

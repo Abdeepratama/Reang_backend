@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
-use App\Models\Pengaduan;
+use App\Models\Dumas;
 use Illuminate\Http\Request;
 
 
-class PengaduanController extends Controller
+class DumasController extends Controller
 {
     use CRUDHelper;
 
     public function __construct()
     {
-        $this->model = Pengaduan::class;
-        $this->routePrefix = 'pengaduan';
-        $this->viewPrefix = 'pengaduan';
+        $this->model = Dumas::class;
+        $this->routePrefix = 'dumas';
+        $this->viewPrefix = 'dumas';
         $this->aktivitasTipe = 'Pengaduan Masyarakat';
         $this->aktivitasCreateMessage = 'Pengaduan baru telah ditambahkan';
         $this->validationRules = [
@@ -25,7 +25,6 @@ class PengaduanController extends Controller
             'lokasi_laporan' => 'required',
             'kategori_laporan' => 'required',
             'deskripsi' => 'required',
-            'pernyataan' => 'required',
         ];
     }
 
@@ -35,7 +34,7 @@ class PengaduanController extends Controller
             'status' => 'required|in:masuk,diproses,selesai,ditolak',
         ]);
 
-        $pengaduan = \App\Models\Pengaduan::findOrFail($id);
+        $pengaduan = Dumas::findOrFail($id);
         $pengaduan->status = $request->status;
         $pengaduan->save();
 

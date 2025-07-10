@@ -10,7 +10,7 @@ use App\Models\Sehat;
 use App\Models\Pasar;
 use App\Models\Plesir;
 use App\Models\Aktivitas;
-use App\Models\Pengaduan;
+use App\Models\Dumas;
 use App\Models\NotifikasiAktivitas;
 
 class DashboardController extends Controller
@@ -24,7 +24,7 @@ class DashboardController extends Controller
             'jumlah_sehat' => Sehat::count(),
             'jumlah_pasar' => Pasar::count(),
             'jumlah_plesir' => Plesir::count(),
-            'jumlah_dumas' => Pengaduan::count(),
+            'jumlah_dumas' => Dumas::count(),
         ];
 
         $aktivitas = Aktivitas::latest()->take(10)->get();

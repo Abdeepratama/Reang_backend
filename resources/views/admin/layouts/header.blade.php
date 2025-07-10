@@ -1,6 +1,6 @@
 <header class="bg-light border-bottom">
     <div class="container-fluid d-flex justify-content-between py-3">
-        <div class="d-flex align-items-center">
+        <div class="border-bottom py-3 px-4 bg-light">
             <button class="btn btn-outline-secondary me-3 d-lg-none" id="sidebarToggle">
                 <i class="bi bi-list"></i>
             </button>

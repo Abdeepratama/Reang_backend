@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\IbadahController;
-use App\Http\Controllers\Admin\PengaduanController;
+use App\Http\Controllers\Admin\DumasController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -19,12 +19,12 @@ Route::prefix('auth')->group(function () {
 });
 
 // 📌 Rute API Pengaduan (tidak harus login)
-Route::prefix('pengaduan')->group(function () {
-    Route::get('/', [PengaduanController::class, 'index']);     // List semua
-    Route::get('/{id}', [PengaduanController::class, 'show']);  // Detail
-    Route::post('/', [PengaduanController::class, 'store']);    // Kirim pengaduan
-    Route::put('/{id}', [PengaduanController::class, 'update']); // Ubah status/tanggapan
-    Route::delete('/{id}', [PengaduanController::class, 'destroy']); // Hapus
+Route::prefix('dumas')->group(function () {
+    Route::get('/', [DumasController::class, 'index']);     // List semua
+    Route::get('/{id}', [DumasController::class, 'show']);  // Detail
+    Route::post('/', [DumasController::class, 'store']);    // Kirim pengaduan
+    Route::put('/{id}', [DumasController::class, 'update']); // Ubah status/tanggapan
+    Route::delete('/{id}', [DumasController::class, 'destroy']); // Hapus
 });
 
 // 📌 Ibadah API (contoh endpoint publik)

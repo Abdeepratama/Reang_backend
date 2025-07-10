@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2 class="mb-4">Daftar Pengaduan Masyarakat (DUMES-YU)</h2>
+    <h2 class="mb-4">Daftar Pengaduan Masyarakat (DUMAS-YU)</h2>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
@@ -18,7 +18,6 @@
                 <th>Status</th>
                 <th>Bukti</th>
                 <th>Deskripsi</th>
-                <th>Pernyataan</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -30,7 +29,7 @@
                 <td>{{ $item->kategori_laporan }}</td>
                 <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                 <td>
-                    <form action="{{ route('admin.pengaduan.update', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.dumas.update', $item->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="d-flex">
@@ -54,7 +53,7 @@
                 <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 80) }}</td>
                 <td>{{ $item->pernyataan ? 'Ya' : '-' }}</td>
                 <td>
-                    <form action="{{ route('admin.pengaduan.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus?')">
+                    <form action="{{ route('admin.dumas.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus?')">
                         @csrf @method('DELETE')
                         <button class="btn btn-sm btn-danger">Hapus</button>
                     </form>
