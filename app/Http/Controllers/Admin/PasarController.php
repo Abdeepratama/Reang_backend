@@ -12,25 +12,22 @@ class PasarController extends Controller
 
     public function __construct()
     {
-        $this->model = Pasar::class; 
+        $this->model = Pasar::class;
         $this->routePrefix = 'pasar';
         $this->viewPrefix = 'pasar';
         $this->aktivitasTipe = 'Pasar';
-        $this->aktivitasCreateMessage = 'Lokasi Pasar telah ditambahkan';
+        $this->aktivitasCreateMessage = 'Lokasi Pasar baru ditambahkan';
         $this->validationRules = [
-            'name' => 'required',
-            'address' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'name' => 'required|string',
+            'address' => 'nullable|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ];
     }
 
-    public function edit($id)
+    public function tempat()
     {
-        $item = ($this->model)::findOrFail($id);
-        $varName = strtolower(class_basename($this->model)); // ibadah, pasar, dll
-        return view("admin.{$this->viewPrefix}.edit", [
-            $varName => $item,
-        ]);
+        $items = Pasar::all();
+        return view('admin.pasar.tempat.index', compact('items'));
     }
 }

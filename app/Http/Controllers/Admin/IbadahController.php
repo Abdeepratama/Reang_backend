@@ -26,12 +26,9 @@ class IbadahController extends Controller
         ];
     }
 
-    public function edit($id)
+    public function tempat()
     {
-        $item = ($this->model)::findOrFail($id);
-        $varName = strtolower(class_basename($this->model)); // ibadah, pasar, dll
-        return view("admin.{$this->viewPrefix}.edit", [
-            $varName => $item,
-        ]);
+        $items = Ibadah::all();
+        return view('admin.ibadah.tempat.index', compact('items'));
     }
 }

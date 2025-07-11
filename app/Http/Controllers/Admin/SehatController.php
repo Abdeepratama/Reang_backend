@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Sehat;
+use Illuminate\Http\Request;
 
 class SehatController extends Controller
 {
@@ -15,22 +16,19 @@ class SehatController extends Controller
         $this->model = Sehat::class;
         $this->routePrefix = 'sehat';
         $this->viewPrefix = 'sehat';
-        $this->aktivitasTipe = 'Rumah Sakit';
-        $this->aktivitasCreateMessage = 'Lokasi Rumah Sakit telah ditambahkan';
+        $this->aktivitasTipe = 'Sehat';
+        $this->aktivitasCreateMessage = 'Tempat sehat baru ditambahkan';
         $this->validationRules = [
-            'name' => 'required',
-            'address' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'name' => 'required|string',
+            'address' => 'nullable|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ];
     }
 
-    public function edit($id)
+    public function tempat()
     {
-        $item = ($this->model)::findOrFail($id);
-        $varName = strtolower(class_basename($this->model)); // ibadah, pasar, dll
-        return view("admin.{$this->viewPrefix}.edit", [
-            $varName => $item,
-        ]);
+        $items = Sehat::all();
+        return view('admin.sehat.tempat.index', compact('items'));
     }
 }

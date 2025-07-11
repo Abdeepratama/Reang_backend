@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Plesir;
+use Illuminate\Http\Request;
 
 class PlesirController extends Controller
 {
@@ -15,22 +16,19 @@ class PlesirController extends Controller
         $this->model = Plesir::class;
         $this->routePrefix = 'plesir';
         $this->viewPrefix = 'plesir';
-        $this->aktivitasTipe = 'Lokasi Plesir';
-        $this->aktivitasCreateMessage = 'Lokasi Plesir telah ditambahkan';
+        $this->aktivitasTipe = 'Plesir';
+        $this->aktivitasCreateMessage = 'Tempat plesir baru ditambahkan';
         $this->validationRules = [
-            'name' => 'required',
-            'address' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'name' => 'required|string',
+            'address' => 'nullable|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ];
     }
 
-    public function edit($id)
+    public function tempat()
     {
-        $item = ($this->model)::findOrFail($id);
-        $varName = strtolower(class_basename($this->model)); // ibadah, pasar, dll
-        return view("admin.{$this->viewPrefix}.edit", [
-            $varName => $item,
-        ]);
+        $items = Plesir::all();
+        return view('admin.plesir.tempat.index', compact('items'));
     }
 }

@@ -1,6 +1,6 @@
 <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark min-vh-100" style="width: 280px;">
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <span class="fs-4">Wong Reang Admin</span>
+        <span class="fs-3">Wong Reang Admin</span>
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
@@ -32,7 +32,7 @@
 
         {{-- Info-Yu --}}
         <li class="nav-item">
-            <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/info*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#ibadahSubmenu" role="button" aria-expanded="{{ request()->is('admin/ibadah*') ? 'true' : 'false' }}">
+            <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/info*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#infoSubmenu" role="button" aria-expanded="{{ request()->is('admin/info*') ? 'true' : 'false' }}">
                 <span><i class="bi bi-info-circle"></i> Info-Yu</span>
                 <i class="fas fa-chevron-down"></i>
             </a>
@@ -58,10 +58,15 @@
 
         {{-- Sekolah-Yu --}}
         <li class="nav-item">
-            <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/sekolah*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#ibadahSubmenu" role="button" aria-expanded="{{ request()->is('admin/ibadah*') ? 'true' : 'false' }}">
-                <span><i class="bi bi-mortarboard"></i> Sekolah-Yu</span>
+            <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/sekolah*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#sekolahSubmenu" role="button" aria-expanded="{{ request()->is('admin/sekolah*') ? 'true' : 'false' }}">
+                <span><i class="bi bi-heart-pulse me-2"></i> Sekolah-Yu</span>
                 <i class="fas fa-chevron-down"></i>
             </a>
+            <div class="collapse {{ request()->is('admin/sekolah*') ? 'show' : '' }}" id="sekolahSubmenu">
+                <ul class="list-unstyled ms-3">
+                    <li><a href="{{ route('admin.sekolah.index') }}" class="nav-link text-white {{ request()->is('admin/sekolah') ? 'active' : '' }}"><i class="bi bi-list me-2"></i> Aduan Sekolah</a></li>
+                </ul>
+            </div>
         </li>
 
         {{-- === KATEGORI: Sosial dan Ekonomi === --}}
@@ -120,7 +125,7 @@
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
                     <li>
                         <a href="{{ route('admin.ibadah.index') }}" class="nav-link text-white {{ request()->is('admin/ibadah') ? 'active' : '' }}">
-                            <i class="bi bi-list me-2"></i> Daftar Tempat
+                            <i class="bi bi-list me-2"></i> Dashboard
                         </a>
                     </li>
                 </ul>
