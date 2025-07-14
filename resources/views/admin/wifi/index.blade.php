@@ -1,9 +1,9 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Info-Yu')
+@section('title', 'Wifi-Yu')
 
 @section('content')
 <div class="container mt-4">
-    <h2 class="mb-4">Dashboard Fitur Info</h2>
+    <h2 class="mb-4">Dashboard Fitur Wifi</h2>
 </div>
 @endsection

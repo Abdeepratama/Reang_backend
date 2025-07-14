@@ -9,6 +9,13 @@ use App\Http\Controllers\Admin\PasarController;
 use App\Http\Controllers\Admin\PlesirController;
 use App\Http\Controllers\Admin\DumasController;
 use App\Http\Controllers\Admin\SekolahController;
+use App\Http\Controllers\Admin\InfoController;
+use App\Http\Controllers\Admin\PajakController;
+use App\Http\Controllers\Admin\KerjaController;
+use App\Http\Controllers\Admin\AdmindukController;
+use App\Http\Controllers\Admin\RenbangController;
+use App\Http\Controllers\Admin\IzinController;
+use App\Http\Controllers\Admin\WifiController;
 use App\Models\NotifikasiAktivitas;
 
 // Halaman Awal
@@ -41,12 +48,34 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/plesir', PlesirController::class);
         Route::resource('/dumas', DumasController::class);
         Route::resource('/sekolah', SekolahController::class);
+        Route::resource('/info', InfoController::class);
+        Route::resource('/pajak', PajakController::class);
+        Route::resource('/Kerja', KerjaController::class);
+        Route::resource('/Kerja', AdmindukController::class);
+        Route::resource('/Kerja', RenbangController::class);
+        Route::resource('/izin',IzinController::class);
+        Route::resource('/wifi',wifiController::class);
 
         Route::get('/admin/ibadah/tempat', [IbadahController::class, 'tempat'])->name('admin.ibadah.tempat.index');
         Route::get('/admin/pasar/tempat', [PasarController::class, 'tempat'])->name('admin.pasar.tempat.index');
         Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('admin.plesir.tempat.index');
         Route::get('/admin/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/sekolah/aduan', [SekolahController::class, 'aduan'])->name('sekolah.aduan.index');
+        Route::get('/dumas/aduan', [DumasController::class, 'aduan'])->name('dumas.aduan.index');
+        Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard');
+        Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');
+        Route::get('admin/kerja', [KerjaController::class, 'dashboard'])->name('kerja.index');
+        Route::get('admin/adminduk', [AdmindukController::class, 'dashboard'])->name('adminduk.index');
+        Route::get('admin/renbang', [RenbangController::class, 'dashboard'])->name('renbang.index');
+        Route::get('admin/izin', [IzinController::class, 'dashboard'])->name('izin.index');
+        Route::get('admin/wifi', [WifiController::class, 'dashboard'])->name('wifi.index');
+
+
+        Route::get('/fitur', function () {
+            return view('admin.fitur.index');
+        })->name('fitur.index');
+
+
 
         // ✅ Route untuk klik notifikasi
         Route::get('/notifikasi/baca/{id}', function ($id) {

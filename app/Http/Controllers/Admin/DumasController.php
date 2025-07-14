@@ -28,16 +28,9 @@ class DumasController extends Controller
         ];
     }
 
-    public function update(Request $request, $id)
+    public function aduan()
     {
-        $request->validate([
-            'status' => 'required|in:masuk,diproses,selesai,ditolak',
-        ]);
-
-        $pengaduan = Dumas::findOrFail($id);
-        $pengaduan->status = $request->status;
-        $pengaduan->save();
-
-        return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+        $items = Dumas::all();
+        return view('admin.dumas.aduan.index', compact('items'));
     }
 }

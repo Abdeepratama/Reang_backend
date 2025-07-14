@@ -128,7 +128,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h6>Modul Aplikasi</h6>
-                <a href="#" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+                <a href="{{ route('admin.fitur.index') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -159,7 +159,7 @@
                     </div>
 
                     <div class="col-6">
-                        <a href="#" class="text-decoration-none">
+                        <a href="{{ route('admin.adminduk.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow">
                                 <i class="bi bi-file-earmark-text fs-3 text-info"></i>
                                 <p class="mb-0 mt-2">Adminduk-Yu</p>
