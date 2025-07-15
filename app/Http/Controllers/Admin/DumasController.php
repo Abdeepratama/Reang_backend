@@ -17,6 +17,7 @@ class DumasController extends Controller
         $this->model = Dumas::class;
         $this->routePrefix = 'dumas';
         $this->viewPrefix = 'dumas';
+        $this->viewSubfolder = 'aduan';
         $this->aktivitasTipe = 'Pengaduan Masyarakat';
         $this->aktivitasCreateMessage = 'Pengaduan baru telah ditambahkan';
         $this->validationRules = [
@@ -30,7 +31,25 @@ class DumasController extends Controller
 
     public function aduan()
     {
-        $items = Dumas::all();
-        return view('admin.dumas.aduan.index', compact('items'));
+        $items = Dumas::latest()->get(); // Atau sesuai kebutuhanmu
+        return view('dumas.aduan.index', compact('items'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi hanya status (jika hanya ubah status)
+        $request->validate([
+            'status' => 'required|in:masuk,diproses,selesai,ditolak',
+        ]);
+
+        // Ambil data berdasarkan ID
+        $dumas = Dumas::findOrFail($id);
+
+        // Update status
+        $dumas->status = $request->status;
+        $dumas->save();
+
+        // Redirect balik ke halaman sebelumnya dengan pesan sukses
+        return redirect()->back()->with('success', 'Status aduan berhasil diperbarui.');
     }
 }

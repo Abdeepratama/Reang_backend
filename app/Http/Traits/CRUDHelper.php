@@ -34,7 +34,7 @@ trait CRUDHelper
 
     public function index()
     {
-        $items = ($this->model)::latest()->get();
+        $items = ($this->model)::oldest()->get();
         return view($this->getViewPath('index'), compact('items'));
     }
 

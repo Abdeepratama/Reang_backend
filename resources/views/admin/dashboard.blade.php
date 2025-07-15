@@ -98,6 +98,22 @@
         </div>
     </div>
 
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Aduan Sekolah</h6>
+                        <h2 class="mb-0">
+                            {{ $stats['jumlah_sekolah'] > 0 ? $stats['jumlah_sekolah'] . ' aduan' : 'Belum ada' }}
+                        </h2>
+                    </div>
+                    <i class="bi bi-book fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </div>
 
@@ -134,15 +150,15 @@
                 <div class="row g-3">
                     <div class="col-6">
                         <a href="{{ route('admin.ibadah.index') }}" class="text-decoration-none">
-                            <div class="p-3 border rounded text-center hover-shadow">
-                                <i class="bi bi-house-door fs-3 text-primary"></i>
+                            <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
+                                <i class="fas fa-mosque fs-2 "></i>
                                 <p class="mb-0 mt-2 text-primary">Ibadah-Yu</p>
                             </div>
                         </a>
                     </div>
                     <div class="col-6">
                         <a href="{{ route('admin.sehat.index') }}" class="text-decoration-none">
-                            <div class="p-3 border rounded text-center hover-shadow">
+                            <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="bi bi-heart-pulse fs-3 text-success"></i>
                                 <p class="mb-0 mt-2 text-primary">Sehat-Yu</p>
                             </div>

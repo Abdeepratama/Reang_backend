@@ -33,7 +33,7 @@
         {{-- Info-Yu --}}
         <li class="nav-item">
             <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/info*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#infoSubmenu" role="button" aria-expanded="{{ request()->is('admin/info*') ? 'true' : 'false' }}">
-                <span><i class="bi bi-info-circle"></i> Info-Yu</span>
+                <span><i class="bi bi-info-circle me-2"></i> Info-Yu</span>
                 <i class="fas fa-chevron-down"></i>
             </a>
             <div class="collapse {{ request()->is('admin/info*') ? 'show' : '' }}" id="infoSubmenu">
@@ -64,7 +64,7 @@
         {{-- Sekolah-Yu --}}
         <li class="nav-item">
             <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/sekolah*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#sekolahSubmenu" role="button" aria-expanded="{{ request()->is('admin/sekolah*') ? 'true' : 'false' }}">
-                <span><i class="bi bi-book me-3"></i> Sekolah-Yu</span>
+                <span><i class="bi bi-book me-2"></i> Sekolah-Yu</span>
                 <i class="fas fa-chevron-down"></i>
             </a>
             <div class="collapse {{ request()->is('admin/sekolah*') ? 'show' : '' }}" id="sekolahSubmenu">
@@ -170,7 +170,7 @@
         {{-- Renbang-Yu --}}
         <li class="nav-item">
             <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/renbang*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#renbangSubmenu" role="button" aria-expanded="{{ request()->is('admin/renbang*') ? 'true' : 'false' }}">
-                <span><i class="bi bi-card-list me-2"></i>Renbang-Yu</span>
+                <span><i class="bi bi-building me-2"></i> Renbang-Yu</span>
                 <i class="fas fa-chevron-down"></i>
             </a>
             <div class="collapse {{ request()->is('admin/renbang*') ? 'show' : '' }}" id="renbangSubmenu">

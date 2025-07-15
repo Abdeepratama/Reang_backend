@@ -11,6 +11,7 @@ use App\Models\Pasar;
 use App\Models\Plesir;
 use App\Models\Aktivitas;
 use App\Models\Dumas;
+use App\Models\Sekolah;
 use App\Models\NotifikasiAktivitas;
 
 class DashboardController extends Controller
@@ -25,6 +26,7 @@ class DashboardController extends Controller
             'jumlah_pasar' => Pasar::count(),
             'jumlah_plesir' => Plesir::count(),
             'jumlah_dumas' => Dumas::count(),
+            'jumlah_sekolah' => Sekolah::count(),
         ];
 
         $aktivitas = Aktivitas::latest()->take(10)->get();

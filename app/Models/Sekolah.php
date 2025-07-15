@@ -18,6 +18,5 @@ class Sekolah extends Model
         'status',
         'bukti_laporan',
         'deskripsi',
-        'pernyataan',
     ];
 }

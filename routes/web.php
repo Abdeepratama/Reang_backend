@@ -51,8 +51,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/info', InfoController::class);
         Route::resource('/pajak', PajakController::class);
         Route::resource('/Kerja', KerjaController::class);
-        Route::resource('/Kerja', AdmindukController::class);
-        Route::resource('/Kerja', RenbangController::class);
+        Route::resource('/adminduk', AdmindukController::class);
+        Route::resource('/renbang', RenbangController::class);
         Route::resource('/izin',IzinController::class);
         Route::resource('/wifi',wifiController::class);
 

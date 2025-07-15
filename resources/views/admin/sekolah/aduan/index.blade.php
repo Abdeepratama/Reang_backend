@@ -14,7 +14,7 @@
         <thead class="table-dark">
             <tr>
                 <th>No</th>
-                <th>Jenis Aduan</th>
+                <th>Jenisa Laporan</th>
                 <th>Kategori</th>
                 <th>Lokasi</th>
                 <th>Status</th>
@@ -27,12 +27,11 @@
             @forelse($items as $i => $item)
             <tr>
                 <td>{{ $i + 1 }}</td>
-                <td>{{ $item->nama_pengadu ?? '-' }}</td>
-                <td>{{ $item->jenis_aduan }}</td>
-                <td>{{ $item->kategori }}</td>
-                <td>{{ $item->lokasi ?? '-' }}</td>
+                <td>{{ $item->jenis_laporan }}</td>
+                <td>{{ $item->kategori_laporan }}</td>
+                <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                 <td>
-                    <form action="{{ route('admin.sekolah.aduan.updateStatus', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.sekolah.update', $item->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="d-flex">
@@ -47,17 +46,15 @@
                     </form>
                 </td>
                 <td>
-                    @if($item->bukti)
-                    <a href="{{ asset($item->bukti) }}" target="_blank">
-                        <img src="{{ asset($item->bukti) }}" alt="Bukti" width="80">
-                    </a>
+                    @if($item->bukti_laporan)
+                    <img src="{{ asset('storage/' . $item->bukti_laporan) }}" alt="Bukti" width="80">
                     @else
                     <span class="text-muted">Tidak ada</span>
                     @endif
                 </td>
                 <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 80) }}</td>
                 <td class="text-center">
-                    <form action="{{ route('admin.sekolah.aduan.destroy', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.sekolah.destroy', $item->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-sm btn-danger">Hapus</button>

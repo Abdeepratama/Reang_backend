@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\IbadahController;
 use App\Http\Controllers\Admin\DumasController;
+use App\Http\Controllers\Admin\SekolahController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -29,3 +30,7 @@ Route::prefix('dumas')->group(function () {
 
 // 📌 Ibadah API (contoh endpoint publik)
 Route::get('/ibadah', [IbadahController::class, 'api']);
+
+// 📌 sekolah API 
+Route::post('/sekolah-aduan', [SekolahController::class, 'store']);
+
