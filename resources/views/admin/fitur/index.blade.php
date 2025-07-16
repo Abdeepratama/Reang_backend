@@ -101,7 +101,7 @@
     <a href="{{ route('admin.dumas.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
-                <i class="bi bi-chat-left-text text-secondary icon-size"></i>
+                <i class="bi bi-exclamation-circle fs-1"></i>
             </div>
             <p class="mb-0 mt-2 text-secondary">DUMAS-Yu</p>
         </div>

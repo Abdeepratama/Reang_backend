@@ -69,7 +69,7 @@
             </a>
             <div class="collapse {{ request()->is('admin/sekolah*') ? 'show' : '' }}" id="sekolahSubmenu">
                 <ul class="list-unstyled ms-3">
-                    <li><a href="{{ route('admin.sekolah.index') }}" class="nav-link text-white {{ request()->is('admin/sekolah') ? 'active' : '' }}"><i class="bi bi-list me-2"></i>Dashboard Sekolah</a></li>
+                    <li><a href="{{ route('admin.sekolah.index') }}" class="nav-link text-white {{ request()->is('admin/sekolah') ? 'active' : '' }}"><i class="bi bi-list me-2"></i>Dashboard Pengaduan</a></li>
                 </ul>
             </div>
         </li>

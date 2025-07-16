@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Sekolah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class SekolahController extends Controller
 {
@@ -16,7 +18,6 @@ class SekolahController extends Controller
         $this->model = Sekolah::class;
         $this->routePrefix = 'sekolah'; // sesuai route name: admin.sekolah.aduan.index
         $this->viewPrefix = 'sekolah';  // views/admin/sekolah/aduan/
-        $this->viewSubfolder = 'aduan';
         $this->aktivitasTipe = 'Aduan Sekolah';
         $this->aktivitasCreateMessage = 'Aduan sekolah baru telah ditambahkan';
 
@@ -29,11 +30,6 @@ class SekolahController extends Controller
         ];
     }
 
-    public function aduan()
-    {
-        // bisa ubah jadi view mana pun
-        return view('sekolah.aduan.index');
-    }
 
     public function store(Request $request)
     {
@@ -73,22 +69,22 @@ class SekolahController extends Controller
     }
 
     public function destroy($id)
-{
-    $item = Sekolah::findOrFail($id);
+    {
+        $item = Sekolah::findOrFail($id);
 
-    // Hapus file bukti jika ada
-    if ($item->bukti_laporan && file_exists(public_path($item->bukti_laporan))) {
-        unlink(public_path($item->bukti_laporan));
+        // Hapus file bukti jika ada
+        if ($item->bukti_laporan && Storage::disk('public')->exists($item->bukti_laporan)) {
+            Storage::disk('public')->delete($item->bukti_laporan);
+        }
+
+        $item->delete();
+
+        // Simpan aktivitas & notifikasi jika diperlukan
+        $this->logAktivitas("Menghapus Aduan Sekolah");
+        $this->logNotifikasi("Aduan Sekolah telah dihapus.");
+
+        // Redirect ke halaman index dengan pesan sukses
+        return redirect()->route('admin.sekolah.index')
+            ->with('success', 'Aduan berhasil dihapus.');
     }
-
-    $item->delete();
-
-    // Simpan aktivitas & notifikasi jika diperlukan
-    $this->logAktivitas("Menghapus Aduan Sekolah");
-    $this->logNotifikasi("Aduan Sekolah telah dihapus.");
-
-    // Redirect ke halaman index dengan pesan sukses
-    return redirect()->route('admin.sekolah.aduan.index')
-        ->with('success', 'Aduan berhasil dihapus.');
-}
 }

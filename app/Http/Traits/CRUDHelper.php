@@ -18,7 +18,6 @@ trait CRUDHelper
 
     protected function getViewPath($page)
     {
-        // contoh hasil: admin.sekolah.aduan.index atau admin.ibadah.index
         return 'admin.' . $this->viewPrefix .
             ($this->viewSubfolder ? '.' . $this->viewSubfolder : '') .
             '.' . $page;
