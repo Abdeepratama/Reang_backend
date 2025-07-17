@@ -43,69 +43,84 @@ class DashboardController extends Controller
             'aktivitas',
             'notifications',
             'jumlahNotifikasi',
-            'sliders' 
+            'sliders'
         ));
     }
 
+    public function apiSlider()
+    {
+        $sliders = Slider::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $sliders->map(function ($slider) {
+                return [
+                    'id' => $slider->id,
+                    'gambar' => asset('storage/' . $slider->gambar),
+                ];
+            }),
+        ]);
+    }
+
     public function sliderIndex()
-{
-    $items = Slider::latest()->get();
-    return view('admin.slider.index', compact('items'));
-}
+    {
+        $items = Slider::latest()->get();
+        return view('admin.slider.index', compact('items'));
+    }
 
-public function sliderCreate()
-{
-    return view('admin.slider.create');
-}
+    public function sliderCreate()
+    {
+        return view('admin.slider.create');
+    }
 
-public function sliderStore(Request $request)
-{
-    $request->validate([
-        'gambar' => 'required|image|max:2048',
-    ]);
+    public function sliderStore(Request $request)
+    {
+        $request->validate([
+            'gambar' => 'required|image|max:2048',
+        ]);
 
-    $gambar = $request->file('gambar')->store('slider', 'public');
+        $gambar = $request->file('gambar')->store('slider', 'public');
 
-    Slider::create(['gambar' => $gambar]);
+        Slider::create(['gambar' => $gambar]);
 
-    return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil ditambahkan.');
-}
+        return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil ditambahkan.');
+    }
 
-public function sliderEdit($id)
-{
-    $item = Slider::findOrFail($id);
-    return view('admin.slider.edit', compact('item'));
-}
+    public function sliderEdit($id)
+    {
+        $item = Slider::findOrFail($id);
+        return view('admin.slider.edit', compact('item'));
+    }
 
-public function sliderUpdate(Request $request, $id)
-{
-    $request->validate([
-        'gambar' => 'nullable|image|max:2048',
-    ]);
+    public function sliderUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'gambar' => 'nullable|image|max:2048',
+        ]);
 
-    $item = Slider::findOrFail($id);
+        $item = Slider::findOrFail($id);
 
-    if ($request->hasFile('gambar')) {
+        if ($request->hasFile('gambar')) {
+            if (Storage::disk('public')->exists($item->gambar)) {
+                Storage::disk('public')->delete($item->gambar);
+            }
+            $item->gambar = $request->file('gambar')->store('slider', 'public');
+            $item->save();
+        }
+
+        return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil diperbarui.');
+    }
+
+    public function sliderDestroy($id)
+    {
+        $item = Slider::findOrFail($id);
+
         if (Storage::disk('public')->exists($item->gambar)) {
             Storage::disk('public')->delete($item->gambar);
         }
-        $item->gambar = $request->file('gambar')->store('slider', 'public');
-        $item->save();
+
+        $item->delete();
+
+        return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil dihapus.');
     }
-
-    return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil diperbarui.');
-}
-
-public function sliderDestroy($id)
-{
-    $item = Slider::findOrFail($id);
-
-    if (Storage::disk('public')->exists($item->gambar)) {
-        Storage::disk('public')->delete($item->gambar);
-    }
-
-    $item->delete();
-
-    return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil dihapus.');
-}
 }

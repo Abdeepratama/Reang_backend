@@ -6,16 +6,6 @@
 
 
 <div class="row">
-    <div class="col-6">
-    <a href="{{ route('admin.slider.index') }}" class="text-decoration-none">
-        <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
-            <i class="bi bi-images fs-3 text-info"></i>
-            <p class="mb-0 mt-2 text-primary">Kelola Home Slider</p>
-        </div>
-    </a>
-</div>
-
-
     <div class="col-md-3 mb-4">
         <div class="card bg-primary text-white">
             <div class="card-body">

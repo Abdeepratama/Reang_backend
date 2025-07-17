@@ -19,7 +19,7 @@ return new class extends Migration
     $table->text('deskripsi');
     $table->string('bukti_laporan')->nullable(); // untuk path foto
     $table->text('pernyataan')->nullable();
-    $table->enum('status', ['masuk', 'diproses', 'selesai', 'ditolak'])->default('masuk');
+    $table->enum('status', ['menunggu', 'diproses', 'selesai', 'ditolak'])->default('masuk');
     $table->text('tanggapan')->nullable();
     $table->timestamps();
 });

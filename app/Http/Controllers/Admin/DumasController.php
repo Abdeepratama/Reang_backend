@@ -27,4 +27,17 @@ class DumasController extends Controller
             'deskripsi' => 'required',
         ];
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:menunggu,diproses,selesai,ditolak',
+        ]);
+
+        $dumas = Dumas::findOrFail($id);
+        $dumas->status = $request->status;
+        $dumas->save();
+
+        return redirect()->back()->with('success', 'Status pengaduan berhasil diperbarui.');
+    }
 }

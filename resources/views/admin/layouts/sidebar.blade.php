@@ -7,9 +7,24 @@
 
         {{-- Dashboard --}}
         <li class="nav-item">
-            <a href="{{ route('admin.dashboard') }}" class="nav-link text-white {{ request()->is('admin/dashboard') ? 'active bg-primary' : '' }}">
-                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            <a class="nav-link text-white d-flex justify-content-between align-items-center {{ request()->is('admin/dashboard') || request()->is('admin/slider*') ? 'bg-primary' : '' }}" data-bs-toggle="collapse" href="#dashboardSubmenu" role="button" aria-expanded="{{ request()->is('admin/slider*') ? 'true' : 'false' }}">
+                <span><i class="bi bi-speedometer2 me-2"></i> Dashboard</span>
+                <i class="fas fa-chevron-down"></i>
             </a>
+            <div class="collapse {{ request()->is('admin/slider*') ? 'show' : '' }}" id="dashboardSubmenu">
+                <ul class="list-unstyled ms-3">
+                    <li>
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link text-white {{ request()->is('admin/dashboard') ? 'active' : '' }}">
+                            <i class="bi bi-house me-2"></i> Beranda
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.slider.index') }}" class="nav-link text-white {{ request()->is('admin/slider*') ? 'active' : '' }}">
+                            <i class="bi bi-images me-2"></i> Slider
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
 
         {{-- === Laporan dan Kedaruratan === --}}

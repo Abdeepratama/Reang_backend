@@ -29,7 +29,7 @@ class InfoController extends Controller
     public function dashboard()
 {
     $items = Info::latest()->take(10)->get(); // Ambil 10 info terbaru
-    return view('admin.info.index', compact('items'));
+    return view('info.index', compact('items'));
 }
 
 }

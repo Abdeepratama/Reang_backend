@@ -36,7 +36,7 @@
                         @method('PUT')
                         <div class="d-flex">
                             <select name="status" class="form-select form-select-sm me-1">
-                                <option value="masuk" {{ $item->status == 'masuk' ? 'selected' : '' }}>Menunggu</option>
+                                <option value="menunggu" {{ $item->status == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
                                 <option value="diproses" {{ $item->status == 'diproses' ? 'selected' : '' }}>Diproses</option>
                                 <option value="selesai" {{ $item->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
                                 <option value="ditolak" {{ $item->status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>

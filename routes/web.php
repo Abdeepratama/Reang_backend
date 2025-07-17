@@ -55,7 +55,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/renbang', RenbangController::class);
         Route::resource('/izin', IzinController::class);
         Route::resource('/wifi', wifiController::class);
-
+        
         Route::get('/admin/ibadah/tempat', [IbadahController::class, 'tempat'])->name('admin.ibadah.tempat.index');
         Route::get('/admin/pasar/tempat', [PasarController::class, 'tempat'])->name('admin.pasar.tempat.index');
         Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('admin.plesir.tempat.index');
@@ -73,8 +73,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/slider/{id}/edit', [DashboardController::class, 'sliderEdit'])->name('slider.edit');
         Route::put('/slider/{id}', [DashboardController::class, 'sliderUpdate'])->name('slider.update');
         Route::delete('/slider/{id}', [DashboardController::class, 'sliderDestroy'])->name('slider.destroy');
-
-
+        Route::get('/', [RenbangController::class, 'index'])->name('deskripsi.index');
+        Route::get('/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])
+     ->name('renbang.deskripsi.index');
 
         Route::get('/fitur', function () {
             return view('admin.fitur.index');
