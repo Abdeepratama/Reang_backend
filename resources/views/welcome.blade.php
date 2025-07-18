@@ -4,55 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Aplikasi Wong Reang</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Warna latar belakang yang lembut */
-        }
-        .gradient-bg {
-            background: linear-gradient(to right, #4a90e2, #50b3e8); /* Gradien biru cerah */
-        }
-        .card-shadow {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-white text-gray-800 flex flex-col">
 
     <!-- Header -->
-    <header class="bg-white shadow-md py-4 px-6 md:px-10 flex justify-between items-center rounded-b-lg">
+    <header class="bg-white shadow-md py-4 px-6 md:px-10 flex justify-between items-center">
         <div class="flex items-center space-x-3">
-            <!-- Placeholder for Government Logo -->
-            <img src="https://placehold.co/40x40/4a90e2/ffffff?text=LOGO" alt="Logo Instansi" class="rounded-full">
+            <img src="https://placehold.co/48x48/4a90e2/ffffff?text=LOGO" alt="Logo Instansi" class="rounded-full shadow">
+            <h1 class="text-lg font-semibold text-blue-700">Admin Wong Reang</h1>
         </div>
-        <nav>
-            <a href="{{ route('admin.login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 card-shadow">
-                Login Admin
-            </a>
-        </nav>
+        <a href="{{ route('admin.login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 shadow">
+            Login Admin
+        </a>
     </header>
 
     <!-- Hero Section -->
-    <main class="flex-grow flex items-center justify-center py-12 px-6 md:px-10">
-        <div class="text-center max-w-4xl bg-white p-8 md:p-12 rounded-xl card-shadow">
-            <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
-                Selamat Datang di Halaman Admin
+    <main class="flex-grow flex items-center justify-center py-16 px-6">
+        <div class="max-w-3xl w-full text-center bg-white p-8 md:p-12 rounded-2xl shadow-lg">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4 leading-snug">
+                Selamat Datang di Panel Admin
             </h2>
             <p class="text-lg md:text-xl text-gray-600 mb-8">
-                Kami berkomitmen untuk menyediakan layanan yang transparan, efisien, dan mudah diakses.
+                Kelola data aplikasi Wong Reang dengan mudah, cepat, dan efisien.
             </p>
-            {{-- Tombol "Lihat Layanan Kami" dan "Cari Informasi" dihapus sesuai permintaan --}}
+            <!-- Tombol jika suatu hari ingin ditambahkan -->
+            <!-- <div class="space-x-4">
+                <a href="#" class="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700">Lihat Layanan</a>
+                <a href="#" class="border border-blue-600 text-blue-600 px-5 py-3 rounded-lg hover:bg-blue-50">Cari Info</a>
+            </div> -->
         </div>
     </main>
 
-    <!-- Footer sederhana -->
-    <footer class="bg-gray-800 text-white py-4 px-6 text-center">
-        <p class="text-gray-500 text-sm">
-            &copy; {{ date('Y') }} Dinas Komunikasi Dan Informatika. Semua Hak Cipta Dilindungi.
-        </p>
+    <!-- Footer -->
+    <footer class="bg-white border-t py-4 px-6 text-center text-sm text-gray-500">
+        &copy; {{ date('Y') }} Dinas Komunikasi dan Informatika. Semua Hak Cipta Dilindungi.
     </footer>
 
 </body>

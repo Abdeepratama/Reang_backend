@@ -29,6 +29,16 @@ class SekolahController extends Controller
             'deskripsi'         => 'required',
         ];
     }
+    public function index()
+    {
+        return view('admin.sekolah.index');
+    }
+
+    public function aduanIndex()
+    {
+        $items = Sekolah::latest()->get();
+        return view('admin.sekolah.aduan.index', compact('items'));
+    }
 
 
     public function store(Request $request)

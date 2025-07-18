@@ -5,38 +5,45 @@
 @section('content')
 <div class="container">
     <h1>Data Deskripsi Renbang</h1>
-    <a href="{{ route('admin.renbang.deskripsi.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
+    <a href="{{ route('admin.renbang.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <table class="table table-bordered">
-        <thea>
+        <thead>
             <tr>
                 <th>Judul</th>
                 <th>Kategori</th>
+                <th>Deskripsi</th>
                 <th>Gambar</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($items as $item)
-                <tr>
-                    <td>{{ $item->judul }}</td>
-                    <td>{{ $item->kategori }}</td>
-                    <td>
-                        @if($item->gambar)
-                            <img src="{{ asset('storage/' . $items->gambar) }}" width="100">
-                        @endif
-                    </td>
-                    <td>
-                        <form action="{{ route('admin.renbang.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-danger btn-sm">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
+            @foreach ($items as $item)
+            <tr>
+                <td>{{ $item->judul }}</td>
+                <td>{{ $item->kategori }}</td>
+                <td>{{ Str::limit(strip_tags($item->isi), 100) }}</td> {{-- tampilkan ringkasan isi --}}
+                <td>
+                    @if ($item->gambar)
+                    <img src="{{ asset('storage/' . $item->gambar) }}" width="100">
+                    @else
+                    Tidak ada gambar
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('admin.renbang.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+
+                    <form action="{{ route('admin.renbang.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                    </form>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

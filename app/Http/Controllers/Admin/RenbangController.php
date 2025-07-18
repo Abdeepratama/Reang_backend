@@ -26,14 +26,14 @@ class RenbangController extends Controller
         ];
     }
 
-    public function dashboard()
+    public function index()
     {
         return view('admin.renbang.index');
     }
 
     public function deskripsiIndex()
     {
-        $renbangs = Renbang::latest()->get();
-        return view('admin.renbang.deskripsi.index', compact('renbangs'));
+        $items = Renbang::latest()->get();
+        return view('admin.renbang.deskripsi.index', compact('items'));
     }
 }

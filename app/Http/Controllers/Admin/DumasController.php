@@ -15,9 +15,9 @@ class DumasController extends Controller
     public function __construct()
     {
         $this->model = Dumas::class;
-        $this->routePrefix = 'dumas';
-        $this->viewPrefix = 'dumas';
-        $this->aktivitasTipe = 'Pengaduan Masyarakat';
+        $this->routePrefix = 'dumas.aduan';
+        $this->viewPrefix = 'dumas.aduan';
+        $this->aktivitasTipe = 'dumas';
         $this->aktivitasCreateMessage = 'Pengaduan baru telah ditambahkan';
         $this->validationRules = [
             'jenis_laporan' => 'required',
@@ -26,6 +26,17 @@ class DumasController extends Controller
             'kategori_laporan' => 'required',
             'deskripsi' => 'required',
         ];
+    }
+
+    public function index()
+    {
+        return view('admin.dumas.index');
+    }
+
+    public function aduanIndex()
+    {
+        $items = Dumas::latest()->get();
+        return view('admin.dumas.aduan.index', compact('items'));
     }
 
     public function update(Request $request, $id)
@@ -39,5 +50,5 @@ class DumasController extends Controller
         $dumas->save();
 
         return redirect()->back()->with('success', 'Status pengaduan berhasil diperbarui.');
-    }
+    } 
 }

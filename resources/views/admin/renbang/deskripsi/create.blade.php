@@ -6,7 +6,7 @@
 <div class="container">
     <h1>Tambah Deskripsi Renbang</h1>
 
-    <form action="{{ route('admin.renbang.deskripsi.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.renbang.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">

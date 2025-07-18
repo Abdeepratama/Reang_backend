@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class WifiController extends Controller
 {
-    public function dashboard()
+    public function index()
     {
         return view('admin.wifi.index');
     }

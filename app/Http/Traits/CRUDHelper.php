@@ -45,6 +45,12 @@ trait CRUDHelper
     public function store(Request $request)
     {
         $validated = $request->validate($this->validationRules);
+
+        // ✅ Tangani upload file jika ada
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('renbang', 'public');
+        }
+
         ($this->model)::create($validated);
 
         $this->logAktivitas("Menambahkan {$this->aktivitasTipe}");
@@ -54,7 +60,6 @@ trait CRUDHelper
             ->route($this->getRouteName())
             ->with('success', $this->aktivitasCreateMessage ?? "{$this->aktivitasTipe} berhasil ditambahkan.");
     }
-
     public function show($id)
     {
         $item = ($this->model)::findOrFail($id);
@@ -73,16 +78,20 @@ trait CRUDHelper
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate($this->validationRules);
-        $item = ($this->model)::findOrFail($id);
-        $item->update($validated);
+        $model = ($this->model)::findOrFail($id);
 
-        $this->logAktivitas("Mengubah {$this->aktivitasTipe}");
-        $this->logNotifikasi("{$this->aktivitasTipe} telah diubah.");
+        $request->validate($this->validationRules);
 
-        return redirect()
-            ->route($this->getRouteName())
-            ->with('success', "{$this->aktivitasTipe} berhasil diperbarui.");
+        $data = $request->except(['_token', '_method']);
+
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('uploads');
+        }
+
+        $model->update($data);
+
+        return redirect()->route('admin.' . $this->routePrefix . '.index')
+            ->with('success', $this->aktivitasUpdateMessage ?? 'Data berhasil diperbarui.');
     }
 
     public function destroy($id)

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class AdmindukController extends Controller
 {
-    public function dashboard()
+    public function index()
     {
         return view('admin.adminduk.index');
     }
