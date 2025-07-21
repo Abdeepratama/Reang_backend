@@ -32,6 +32,13 @@
 </head>
 <body>
 <div class="container mt-5">
+
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
+
     <h2 class="mb-4 text-center">Semua Modul Aplikasi</h2>
 
     <div class="row g-3">

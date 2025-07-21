@@ -31,4 +31,9 @@ class IbadahController extends Controller
         $items = Ibadah::all();
         return view('admin.ibadah.tempat.index', compact('items'));
     }
+
+    public function lokasi()
+    {
+        return view('admin.ibadah.tempat.map');
+    }
 }

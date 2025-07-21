@@ -41,11 +41,9 @@
             </div> -->
         </div>
     </main>
-
     <!-- Footer -->
     <footer class="bg-white border-t py-4 px-6 text-center text-sm text-gray-500">
         &copy; {{ date('Y') }} Dinas Komunikasi dan Informatika. Semua Hak Cipta Dilindungi.
     </footer>
-
 </body>
 </html>

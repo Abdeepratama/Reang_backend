@@ -41,6 +41,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/admin/ibadah/tempat', [IbadahController::class, 'tempat'])->name('admin.ibadah.tempat.index');
+        Route::get('/admin/ibadah/lokasi', [IbadahController::class, 'lokasi'])->name('admin.ibadah.tempat.map');
         Route::get('/admin/pasar/tempat', [PasarController::class, 'tempat'])->name('admin.pasar.tempat.index');
         Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('admin.plesir.tempat.index');
         Route::get('/admin/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
@@ -82,7 +83,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/fitur', function () {
             return view('admin.fitur.index');
         })->name('fitur.index');
-
 
 
         // ✅ Route untuk klik notifikasi

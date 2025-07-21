@@ -4,8 +4,16 @@
 
 @section('content')
 <div class="d-flex justify-content-between mb-3">
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
     <h3>Daftar Slider</h3>
-    <a href="{{ route('admin.slider.create') }}" class="btn btn-primary">+ Tambah Gambar</a>
+    <a href="{{ route('admin.slider.create') }}" class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm">
+        <i class="bi bi-plus-circle"></i>
+        <span>Tambah Gambar</span>
+    </a>
 </div>
 
 @if(session('success'))
