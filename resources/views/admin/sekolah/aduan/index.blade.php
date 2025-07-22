@@ -4,6 +4,12 @@
 
 @section('content')
 <div class="container mt-4">
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.sekolah.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
+
     <h2 class="mb-4">Daftar Aduan Sekolah</h2>
 
     @if(session('success'))

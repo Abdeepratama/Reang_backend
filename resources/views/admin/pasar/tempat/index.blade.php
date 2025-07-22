@@ -1,7 +1,15 @@
 @extends('admin.layouts.app')
 
+@section('title', 'PASAR-YU')
+
 @section('content')
 <div class="container mt-4">
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.pasar.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
+
     <h2 class="mb-4">Daftar Pasar</h2>
 
     <a href="{{ route('admin.pasar.create') }}" class="btn btn-primary mb-3">Tambah Pasar</a>

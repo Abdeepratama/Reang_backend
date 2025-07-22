@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'PLESIR-YU')
+
 @section('content')
 <div class="container">
     <h2>Tambah Lokasi Plesir</h2>

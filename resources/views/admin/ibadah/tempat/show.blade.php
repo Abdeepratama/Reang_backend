@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'IBADAH-YU')
+
 @section('content')
 <div class="container mt-4">
     <h2>Detail Tempat Ibadah</h2>

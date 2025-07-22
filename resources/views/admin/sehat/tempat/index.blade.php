@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="container">
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.sehat.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
     
     <a href="{{ route('admin.sehat.create') }}" class="btn btn-primary mb-3">Tambah Lokasi</a>
 

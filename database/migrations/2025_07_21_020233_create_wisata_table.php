@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('lokasi_text'); // contoh: "Balongan, Jawa Barat"
             $table->decimal('latitude', 10, 7)->nullable(); // contoh: -6.6512345
             $table->decimal('longitude', 10, 7)->nullable(); // contoh: 108.4532100
-            $table->string('admin_nama');
             $table->string('gambar')->nullable(); // path file gambar
             $table->timestamps();
         });

@@ -1,9 +1,15 @@
 @extends('admin.layouts.app')
 
+@section('title', 'IBADAH-YU')
+
 @section('content')
 <div class="container mt-4">
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.ibadah.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
     <h2 class="mb-4">Dashboard Tempat Ibadah</h2>
-
     <a href="{{ route('admin.ibadah.create') }}" class="btn btn-primary mb-3">Tambah Tempat Ibadah</a>
 
     @if(session('success'))

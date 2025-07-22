@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="container">
+    <div class="mb-3 text-start">
+        <a href="{{ route('admin.renbang.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
     <h1>Data Deskripsi Renbang</h1>
     <a href="{{ route('admin.renbang.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
 

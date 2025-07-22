@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'PASAR-YU')
+
 @section('content')
 <div class="container">
     <h2>Edit Pasar</h2>

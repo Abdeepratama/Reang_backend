@@ -32,8 +32,13 @@ class IbadahController extends Controller
         return view('admin.ibadah.tempat.index', compact('items'));
     }
 
-    public function lokasi()
+    public function map()
     {
-        return view('admin.ibadah.tempat.map');
+        $items = Ibadah::all();
+        $center = $items->isNotEmpty()
+            ? [$items->first()->latitude, $items->first()->longitude]
+            : [-6.3274, 108.3270]; // Default center: Indramayu
+
+        return view('admin.ibadah.tempat.map', compact('items', 'center'));
     }
 }

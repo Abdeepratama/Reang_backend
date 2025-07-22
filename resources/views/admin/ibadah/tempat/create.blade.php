@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'IBADAH-YU')
+
 @section('content')
 <div class="container">
     <h2>{{ isset($item) ? 'Edit Tempat Ibadah' : 'Tambah Tempat Ibadah' }}</h2>
