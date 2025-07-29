@@ -73,7 +73,9 @@ trait CRUDHelper
     public function edit($id)
     {
         $item = ($this->model)::findOrFail($id);
-        return view($this->getViewPath('edit'), compact('item'));
+        $kategoriIbadah = \App\Models\Kategori::all(); // atau sesuai kebutuhan
+
+        return view($this->getViewPath('edit'), compact('item', 'kategoriIbadah'));
     }
 
     public function update(Request $request, $id)

@@ -23,6 +23,11 @@
                             <i class="bi bi-images me-2"></i> Slider
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.kategori.index') }}" class="nav-link text-white {{ request()->is('admin/slider*') ? 'active' : '' }}">
+                            <i class="bi bi-images me-2"></i> Kategori
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>

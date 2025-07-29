@@ -16,6 +16,10 @@ use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Admin\RenbangController;
 use App\Http\Controllers\Admin\IzinController;
 use App\Http\Controllers\Admin\WifiController;
+use App\Http\Controllers\Admin\WebController;
+use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Models\Kategori;
 use App\Models\NotifikasiAktivitas;
 
 // Halaman Awal
@@ -40,9 +44,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // ✅ Semua route di bawah butuh login admin
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/admin/ibadah/tempat', [IbadahController::class, 'tempat'])->name('admin.ibadah.tempat.index');
+        Route::get('/ibadah/tempat', [IbadahController::class, 'tempat'])->name('ibadah.tempat.index');
         Route::get('/admin/pasar/tempat', [PasarController::class, 'tempat'])->name('admin.pasar.tempat.index');
-        Route::get('admin/ibadah/tempat/map', [IbadahController::class, 'map'])->name('admin.ibadah.tempat.map');
+        Route::post('/admin/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
+        Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
         Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('admin.plesir.tempat.index');
         Route::get('/admin/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard');
@@ -62,10 +67,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('admin/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('renbang.deskripsi.index');
         Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('dumas.aduan.index');
         Route::get('sekolah/aduan', [SekolahController::class, 'aduanIndex'])->name('sekolah.aduan.index');
-
-
+        Route::get('ibadah/tempat/create', [IbadahController::class, 'createTempat'])->name('ibadah.tempat.create');
+        Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
         // Resource routes
-        Route::resource('/ibadah', IbadahController::class);
+        Route::resource('ibadah', IbadahController::class);
         Route::resource('/sehat', SehatController::class);
         Route::resource('/pasar', PasarController::class);
         Route::resource('/plesir', PlesirController::class);
@@ -78,6 +83,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/renbang', RenbangController::class);
         Route::resource('/izin', IzinController::class);
         Route::resource('/wifi', wifiController::class);
+        Route::resource('/kategori', KategoriController::class);
+        Route::resource('/maps',    WebController::class);
+
 
 
         Route::get('/fitur', function () {

@@ -38,7 +38,7 @@ class DashboardController extends Controller
         $jumlahNotifikasi = NotifikasiAktivitas::unread()->count();
         $sliders = Slider::latest()->take(5)->get();
 
-        return view('admin.dashboard', compact(
+        return view('admin.dashboard1', compact(
             'stats',
             'aktivitas',
             'notifications',
