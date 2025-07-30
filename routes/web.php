@@ -68,7 +68,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('dumas.aduan.index');
         Route::get('sekolah/aduan', [SekolahController::class, 'aduanIndex'])->name('sekolah.aduan.index');
         Route::get('ibadah/tempat/create', [IbadahController::class, 'createTempat'])->name('ibadah.tempat.create');
+        Route::get('ibadah/info', [IbadahController::class, 'infoIndex'])->name('ibadah.info.index');
+        Route::get('ibadah/info/create', [IbadahController::class, 'createInfo'])->name('ibadah.info.create');
+        Route::post('ibadah/info', [IbadahController::class, 'storeInfo'])->name('ibadah.info.store');
+        Route::get('ibadah/info/{id}/edit', [IbadahController::class, 'infoEdit'])->name('ibadah.info.edit');
+        Route::put('ibadah/info/{id}', [IbadahController::class, 'infoUpdate'])->name('ibadah.info.update');
+        Route::delete('ibadah/info/{id}', [IbadahController::class, 'infoDestroy'])->name('ibadah.info.destroy');
         Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+
+
+        
         // Resource routes
         Route::resource('ibadah', IbadahController::class);
         Route::resource('/sehat', SehatController::class);

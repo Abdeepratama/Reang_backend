@@ -6,200 +6,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Peta Interaktif</title>
 
-    <style>
-        #peta {
-            height: 600px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .search-controls {
-            margin-bottom: 10px;
-        }
-
-        input[type="text"] {
-            padding: 6px;
-            margin-right: 5px;
-        }
-
-        button {
-            padding: 6px 10px;
-        }
-    </style>
-
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        #mapContainer {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        #overlay {
+            width: 400px; /* Lebih besar dari sebelumnya */
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+
+        #overlay input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background: #f2f2f2;
+        }
+
+        #peta {
+            flex-grow: 1;
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body>
-
-    <div class="container">
-        <h3>Peta Interaktif</h3>
-        <p>Cari lokasi berdasarkan alamat atau klik langsung di peta.</p>
-
-        <!-- Pencarian alamat -->
-        <div class="search-controls">
-            <input type="text" id="cariAlamat" placeholder="Masukkan alamat">
-            <button onclick="cariAlamat()">Cari Lokasi</button>
+    <div id="mapContainer">
+        <!-- Sidebar Pencarian -->
+        <div id="overlay">
+            <input type="text" id="searchInput" placeholder="Cari tempat...">
+            <div id="resultList"></div>
         </div>
 
-        <!-- Input hasil koordinat dan alamat -->
-        <div class="search-controls">
-            <input type="text" id="latitude" placeholder="Latitude" readonly>
-            <input type="text" id="longitude" placeholder="Longitude" readonly>
-            <input type="text" id="alamat" placeholder="Alamat Lengkap" style="width: 50%;" readonly>
-        </div>
-
+        <!-- Peta -->
         <div id="peta"></div>
     </div>
 
     <script>
-        const map = L.map('peta').setView([-6.326511, 108.3202685], 13);
-        let clickMarker = null;
-
+        const map = L.map('peta').setView([-6.326511, 108.3202685], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '© OpenStreetMap'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        const locations = @json($lokasi);
+        const lokasi = @json($lokasi); // ← Ini Laravel Blade
+        const resultList = document.getElementById('resultList');
+        const searchInput = document.getElementById('searchInput');
 
-    locations.forEach(loc => {
-        const marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
-        marker.bindPopup(`
-            <strong>${loc.name}</strong><br>
-            <em>${loc.address}</em><br>
-            ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}">` : ''}
-        `);
-    });
+        let allMarkers = [];
+        let tempMarker = null;
 
-        // Event klik peta
-        map.on('click', async function (e) {
-            const lat = e.latlng.lat.toFixed(6);
-            const lng = e.latlng.lng.toFixed(6);
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-
-            let alamat = 'Alamat tidak ditemukan';
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-                const data = await res.json();
-                alamat = data.display_name || alamat;
-            } catch (err) {
-                console.error('Gagal ambil alamat:', err);
-            }
-
-            document.getElementById('alamat').value = alamat;
-
-            if (clickMarker) map.removeLayer(clickMarker);
-            clickMarker = L.marker([lat, lng]).addTo(map)
-                .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
-                .openPopup();
+        lokasi.forEach(loc => {
+            const marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
+            marker.bindPopup(`
+                <strong>${loc.name}</strong><br>
+                ${loc.address}<br>
+                ${loc.foto ? `<img src="${loc.foto}" width="100%">` : ''}
+            `);
+            allMarkers.push({ marker, data: loc });
         });
 
+        function tampilkanHasil(keyword) {
+            resultList.innerHTML = '';
 
-    async function cariAlamat() {
-        const inputAlamat = document.getElementById('cariAlamat').value.trim();
-        if (!inputAlamat) {
-            alert("Masukkan alamat terlebih dahulu.");
-            return;
+            const filtered = lokasi.filter(loc =>
+                loc.name.toLowerCase().includes(keyword.toLowerCase()) ||
+                loc.address.toLowerCase().includes(keyword.toLowerCase())
+            );
+
+            allMarkers.forEach(obj => map.removeLayer(obj.marker));
+
+            filtered.forEach(loc => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `<strong>${loc.name}</strong><br>${loc.address}`;
+                item.onclick = () => {
+                    const lat = parseFloat(loc.latitude);
+                    const lng = parseFloat(loc.longitude);
+                    map.setView([lat, lng], 17);
+
+                    if (tempMarker) map.removeLayer(tempMarker);
+                    tempMarker = L.marker([lat, lng]).addTo(map);
+                    tempMarker.bindPopup(`<b>${loc.name}</b><br>${loc.address}`).openPopup();
+
+                    setTimeout(() => {
+                        if (tempMarker) {
+                            map.removeLayer(tempMarker);
+                            tempMarker = null;
+                        }
+                    }, 5000);
+                };
+                resultList.appendChild(item);
+            });
+
+            allMarkers.forEach(obj => {
+                if (filtered.includes(obj.data)) {
+                    obj.marker.addTo(map);
+                }
+            });
         }
 
-        // 1. Coba cari dari data database terlebih dahulu
-        const found = locations.find(loc =>
-            loc.name.toLowerCase().includes(inputAlamat.toLowerCase()) ||
-            loc.address.toLowerCase().includes(inputAlamat.toLowerCase())
-        );
+        searchInput.addEventListener('input', () => {
+            tampilkanHasil(searchInput.value.trim());
+        });
 
-        if (found) {
-            const lat = parseFloat(found.latitude).toFixed(6);
-            const lon = parseFloat(found.longitude).toFixed(6);
-
-            map.setView([lat, lon], 16);
-
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lon;
-            document.getElementById('alamat').value = found.address;
-
-            if (clickMarker) map.removeLayer(clickMarker);
-            clickMarker = L.marker([lat, lon]).addTo(map)
-                .bindPopup(`<b>${found.name}</b><br>${found.address}<br>Lat: ${lat}, Lng: ${lon}`)
-                .openPopup();
-
-            return;
-        }
-
-        // 2. Jika tidak ketemu, pakai pencarian dari API OpenStreetMap
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(inputAlamat)}`);
-            const data = await res.json();
-
-            if (data.length === 0) {
-                alert("Alamat tidak ditemukan.");
-                return;
-            }
-
-            const hasil = data[0];
-            const lat = parseFloat(hasil.lat).toFixed(6);
-            const lon = parseFloat(hasil.lon).toFixed(6);
-            const displayName = hasil.display_name;
-
-            map.setView([lat, lon], 16);
-
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lon;
-            document.getElementById('alamat').value = displayName;
-
-            if (clickMarker) map.removeLayer(clickMarker);
-            clickMarker = L.marker([lat, lon]).addTo(map)
-                .bindPopup(`<b>${displayName}</b><br>Lat: ${lat}<br>Lng: ${lon}`)
-                .openPopup();
-        } catch (err) {
-            alert("Gagal mencari alamat.");
-            console.error(err);
-        }
-    }
-
-        // Fungsi pencarian berdasarkan alamat
-        // async function cariAlamat() {
-        //     const inputAlamat = document.getElementById('cariAlamat').value;
-        //     if (!inputAlamat) {
-        //         alert("Masukkan alamat terlebih dahulu.");
-        //         return;
-        //     }
-
-        //     try {
-        //         const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(inputAlamat)}`);
-        //         const data = await res.json();
-
-        //         if (data.length === 0) {
-        //             alert("Alamat tidak ditemukan.");
-        //             return;
-        //         }
-
-        //         const hasil = data[0];
-        //         const lat = parseFloat(hasil.lat).toFixed(6);
-        //         const lon = parseFloat(hasil.lon).toFixed(6);
-        //         const displayName = hasil.display_name;
-
-        //         map.setView([lat, lon], 16);
-
-        //         document.getElementById('latitude').value = lat;
-        //         document.getElementById('longitude').value = lon;
-        //         document.getElementById('alamat').value = displayName;
-
-        //         if (clickMarker) map.removeLayer(clickMarker);
-        //         clickMarker = L.marker([lat, lon]).addTo(map)
-        //             .bindPopup(`<b>${displayName}</b><br>Lat: ${lat}<br>Lng: ${lon}`)
-        //             .openPopup();
-        //     } catch (err) {
-        //         alert("Gagal mencari alamat.");
-        //         console.error(err);
-        //     }
-        // }
+        tampilkanHasil('');
     </script>
-
 </body>
 
 </html>

@@ -29,91 +29,180 @@
             <span>Informasi & Pelaporan Publik</span>
         </p>
         <ul class="navbar-nav flex-fill w-100 mb-2">
-            <li class="nav-item dropdown">
-                <a href="#aduan" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle nav-link">
-                    <i class="fe fe-twitch  fe-16"></i>
-                    <span class="ml-3 item-text">Aduan &amp; Kedaruratan</span><span class="sr-only">(current)</span>
+            <li class="nav-item dropdown {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'show' : '' }}">
+                <a href="#aduan"
+                    data-toggle="collapse"
+                    aria-expanded="{{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? '' : 'collapsed' }}">
+                    <i class="fe fe-twitch fe-16"></i>
+                    <span class="ml-3 item-text">Aduan &amp; Kedaruratan</span>
                 </a>
-                <ul class="collapse list-unstyled pl-4 w-100 active show" id="aduan">
-                    <li class="nav-item active">
-                        <a class="nav-link pl-3" href="{{ route('admin.dumas.index') }}"><span class="ml-1 item-text">Dumas-Yu</span></a>
+
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'show' : '' }}" id="aduan">
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.dumas.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.dumas.index') }}">
+                            <span class="ml-1 item-text">Dumas-Yu</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.info.index') }}"><span class="ml-1 item-text">Info-Yu</span></a>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.info.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.info.index') }}">
+                            <span class="ml-1 item-text">Info-Yu</span>
+                        </a>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#kesehatan" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link">
-                    <i class="fe fe-briefcase  fe-16"></i>
+            <li class="nav-item dropdown {{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? 'show' : '' }}">
+                <a href="#kesehatan"
+                    data-toggle="collapse"
+                    aria-expanded="{{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? '' : 'collapsed' }}">
+                    <i class="fe fe-briefcase fe-16"></i>
                     <span class="ml-3 item-text">Kesehatan & Pendidikan</span><span class="sr-only">(current)</span>
                 </a>
-                <ul class="collapse list-unstyled pl-4 w-100" id="kesehatan">
-                    <li class="nav-item active">
-                        <a class="nav-link pl-3" href="{{ route('admin.sehat.index') }}"><span class="ml-1 item-text">Sehat-Yu</span></a>
+
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? 'show' : '' }}" id="kesehatan">
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.sehat.index') }}">
+                            <span class="ml-1 item-text">Sehat-Yu</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.sekolah.index') }}"><span class="ml-1 item-text">Sekolah-Yu</span></a>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.sekolah.index') }}">
+                            <span class="ml-1 item-text">Sekolah-Yu</span>
+                        </a>
                     </li>
                 </ul>
             </li>
+
         </ul>
 
         <p class="text-muted nav-heading mt-4 mb-1">
             <span>Layanan Publik & Ekonomi</span>
         </p>
         <ul class="navbar-nav flex-fill w-100 mb-2">
-            <li class="nav-item dropdown">
-                <a href="#sosial" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link">
-                    <i class="fe fe-pie-chart  fe-16"></i>
-                    <span class="ml-3 item-text">Sosial & Ekonomi</span><span class="sr-only">(current)</span>
+            <li class="nav-item dropdown {{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? 'show' : '' }}">
+                <a href="#ekonomi"
+                    data-toggle="collapse"
+                    aria-expanded="{{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? '' : 'collapsed' }}">
+                    <i class="fe fe-dollar-sign fe-16"></i>
+                    <span class="ml-3 item-text">Sosial & Ekonomi</span>
                 </a>
-                <ul class="collapse list-unstyled pl-4 w-100 active" id="sosial">
-                    <li class="nav-item active">
-                        <a class="nav-link pl-3" href="{{ route('admin.pajak.index') }}"><span class="ml-1 item-text">Pajak-Yu</span></a>
+
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? 'show' : '' }}" id="ekonomi">
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.pajak.index') }}">
+                            <span class="ml-1 item-text">Pajak-Yu</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.pasar.index') }}"><span class="ml-1 item-text">Pasar-Yu</span></a>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.pasar.index') }}">
+                            <span class="ml-1 item-text">Pasar-Yu</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.kerja.index') }}"><span class="ml-1 item-text">Kerja-Yu</span></a>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.kerja.index') }}">
+                            <span class="ml-1 item-text">Kerja-Yu</span>
+                        </a>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#pariwisata" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link">
-                    <i class="fe fe-layout  fe-16"></i>
-                    <span class="ml-3 item-text">Pariwisata & Keagamaan</span><span class="sr-only">(current)</span>
+            <li class="nav-item dropdown {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'show' : '' }}">
+                <a href="#pariwisata"
+                    data-toggle="collapse"
+                    aria-expanded="{{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? '' : 'collapsed' }}">
+                    <i class="fe fe-layout fe-16"></i>
+                    <span class="ml-3 item-text">Pariwisata & Keagamaan</span>
                 </a>
-                <ul class="collapse list-unstyled pl-4 w-100" id="pariwisata">
-                    <li class="nav-item active">
-                        <a class="nav-link pl-3" href="{{ route('admin.plesir.index') }}"><span class="ml-1 item-text">Plesir-Yu</span></a>
-                    </li>
+
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'show' : '' }}" id="pariwisata">
+                    <!-- Menu Plesir-Yu -->
                     <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.ibadah.index') }}"><span class="ml-1 item-text">Ibadah-Yu</span></a>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.plesir.index') }}">
+                            <span class="ml-1 item-text">Plesir-Yu</span>
+                        </a>
+                    </li>
+
+                    <!-- Menu Ibadah-Yu (Submenu sebagai list biasa) -->
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->is('admin/ibadah*') ? 'active bg-light' : '' }}"
+                            href="#submenu-ibadah" data-toggle="collapse"
+                            aria-expanded="{{ request()->is('admin/ibadah*') ? 'true' : 'false' }}">
+                            <span class="ml-1 item-text">Ibadah-Yu</span>
+                        </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/ibadah*') ? 'show' : '' }}" id="submenu-ibadah">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.ibadah.index') }}">
+                                    Lokasi Tempat
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.ibadah.info.index') }}">
+                                    Info Keagamaan
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#lainnya" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link">
-                    <i class="fe fe-layers  fe-16"></i>
-                    <span class="ml-3 item-text">Layanan Publik Lainnya</span><span class="sr-only">(current)</span>
-                </a>
-                <ul class="collapse list-unstyled pl-4 w-100" id="lainnya">
-                    <li class="nav-item active">
-                        <a class="nav-link pl-3" href="{{ route('admin.adminduk.index') }}"><span class="ml-1 item-text">Adminduk-Yu</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.renbang.index') }}"><span class="ml-1 item-text">Renbang-Yu</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.izin.index') }}"><span class="ml-1 item-text">Izin-Yu</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link pl-3" href="{{ route('admin.wifi.index') }}"><span class="ml-1 item-text">Wifi-Yu</span></a>
-                    </li>
-                </ul>
-            </li>
+
+        </ul>
+        </li>
+        <li class="nav-item dropdown {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? 'active' : '' }}">
+            <a href="#lainnya" data-toggle="collapse" aria-expanded="{{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? 'true' : 'false' }}" class="dropdown-toggle nav-link">
+                <i class="fe fe-layers fe-16"></i>
+                <span class="ml-3 item-text">Layanan Publik Lainnya</span><span class="sr-only">(current)</span>
+            </a>
+            <ul class="collapse list-unstyled pl-4 w-100 {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? 'show' : '' }}" id="lainnya">
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.adminduk.index') }}">
+                        <span class="ml-1 item-text">Adminduk-Yu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.renbang.index') }}">
+                        <span class="ml-1 item-text">Renbang-Yu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.izin.index') }}">
+                        <span class="ml-1 item-text">Izin-Yu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.wifi.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.wifi.index') }}">
+                        <span class="ml-1 item-text">Wifi-Yu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.pajak.index') }}">
+                        <span class="ml-1 item-text">Pajak-Yu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.pasar.index') }}">
+                        <span class="ml-1 item-text">Pasar-Yu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.kerja.index') }}">
+                        <span class="ml-1 item-text">Kerja-Yu</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
         </ul>
 
         <!-- <p class="text-muted nav-heading mt-4 mb-1">
@@ -281,5 +370,6 @@
             </li>
         </ul> -->
 
-    </nav>
+         
+    </nav>
 </aside>
