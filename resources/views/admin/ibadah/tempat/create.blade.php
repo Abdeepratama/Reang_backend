@@ -9,12 +9,12 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.ibadah.store') }}" method="POST">
+            <form action="{{ route('admin.ibadah.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Tempat</label>
-                    <input type="text" name="name" id="name" class="form-control" required>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -37,11 +37,21 @@
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoriIbadah as $kategori)
-                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
+                            <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                                {{ $kategori->nama }}
+                            </option>
                         @endforeach
                     </select>
+                </div>
+
+                @php
+                    // karena ini halaman create, tidak ada $item => pakai default preview
+                    $previewSrc = asset('images/default-ibadah.jpg');
+                @endphp
+
+                <div class="form-group mb-3">
+                    <label for="foto">Foto</label>
+                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>
@@ -58,14 +68,14 @@
 
 <script>
     const map = L.map('peta').setView([-6.326511, 108.3202685], 13);
-        let clickMarker = null;
+    let clickMarker = null;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-        const locations = @json($lokasi);
+    const locations = @json($lokasi);
 
     locations.forEach(loc => {
         const marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
@@ -75,7 +85,7 @@
             ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}">` : ''}
         `);
     });
-    
+
 
 
     // Event klik pada peta
@@ -149,6 +159,14 @@
             alert('Klik peta dulu untuk mengambil lokasi!');
         }
     }
+
+    // preview image sebelum submit
+    document.getElementById('fotoInput').addEventListener('change', function () {
+        const [file] = this.files;
+        if (file) {
+            document.getElementById('preview').src = URL.createObjectURL(file);
+        }
+    });
 </script>
 
 @endsection

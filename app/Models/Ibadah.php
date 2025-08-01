@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+
 
 class Ibadah extends Model
 {
@@ -10,11 +12,25 @@ class Ibadah extends Model
     protected $table = 'tempat_ibadah';
 
     protected $fillable = [
-        'name', 'latitude', 'longitude', 'address', 'fitur'
+        'name',
+        'latitude',
+        'longitude',
+        'address',
+        'fitur',
+        'foto'
     ];
 
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->foto && Storage::disk('public')->exists($this->foto)) {
+            return Storage::url($this->foto);
+        }
+
+        return asset('images/default-ibadah.jpg');
     }
 }

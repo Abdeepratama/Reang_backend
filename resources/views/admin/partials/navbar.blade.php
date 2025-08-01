@@ -47,6 +47,15 @@
         <a class="dropdown-item" href="#">Profile</a>
         <a class="dropdown-item" href="{{ route('admin.setting.index') }}">Settings</a>
         <a class="dropdown-item" href="#">Activities</a>
+        <a class="dropdown-item" href="#"
+   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+   Logout
+</a>
+
+<!-- Form logout tersembunyi -->
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
       </div>
     </li>
   </ul>

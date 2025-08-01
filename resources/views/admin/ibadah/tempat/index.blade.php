@@ -8,7 +8,6 @@
 
     <a href="{{ route('admin.ibadah.tempat.map') }}">Lihat Peta</a>
 
-
     <a href="{{ route('admin.ibadah.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Ibadah</a>
 
     @if(session('success'))
@@ -22,7 +21,8 @@
                 <th>Alamat</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th>Agama</th>
+                <th>Fitur</th>
+                <th>Foto</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -35,16 +35,23 @@
                     <td>{{ $item->longitude }}</td>
                     <td>{{ $item->fitur }}</td>
                     <td>
-                        <a href="{{ route('admin.ibadah.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        @if($item->foto)
+                            <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.ibadah.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
                         <form action="{{ route('admin.ibadah.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm">Hapus</button>
+                            <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>
                         </form>
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="text-center">Belum ada data.</td></tr>
+                <tr><td colspan="7" class="text-center">Belum ada data.</td></tr>
             @endforelse
         </tbody>
     </table>

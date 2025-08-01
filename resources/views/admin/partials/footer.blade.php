@@ -4,8 +4,8 @@
     <script src="{{ asset('admin/js/moment.min.js') }} "></script>
     <script src="{{ asset('admin/js/bootstrap.min.js') }} "></script>
     <script src="{{ asset('admin/js/simplebar.min.js') }} "></script>
-    <script src="{{ asset('admin//daterangepicker.js') }} "></script>
-    <script src="{{ asset('admin//jquery.stickOnScroll.js') }} "></script>
+    <script src="{{ asset('admin/js/daterangepicker.js') }} "></script>
+    <script src="{{ asset('admin/js/jquery.stickOnScroll.js') }} "></script>
     <script src="{{ asset('admin/js/tinycolor-min.js') }} "></script>
     <script src="{{ asset('admin/js/config.js') }} "></script>
     <script src="{{ asset('admin/js/d3.min.js') }} "></script>
@@ -14,6 +14,8 @@
     <script src="{{ asset('admin/js/datamaps-zoomto.js') }} "></script>
     <script src="{{ asset('admin/js/datamaps.custom.js') }} "></script>
     <script src="{{ asset('admin/js/Chart.min.js') }} "></script>
+    <script src="{{ asset('admin/js/jquery.dataTables.min.js') }} "></script>
+    <script src="{{ asset('admin/js/dataTables.bootstrap4.min.js') }} "></script>
     <script>
       /* defind global options */
       Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
@@ -23,14 +25,25 @@
     <script src="{{ asset('admin/js/jquery.sparkline.min.js') }} "></script>
     <script src="{{ asset('admin/js/apexcharts.min.js') }} "></script>
     <script src="{{ asset('admin/js/apexcharts.custom.js') }} "></script>
-    <script src="{{ asset('admin//jquery.mask.min.js') }} "></script>
-    <script src="{{ asset('admin//select2.min.js') }} "></script>
-    <script src="{{ asset('admin//jquery.steps.min.js') }} "></script>
-    <script src="{{ asset('admin//jquery.validate.min.js') }} "></script>
-    <script src="{{ asset('admin//jquery.timepicker.js') }} "></script>
-    <script src="{{ asset('admin//dropzone.min.js') }} "></script>
-    <script src="{{ asset('admin//uppy.min.js') }} "></script>
-    <script src="{{ asset('admin//quill.min.js') }} "></script>
+    <script src="{{ asset('admin/js/jquery.mask.min.js') }} "></script>
+    <script src="{{ asset('admin/js/select2.min.js') }} "></script>
+    <script src="{{ asset('admin/js/jquery.steps.min.js') }} "></script>
+    <script src="{{ asset('admin/js/jquery.validate.min.js') }} "></script>
+    <script src="{{ asset('admin/js/jquery.timepicker.js') }} "></script>
+    <script src="{{ asset('admin/js/dropzone.min.js') }} "></script>
+    <script src="{{ asset('admin/js/uppy.min.js') }} "></script>
+    <script src="{{ asset('admin/js/quill.min.js') }} "></script>
+    <script>
+    $(document).ready(function() {
+        $('#infoTable').DataTable({
+            autoWidth: true,
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ]
+        });
+    });
+</script>
     <script>
       $('.select2').select2(
       {
