@@ -77,16 +77,27 @@
 
     const locations = @json($lokasi);
 
+    // custom icon rumah
+    const houseIcon = L.divIcon({
+        html: `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#2A9D8F" stroke="white" stroke-width="2">
+            <path d="M32 12 L12 32 H20 V52 H44 V32 H52 Z"/>
+            <circle cx="32" cy="40" r="5" fill="white"/>
+        </svg>`,
+        className: '',
+        iconSize: [48, 48],
+        iconAnchor: [24, 48],
+        popupAnchor: [0, -48]
+    });
+
     locations.forEach(loc => {
-        const marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
+        const marker = L.marker([loc.latitude, loc.longitude], { icon: houseIcon }).addTo(map);
         marker.bindPopup(`
             <strong>${loc.name}</strong><br>
             <em>${loc.address}</em><br>
-            ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}">` : ''}
+            ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
         `);
     });
-
-
 
     // Event klik pada peta
     map.on('click', async function(e) {
@@ -122,7 +133,7 @@
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng]).addTo(map)
+        clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
@@ -136,7 +147,7 @@
 
             if (clickMarker) map.removeLayer(clickMarker);
 
-            clickMarker = L.marker([lat, lng]).addTo(map)
+            clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)
                 .bindPopup(`Lokasi hasil pencarian:<br>Latitude: ${lat}<br>Longitude: ${lng}`)
                 .openPopup();
         } else {

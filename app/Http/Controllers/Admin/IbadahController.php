@@ -40,38 +40,38 @@ class IbadahController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'address' => 'required|string',
-        'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
-        'fitur' => 'required|string',
-        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
-    ]);
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'fitur' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+        ]);
 
-    if (isset($validated['foto'])) {
-        $path = $request->file('foto')->store('ibadah_foto', 'public');
-        $validated['foto'] = $path;
+        if (isset($validated['foto'])) {
+            $path = $request->file('foto')->store('ibadah_foto', 'public');
+            $validated['foto'] = $path;
+        }
+
+        Ibadah::create($validated);
+
+        return redirect()->route('admin.ibadah.tempat.index',)
+            ->with('success', 'Tempat ibadah berhasil ditambahkan!');
     }
 
-    Ibadah::create($validated);
+    public function editTempat($id)
+    {
+        $item = Ibadah::findOrFail($id);
+        $kategoriIbadah = Ibadah::all(); // ambil daftar kategori yang benar
 
-    return redirect()->route('admin.ibadah.tempat.index',)
-        ->with('success', 'Tempat ibadah berhasil ditambahkan!');
-}
-
-public function editTempat($id)
-{
-    $item = Ibadah::findOrFail($id);
-    $kategoriIbadah = Ibadah::all(); // ambil daftar kategori yang benar
-
-    return view('admin.ibadah.edit', [
-        'item' => $item,
-        'kategoriIbadah' => $kategoriIbadah,
-        'lokasi' => [], // kalau memang diperlukan di view
-    ]);
-}
+        return view('admin.ibadah.edit', [
+            'item' => $item,
+            'kategoriIbadah' => $kategoriIbadah,
+            'lokasi' => [], // kalau memang diperlukan di view
+        ]);
+    }
 
     public function info()
     {
@@ -87,7 +87,17 @@ public function editTempat($id)
 
     public function map()
     {
-        $lokasi = Ibadah::all(); // ini ambil semua data dari tabel tempat_ibadah
+        $lokasi = Ibadah::all()->map(function ($loc) {
+            return [
+                'name' => $loc->name,
+                'address' => $loc->address,
+                'latitude' => $loc->latitude,
+                'longitude' => $loc->longitude,
+                // pastikan sudah menjalankan `php artisan storage:link`
+                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+            ];
+        });
+
         return view('admin.ibadah.tempat.map', compact('lokasi'));
     }
 
@@ -138,40 +148,40 @@ public function editTempat($id)
 
 
     public function update(Request $request, $id)
-{
-    $ibadah = Ibadah::findOrFail($id);
+    {
+        $ibadah = Ibadah::findOrFail($id);
 
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'address' => 'required|string',
-        'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
-        'fitur' => 'required|string',
-        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-    ]);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'fitur' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ]);
 
-    // Update field dasar
-    $ibadah->name = $validated['name'];
-    $ibadah->address = $validated['address'];
-    $ibadah->latitude = $validated['latitude'];
-    $ibadah->longitude = $validated['longitude'];
-    $ibadah->fitur = $validated['fitur'];
+        // Update field dasar
+        $ibadah->name = $validated['name'];
+        $ibadah->address = $validated['address'];
+        $ibadah->latitude = $validated['latitude'];
+        $ibadah->longitude = $validated['longitude'];
+        $ibadah->fitur = $validated['fitur'];
 
-    // Jika ada file foto baru, ganti
-    if ($request->hasFile('foto')) {
-        // hapus foto lama kalau ada
-        if ($ibadah->foto && Storage::disk('public')->exists($ibadah->foto)) {
-            Storage::disk('public')->delete($ibadah->foto);
+        // Jika ada file foto baru, ganti
+        if ($request->hasFile('foto')) {
+            // hapus foto lama kalau ada
+            if ($ibadah->foto && Storage::disk('public')->exists($ibadah->foto)) {
+                Storage::disk('public')->delete($ibadah->foto);
+            }
+            $path = $request->file('foto')->store('ibadah_foto', 'public');
+            $ibadah->foto = $path;
         }
-        $path = $request->file('foto')->store('ibadah_foto', 'public');
-        $ibadah->foto = $path;
+
+        $ibadah->save();
+
+        return redirect()->route('admin.ibadah.tempat.index')
+            ->with('success', 'Lokasi berhasil diperbarui!');
     }
-
-    $ibadah->save();
-
-    return redirect()->route('admin.ibadah.tempat.index')
-        ->with('success', 'Lokasi berhasil diperbarui!');
-}
 
     public function infoIndex()
     {
@@ -187,76 +197,76 @@ public function editTempat($id)
     }
 
     public function storeInfo(Request $request)
-{
-    $request->validate([
-        'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        'judul' => 'required|string|max:255',
-        'tanggal' => 'required|date',
-        'waktu' => 'required',
-        'deskripsi' => 'required|string',
-        'lokasi' => 'required|string',
-        'alamat' => 'required|string',
-        'fitur' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'judul' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'waktu' => 'required',
+            'deskripsi' => 'required|string',
+            'lokasi' => 'required|string',
+            'alamat' => 'required|string',
+            'fitur' => 'required|string',
+        ]);
 
-    // Upload foto ke disk publik di folder 'foto_ibadah'
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $fotoName = time() . '_' . $file->getClientOriginalName();
-        $path = $file->storeAs('foto_ibadah', $fotoName, 'public'); // disimpan di storage/app/public/foto_ibadah
-    }
-
-    // Simpan ke database (pakai $path agar asset() bisa memuat)
-    InfoKeagamaan::create([
-        'foto' => $path, // Simpan path lengkap relatif ke storage/app/public
-        'judul' => $request->judul,
-        'tanggal' => $request->tanggal,
-        'waktu' => $request->waktu,
-        'deskripsi' => $request->deskripsi,
-        'lokasi' => $request->lokasi,
-        'alamat' => $request->alamat,
-        'fitur' => $request->fitur,
-    ]);
-
-    return redirect()->route('admin.ibadah.info.index')->with('success', 'Info keagamaan berhasil disimpan.');
-}
-
-    public function infoEdit($id)
-{
-    $info = InfoKeagamaan::findOrFail($id);
-    $kategoriIbadah = Kategori::all();
-    return view('admin.ibadah.info.edit', compact('info', 'kategoriIbadah'));
-}
-
-    public function infoUpdate(Request $request, $id)
-{
-    $item = InfoKeagamaan::findOrFail($id);
-
-    $data = $request->validate([
-        'judul' => 'required',
-        'tanggal' => 'required|date',
-        'waktu' => 'required',
-        'deskripsi' => 'required',
-        'lokasi' => 'required',
-        'alamat' => 'required',
-        'fitur' => 'required',
-        'foto' => 'nullable|image|max:2048',
-    ]);
-
-    if ($request->hasFile('foto')) {
-        // Hapus foto lama jika ada
-        if ($item->foto) {
-            Storage::disk('public')->delete($item->foto);
+        // Upload foto ke disk publik di folder 'foto_ibadah'
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $fotoName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('foto_ibadah', $fotoName, 'public'); // disimpan di storage/app/public/foto_ibadah
         }
 
-        // Upload dan simpan path baru
-        $data['foto'] = $request->file('foto')->store('foto_ibadah', 'public');
+        // Simpan ke database (pakai $path agar asset() bisa memuat)
+        InfoKeagamaan::create([
+            'foto' => $path, // Simpan path lengkap relatif ke storage/app/public
+            'judul' => $request->judul,
+            'tanggal' => $request->tanggal,
+            'waktu' => $request->waktu,
+            'deskripsi' => $request->deskripsi,
+            'lokasi' => $request->lokasi,
+            'alamat' => $request->alamat,
+            'fitur' => $request->fitur,
+        ]);
+
+        return redirect()->route('admin.ibadah.info.index')->with('success', 'Info keagamaan berhasil disimpan.');
     }
 
-    $item->update($data);
+    public function infoEdit($id)
+    {
+        $info = InfoKeagamaan::findOrFail($id);
+        $kategoriIbadah = Kategori::all();
+        return view('admin.ibadah.info.edit', compact('info', 'kategoriIbadah'));
+    }
 
-    return redirect()->route('admin.ibadah.info.index')->with('success', 'Info Keagamaan berhasil diperbarui');
-}
+    public function infoUpdate(Request $request, $id)
+    {
+        $item = InfoKeagamaan::findOrFail($id);
+
+        $data = $request->validate([
+            'judul' => 'required',
+            'tanggal' => 'required|date',
+            'waktu' => 'required',
+            'deskripsi' => 'required',
+            'lokasi' => 'required',
+            'alamat' => 'required',
+            'fitur' => 'required',
+            'foto' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($item->foto) {
+                Storage::disk('public')->delete($item->foto);
+            }
+
+            // Upload dan simpan path baru
+            $data['foto'] = $request->file('foto')->store('foto_ibadah', 'public');
+        }
+
+        $item->update($data);
+
+        return redirect()->route('admin.ibadah.info.index')->with('success', 'Info Keagamaan berhasil diperbarui');
+    }
 
     public function infoDestroy($id)
     {

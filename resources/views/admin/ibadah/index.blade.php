@@ -14,7 +14,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered">
+    <table class="table datatables" id="infoTable">
         <thead>
             <tr>
                 <th>Nama</th>
@@ -56,4 +56,18 @@
         </tbody>
     </table>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        $('#infoTable').DataTable({
+            autoWidth: true,
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ]
+        });
+    });
+</script>
 @endsection

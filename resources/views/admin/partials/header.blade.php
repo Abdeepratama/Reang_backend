@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -11,6 +12,10 @@
     <link rel="stylesheet" href="{{ asset('admin/css/simplebar.css') }}">
     <!-- Fonts CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
     <!-- Icons CSS -->
     <link rel="stylesheet" href="{{ asset('admin/css/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/css/select2.css') }}">
@@ -21,6 +26,8 @@
     <link rel="stylesheet" href="{{ asset('admin/css/quill.snow.css') }}">
     <!-- Date Range Picker CSS -->
     <link rel="stylesheet" href="{{ asset('admin/css/daterangepicker.css') }}">
+    <!-- Favicons -->
+
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ asset('admin/css/app-light.css') }}" id="lightTheme">
     <link rel="stylesheet" href="{{ asset('admin/css/app-dark.css') }}" id="darkTheme" disabled>
@@ -56,6 +63,7 @@
             margin-top: 10px;
         }
     </style>
-  </head>
-  <body class="vertical  light  ">
+</head>
+
+<body class="vertical  light  ">
     <div class="wrapper"></div>

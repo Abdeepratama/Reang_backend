@@ -24,7 +24,7 @@ use App\Models\NotifikasiAktivitas;
 
 // Halaman Awal
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing/pages/dashboard/index');
 })->name('home');
 
 // Route Admin
