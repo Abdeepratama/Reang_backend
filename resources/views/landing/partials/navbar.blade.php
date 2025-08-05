@@ -2,7 +2,7 @@
   <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
     <a href="index.html" class="logo d-flex align-items-center">
-      <h1 class="sitename">Reang Apps</h1>
+      <img src="landing/img/color_wongreang_apps.png" alt="Logo Reang Apps" style="height: 90px;">
     </a>
 
     <nav id="navmenu" class="navmenu" aria-label="Navigasi utama">

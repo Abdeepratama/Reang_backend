@@ -57,60 +57,38 @@
     </section><!-- /Hero Section -->
 
     <!-- About Section -->
-    <section id="about" class="about section">
+    <section class="hero-roles-wrapper">
+  <div class="container">
+    <div class="title-group">
+      <h1>Cari fitur yang paling pas buat kamu</h1>
+      <p>Tentukan sendiri sesuai kebutuhanmu</p>
+    </div>
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="row align-items-xl-center gy-5">
+    <div class="role-tabs" role="tablist" aria-label="Pilih kategori">
+  <button class="tab active" data-role="publik" role="tab" aria-selected="true">Publik</button>
+  <button class="tab" data-role="pelayanan" role="tab" aria-selected="false">Pelayanan</button>
+  <button class="tab" data-role="sosial" role="tab" aria-selected="false">Sosial</button>
+  <button class="tab" data-role="pariwisata" role="tab" aria-selected="false">Pariwisata</button>
+  <button class="tab" data-role="lainnya" role="tab" aria-selected="false">Lainnya</button>
+</div>
 
-          <div class="col-xl-5 content">
-            <h3>About Us</h3>
-            <h2>Ducimus rerum libero reprehenderit cumque</h2>
-            <p>Ipsa sint sit. Quis ducimus tempore dolores impedit et dolor cumque alias maxime. Enim reiciendis minus et rerum hic non. Dicta quas cum quia maiores iure. Quidem nulla qui assumenda incidunt voluptatem tempora deleniti soluta.</p>
-            <a href="#" class="read-more"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
-          </div>
-
-          <div class="col-xl-7">
-            <div class="row gy-4 icon-boxes">
-
-              <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="icon-box">
-                  <i class="bi bi-buildings"></i>
-                  <h3>Eius provident</h3>
-                  <p>Magni repellendus vel ullam hic officia accusantium ipsa dolor omnis dolor voluptatem</p>
-                </div>
-              </div> <!-- End Icon Box -->
-
-              <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="icon-box">
-                  <i class="bi bi-clipboard-pulse"></i>
-                  <h3>Rerum aperiam</h3>
-                  <p>Autem saepe animi et aut aspernatur culpa facere. Rerum saepe rerum voluptates quia</p>
-                </div>
-              </div> <!-- End Icon Box -->
-
-              <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="icon-box">
-                  <i class="bi bi-command"></i>
-                  <h3>Veniam omnis</h3>
-                  <p>Omnis perferendis molestias culpa sed. Recusandae quas possimus. Quod consequatur corrupti</p>
-                </div>
-              </div> <!-- End Icon Box -->
-
-              <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
-                <div class="icon-box">
-                  <i class="bi bi-graph-up-arrow"></i>
-                  <h3>Delares sapiente</h3>
-                  <p>Sint et dolor voluptas minus possimus nostrum. Reiciendis commodi eligendi omnis quideme lorenda</p>
-                </div>
-              </div> <!-- End Icon Box -->
-
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </section><!-- /About Section -->
+<div id="hero" class="hero-card-custom" aria-labelledby="hero-title" aria-describedby="hero-desc">
+  <div class="decor" aria-hidden="true"></div>
+  <div class="hero-right">
+    <div>
+      <h2 id="hero-title">Informasi & Pelaporan Publik</h2>
+      <p id="hero-desc">Akses berita terbaru, informasi penting daerah, dan laporkan masalah publik secara cepat.</p>
+    </div>
+    <div class="feature-list-custom" aria-label="Daftar fitur">
+      <!-- items diinject lewat JS -->
+    </div>
+    <div class="d-flex align-items-center gap-3" style="margin-top:8px;">
+      <a href="#" class="btn-hero-cta">Selengkapnya</a>
+      <div class="small-desc">dan banyak fitur bermanfaat lainnya..</div>
+    </div>
+  </div>
+</div>
+</section>
 
     <!-- Features Section -->
     <section id="features" class="features section">

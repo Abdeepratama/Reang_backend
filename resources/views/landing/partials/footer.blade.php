@@ -1,146 +1,147 @@
 <footer id="footer" class="footer dark-background">
 
-    <div class="container footer-top">
-        <div class="row gy-4">
-            <div class="col-lg-4 col-md-6 footer-about">
-                <a href="index.html" class="logo d-flex align-items-center">
-                    <span class="sitename">Bootslander</span>
-                </a>
-                <div class="footer-contact pt-3">
-                    <p>A108 Adam Street</p>
-                    <p>New York, NY 535022</p>
-                    <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-                    <p><strong>Email:</strong> <span>info@example.com</span></p>
-                </div>
-                <div class="social-links d-flex mt-4">
-                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                    <a href=""><i class="bi bi-facebook"></i></a>
-                    <a href=""><i class="bi bi-instagram"></i></a>
-                    <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-            </div>
-
-            <div class="col-lg-2 col-md-3 footer-links">
-                <h4>Useful Links</h4>
-                <ul>
-                    <li><a href="#">Fitur</a></li>
-                    <li><a href="#">Tentang</a></li>
-                    <li><a href="#">Takon Reang</a></li>
-                    <li><a href="{{ route('admin.login') }}">Login</a></li>
-                </ul>
-            </div>
-
-            <div class="col-lg-2 col-md-3 footer-links">
-                <h4>Our Services</h4>
-                <ul>
-                    <li><a href="#">Web Design</a></li>
-                    <li><a href="#">Web Development</a></li>
-                    <li><a href="#">Product Management</a></li>
-                    <li><a href="#">Marketing</a></li>
-                    <li><a href="#">Graphic Design</a></li>
-                </ul>
-            </div>
-
-            <div class="col-lg-4 col-md-12 footer-newsletter">
-                <h4>Our Newsletter</h4>
-                <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
-                <form action="forms/newsletter.php" method="post" class="php-email-form">
-                    <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-                    <div class="loading">Loading</div>
-                    <div class="error-message"></div>
-                    <div class="sent-message">Your subscription request has been sent. Thank you!</div>
-                </form>
-            </div>
-
-            <div class="a11y-panel" role="dialog" aria-label="Panel Aksesibilitas" aria-modal="true" id="a11yPanel">
-                <div class="a11y-header">
-                    <div>
-                        <strong id="panel-title">Sarana</strong>
-                    </div>
-                    <button class="a11y-close" aria-label="Tutup panel" id="closeBtn">&times;</button>
-                </div>
-
-                <!-- Bahasa -->
-                <div class="control-row">
-                    <div class="lang-toggle" aria-label="Pilih bahasa">
-                        <button data-lang="id" class="active" aria-pressed="true">Indonesia</button>
-                        <button data-lang="en" aria-pressed="false">Inggris</button>
-                    </div>
-                </div>
-
-                <div class="separator"></div>
-
-                <!-- Mode Suara -->
-                <div class="section">
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        <span class="icon" aria-hidden="true">🔊</span>
-                        <strong class="small" id="voice-label">Moda Suara</strong>
-                    </div>
-                    <div class="voice-controls">
-                        <button class="btn" id="startVoice" aria-label="Mulai membaca">▶️ Baca</button>
-                        <button class="btn" id="pauseVoice" aria-label="Jeda" disabled>⏸️ Jeda</button>
-                        <button class="btn" id="stopVoice" aria-label="Hentikan" disabled>⏹️ Hentikan</button>
-                    </div>
-                    <div style="margin-top:4px; font-size:11px;">
-                        <label for="voice-rate">Kecepatan:</label>
-                        <input type="range" id="voice-rate" min="0.5" max="2" step="0.1" value="1">
-                        <span id="rateVal">1.0</span>
-                    </div>
-                </div>
-
-                <div class="separator"></div>
-
-                <!-- Teks & Tema -->
-                <div class="section">
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        <span class="icon" aria-hidden="true">🔍</span>
-                        <strong class="small">Teks & Tema</strong>
-                    </div>
-
-                    <div class="control-row">
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn" data-action="increase-text">Perbesar Teks</button>
-                            <button class="btn" data-action="decrease-text">Perkecil Teks</button>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn" data-toggle="grayscale">Skala Abu - Abu</button>
-                            <button class="btn" data-toggle="high-contrast">Kontras Tinggi</button>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn" data-toggle="dark-mode">Latar Gelap</button>
-                            <button class="btn" data-toggle="light-mode">Latar Terang</button>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn" data-toggle="readable-font">Tulisan Dapat Dibaca</button>
-                            <button class="btn" data-toggle="underline-links">Garis Bawah Tautan</button>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn" data-toggle="spacing-wide">Rata Tulisan</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="separator"></div>
-
-                <!-- Reset -->
-                <div class="section">
-                    <button class="btn full" id="resetBtn">Atur Ulang</button>
-                </div>
-            </div>
-
+  <div class="container footer-top">
+    <div class="row gy-4">
+      <div class="col-lg-4 col-md-6 footer-about">
+        <a href="index.html" class="logo d-flex align-items-center">
+          <span class="sitename">Bootslander</span>
+        </a>
+        <div class="footer-contact pt-3">
+          <p>A108 Adam Street</p>
+          <p>New York, NY 535022</p>
+          <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
+          <p><strong>Email:</strong> <span>info@example.com</span></p>
         </div>
-    </div>
-
-    <div class="container copyright text-center mt-4">
-        <p>© <span>Copyright</span> <strong class="px-1 sitename">Bootslander</strong> <span>All Rights Reserved</span></p>
-        <div class="credits">
-            <!-- All the links in the footer should remain intact. -->
-            <!-- You can delete the links only if you've purchased the pro version. -->
-            <!-- Licensing information: https://bootstrapmade.com/license/ -->
-            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed By <a href="https://themewagon.com">ThemeWagon</a>
+        <div class="social-links d-flex mt-4">
+          <a href=""><i class="bi bi-twitter-x"></i></a>
+          <a href=""><i class="bi bi-facebook"></i></a>
+          <a href=""><i class="bi bi-instagram"></i></a>
+          <a href=""><i class="bi bi-linkedin"></i></a>
         </div>
+      </div>
+
+      <div class="col-lg-2 col-md-3 footer-links">
+        <h4>Useful Links</h4>
+        <ul>
+          <div class="role-tabs" role="tablist" aria-label="Pilih kategori"></div></div>
+          <li><a href="#">Fitur</a></li>
+          <li><a href="#">Tentang</a></li>
+          <li><a href="#">Takon Reang</a></li>
+          <li><a href="{{ route('admin.login') }}">Login</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 col-md-3 footer-links">
+        <h4>Our Services</h4>
+        <ul>
+          <li><a href="#">Web Design</a></li>
+          <li><a href="#">Web Development</a></li>
+          <li><a href="#">Product Management</a></li>
+          <li><a href="#">Marketing</a></li>
+          <li><a href="#">Graphic Design</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 col-md-12 footer-newsletter">
+        <h4>Our Newsletter</h4>
+        <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+        <form action="forms/newsletter.php" method="post" class="php-email-form">
+          <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+          <div class="loading">Loading</div>
+          <div class="error-message"></div>
+          <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+        </form>
+      </div>
+
+      <div class="a11y-panel" role="dialog" aria-label="Panel Aksesibilitas" aria-modal="true" id="a11yPanel">
+        <div class="a11y-header">
+          <div>
+            <strong id="panel-title">Sarana</strong>
+          </div>
+          <button class="a11y-close" aria-label="Tutup panel" id="closeBtn">&times;</button>
+        </div>
+
+        <!-- Bahasa -->
+        <div class="control-row">
+          <div class="lang-toggle" aria-label="Pilih bahasa">
+            <button data-lang="id" class="active" aria-pressed="true">Indonesia</button>
+            <button data-lang="en" aria-pressed="false">Inggris</button>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Mode Suara -->
+        <div class="section">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="icon" aria-hidden="true">🔊</span>
+            <strong class="small" id="voice-label">Moda Suara</strong>
+          </div>
+          <div class="voice-controls">
+            <button class="btn" id="startVoice" aria-label="Mulai membaca">▶️ Baca</button>
+            <button class="btn" id="pauseVoice" aria-label="Jeda" disabled>⏸️ Jeda</button>
+            <button class="btn" id="stopVoice" aria-label="Hentikan" disabled>⏹️ Hentikan</button>
+          </div>
+          <div style="margin-top:4px; font-size:11px;">
+            <label for="voice-rate">Kecepatan:</label>
+            <input type="range" id="voice-rate" min="0.5" max="2" step="0.1" value="1">
+            <span id="rateVal">1.0</span>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Teks & Tema -->
+        <div class="section">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="icon" aria-hidden="true">🔍</span>
+            <strong class="small">Teks & Tema</strong>
+          </div>
+
+          <div class="control-row">
+            <div style="display:flex; gap:6px;">
+              <button class="btn" data-action="increase-text">Perbesar Teks</button>
+              <button class="btn" data-action="decrease-text">Perkecil Teks</button>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn" data-toggle="grayscale">Skala Abu - Abu</button>
+              <button class="btn" data-toggle="high-contrast">Kontras Tinggi</button>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn" data-toggle="dark-mode">Latar Gelap</button>
+              <button class="btn" data-toggle="light-mode">Latar Terang</button>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn" data-toggle="readable-font">Tulisan Dapat Dibaca</button>
+              <button class="btn" data-toggle="underline-links">Garis Bawah Tautan</button>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn" data-toggle="spacing-wide">Rata Tulisan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Reset -->
+        <div class="section">
+          <button class="btn full" id="resetBtn">Atur Ulang</button>
+        </div>
+      </div>
+
     </div>
+  </div>
+
+  <div class="container copyright text-center mt-4">
+    <p>© <span>Copyright</span> <strong class="px-1 sitename">Bootslander</strong> <span>All Rights Reserved</span></p>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you've purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed By <a href="https://themewagon.com">ThemeWagon</a>
+    </div>
+  </div>
 
 </footer>
 
@@ -162,8 +163,8 @@
 <script src="{{ asset('landing/js/main.js')}} "></script>
 
 <div style="margin-top:6px; display:flex; align-items:center; gap:6px;">
-    <input type="checkbox" id="autoSpeakSelection" />
-    <label for="autoSpeakSelection" style="font-size:12px;">Baca saat blok</label>
+  <input type="checkbox" id="autoSpeakSelection" />
+  <label for="autoSpeakSelection" style="font-size:12px;">Baca saat blok</label>
 </div>
 
 <script>
@@ -191,6 +192,7 @@
 
   // voice list & loader
   let voices = [];
+
   function loadVoices() {
     voices = synth.getVoices();
   }
@@ -258,14 +260,29 @@
       const key = b.getAttribute('data-toggle');
       let label = '';
       switch (key) {
-        case 'grayscale': label = t('Skala Abu - Abu'); break;
-        case 'high-contrast': label = t('Kontras Tinggi'); break;
-        case 'dark-mode': label = t('Latar Gelap'); break;
-        case 'light-mode': label = t('Latar Terang'); break;
-        case 'readable-font': label = t('Tulisan Dapat Dibaca'); break;
-        case 'underline-links': label = t('Garis Bawah Tautan'); break;
-        case 'spacing-wide': label = t('Rata Tulisan'); break;
-        default: label = key;
+        case 'grayscale':
+          label = t('Skala Abu - Abu');
+          break;
+        case 'high-contrast':
+          label = t('Kontras Tinggi');
+          break;
+        case 'dark-mode':
+          label = t('Latar Gelap');
+          break;
+        case 'light-mode':
+          label = t('Latar Terang');
+          break;
+        case 'readable-font':
+          label = t('Tulisan Dapat Dibaca');
+          break;
+        case 'underline-links':
+          label = t('Garis Bawah Tautan');
+          break;
+        case 'spacing-wide':
+          label = t('Rata Tulisan');
+          break;
+        default:
+          label = key;
       }
       b.textContent = label;
     });
@@ -448,10 +465,10 @@
 
   // panel open/close & focus trap
   function focusableIn(el) {
-    return el
-      ? Array.from(el.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])'))
-          .filter(e => !e.hasAttribute('disabled'))
-      : [];
+    return el ?
+      Array.from(el.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])'))
+      .filter(e => !e.hasAttribute('disabled')) :
+      [];
   }
 
   function trapFocus(e) {
@@ -520,6 +537,172 @@
     panel.setAttribute('aria-hidden', 'true');
   }
   updateLabels();
+</script>
+
+<script>
+  const roleConfig = {
+    publik: {
+      title: 'Informasi & Pelaporan Publik',
+      desc: 'Akses berita terbaru, informasi penting daerah, dan laporkan masalah publik secara cepat.',
+      features: [
+        {
+          iconClass: 'bi bi-exclamation-circle',
+          name: 'Dumas-Yu',
+          subtitle: 'Segala bentuk pengaduan dari masyarakat',
+        },
+        {
+          iconClass: 'bi bi-info-circle',
+          name: 'Info-Yu',
+          subtitle: 'Baca berita dan informasi terupdate yang ada di indramayu',
+        },
+      ],
+      ctaText: 'Selengkapnya',
+      smallDesc: 'dan banyak fitur bermanfaat lainnya..',
+    },
+    pelayanan: {
+      title: 'Kesehatan & Pendidikan',
+      desc: 'Cari fasilitas kesehatan, layanan darurat, dan informasi sekolah atau pelatihan terdekat.',
+      features: [
+        {
+          iconClass: 'bi bi-hospital',
+          name: 'Sehat-Yu',
+          subtitle: 'Cari layanan kesehatan di sekitar kamu',
+        },
+        {
+          iconClass: 'bi bi-book',
+          name: 'Sekolah-Yu',
+          subtitle: 'Informasi terkait pendaftaran dan lokasi sekolah',
+        },
+      ],
+      ctaText: 'Selengkapnya',
+      smallDesc: 'untuk kesehatan dan pendidikan terbaik.',
+    },
+    sosial: {
+      title: 'Sosial & Ekonomi',
+      desc: 'Temukan lowongan kerja, buat CV online, dan ikuti pelatihan pengembangan diri.',
+      features: [
+        {
+          iconClass: 'bi bi-journal-medical',
+          name: 'Pajak-Yu',
+          subtitle: 'Informasi pengecekan pajak dan pembayarannya',
+        },
+        {
+          iconClass: 'bi bi-cart',
+          name: 'Pasar-Yu',
+          subtitle: 'Informasi harga serta titik lokasi pajak',
+        },
+        {
+          iconClass: 'bi bi-receipt',
+          name: 'Kerja-Yu',
+          subtitle: 'Informasi terkait lowongan pekerjaan',
+        },
+      ],
+      ctaText: 'Selengkapnya',
+      smallDesc: 'tingkatkan kompetensimu.',
+    },
+    pariwisata: {
+      title: 'Pariwisata & Keagamaan',
+      desc: 'Jelajahi destinasi wisata, temukan agenda keagamaan, dan promosi usaha lokal.',
+      features: [
+        {
+          iconClass: 'bi bi-geo-alt',
+          name: 'Plesir-Yu',
+          subtitle: 'Rekomendasi tempat wisata menarik',
+        },
+        {
+          iconClass: 'bi bi-house',
+          name: 'Ibadah-Yu',
+          subtitle: 'Informasi kegiatan keagamaan terdekat',
+        },
+      ],
+      ctaText: 'Selengkapnya',
+      smallDesc: 'dan rencanakan kunjunganmu.',
+    },
+    lainnya: {
+      title: 'Layanan Publik Lainnya',
+      desc: 'Kelola keuangan, belanja kebutuhan harian, dan akses layanan umum lainnya.',
+      features: [
+        {
+          iconClass: 'bi bi-card-list',
+          name: 'Adminduk-Yu',
+          subtitle: 'Informasi pembuatan KTP elektronik dan lainnya',
+        },
+        {
+          iconClass: 'bi bi-building',
+          name: 'Renbang-Yu',
+          subtitle: 'informasi terkait rencana pembangunan',
+        },
+        {
+          iconClass: 'bi bi-shield-check',
+          name: 'Izin-Yu',
+          subtitle: 'informasi terkait rencana pembangunan',
+        },
+        {
+          iconClass: 'bi bi-wifi',
+          name: 'Wifi-Yu',
+          subtitle: 'informasi terkait rencana pembangunan',
+        },
+      ],
+      ctaText: 'Selengkapnya',
+      smallDesc: 'semua kebutuhanmu dalam satu tempat.',
+    },
+  };
+
+  function renderHeroCard(role) {
+    const config = roleConfig[role];
+    if (!config) return;
+
+    const titleEl = document.querySelector('.hero-card-custom h2');
+    const descEl = document.querySelector('.hero-card-custom .hero-right p');
+    const featureList = document.querySelector('.feature-list-custom');
+    const cta = document.querySelector('.btn-hero-cta');
+    const smallDesc = document.querySelector('.small-desc');
+
+    // set title/desc
+    if (titleEl) titleEl.textContent = config.title;
+    if (descEl) descEl.textContent = config.desc;
+
+    // clear & populate features
+    if (featureList) {
+      featureList.innerHTML = '';
+      config.features.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'feature-item-custom';
+        item.innerHTML = `
+          <div class="icon-wrapper">
+            <i class="${f.iconClass}" aria-hidden="true" style="font-size:1.2rem;"></i>
+          </div>
+          <div>
+            <div style="font-weight:600;">${f.name}</div>
+            <div style="font-size:.75rem; opacity:.9;">${f.subtitle}</div>
+          </div>
+        `;
+        featureList.appendChild(item);
+      });
+    }
+
+    if (cta) cta.textContent = config.ctaText;
+    if (smallDesc) smallDesc.textContent = config.smallDesc;
+  }
+
+  // Inisialisasi awal (role default "publik")
+ renderHeroCard('publik');
+
+  // Event listener tab
+  document.querySelectorAll('.role-tabs .tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // visual active
+      document.querySelectorAll('.role-tabs .tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      const role = btn.dataset.role;
+      renderHeroCard(role);
+    });
+  });
 </script>
 
 

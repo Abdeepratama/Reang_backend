@@ -178,8 +178,8 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 32px;
-  margin-right: 8px;
+  max-height: 50px;
+  margin-right: 10px;
 }
 
 .header .logo h1 {
@@ -222,7 +222,7 @@ h6 {
 
   .navmenu>ul>li {
     white-space: nowrap;
-    padding: 15px 14px;
+    padding: 30px 14px;
   }
 
   .navmenu>ul>li:last-child {
@@ -232,7 +232,7 @@ h6 {
   .navmenu a,
   .navmenu a:focus {
     color: color-mix(in srgb, var(--nav-color), transparent 20%);
-    font-size: 15px;
+    font-size: 25px;
     padding: 0 2px;
     font-family: var(--nav-font);
     font-weight: 400;
@@ -1098,6 +1098,204 @@ section,
   .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
   .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
     margin-top: 0;
+  }
+}
+
+/* ====== Hero role selector + card seperti screenshot ====== */
+.hero-roles-wrapper {
+  padding: 80px 0 40px;
+  background: linear-gradient(135deg,#4f8aff 0%,#417bfa 100%);
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.hero-roles-wrapper .title-group {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.hero-roles-wrapper .title-group h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.hero-roles-wrapper .title-group p {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  opacity: .95;
+}
+
+.role-tabs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1rem auto 2rem;
+  max-width: 900px;
+}
+
+.role-tabs .tab {
+  padding: .55rem 1.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .9rem;
+  position: relative;
+  text-decoration: none;
+  color: white;
+  background: rgba(255,255,255,0.1);
+  transition: background .2s, color .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+}
+
+.role-tabs .tab.active {
+  background: white;
+  color: var(--heading-color);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.role-tabs .tab:not(.active):hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Hero card */
+.hero-card-custom {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(140deg, rgba(31,87,209,1) 0%, #2669ff 85%);
+  color: white;
+  padding: 2rem 2.5rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  min-height: 360px;
+  max-width: 1120px;
+  margin: 0 auto 60px;
+  font-family: var(--default-font);
+}
+
+.hero-card-custom .decor {
+  position: absolute;
+  left: -100px;
+  top: 50%;
+  width: 360px;
+  height: 360px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.hero-card-custom .hero-left {
+  flex: 0 0 340px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-card-custom .cutout-img {
+  width: 300px;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  border-radius: 12px;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.35));
+}
+
+.hero-card-custom .hero-right {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-right: 1rem;
+}
+
+.hero-card-custom .hero-right h2 {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hero-card-custom .hero-right p {
+  margin: 0;
+  font-size: .95rem;
+  line-height: 1.4;
+}
+
+.feature-list-custom {
+  margin-top: .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+
+.feature-item-custom {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-size: .9rem;
+}
+
+.feature-item-custom .icon-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-hero-cta {
+  background: #0f204d;
+  border: none;
+  padding: .75rem 1.75rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(15,32,77,0.4);
+  text-decoration: none;
+  display: inline-block;
+  transition: transform .15s;
+}
+
+.btn-hero-cta:hover {
+  transform: translateY(-1px);
+}
+
+.small-desc {
+  margin-top: 6px;
+  font-size: .85rem;
+  opacity: .9;
+}
+
+/* Responsive tweak */
+@media (max-width: 1100px) {
+  .hero-card-custom {
+    flex-direction: column;
+    padding: 1.5rem 1.25rem;
+    min-height: auto;
+  }
+  .hero-card-custom .hero-left {
+    margin-bottom: 1rem;
+  }
+  .hero-card-custom .cutout-img {
+    width: 220px;
+  }
+  .hero-card-custom .hero-right h2 {
+    font-size: 1.6rem;
   }
 }
 
