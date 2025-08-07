@@ -168,7 +168,7 @@ h6 {
   --heading-color: #ffffff;
   color: var(--default-color);
   background-color: var(--background-color);
-  padding: 20px 0;
+  padding: 10px 0;
   transition: all 0.5s;
   z-index: 997;
 }
@@ -178,7 +178,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 50px;
+  max-height: 40px;
   margin-right: 10px;
 }
 
@@ -203,7 +203,7 @@ h6 {
 # Navigation Menu
 --------------------------------------------------------------*/
 /* Desktop Navigation */
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .navmenu {
     padding: 0;
   }
@@ -222,7 +222,7 @@ h6 {
 
   .navmenu>ul>li {
     white-space: nowrap;
-    padding: 30px 14px;
+    padding: 20px 10px  ;
   }
 
   .navmenu>ul>li:last-child {
@@ -876,6 +876,28 @@ section,
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
 }
 
+.btn-get-started {
+  background-color: rgba(255, 255, 255, 0.2); /* transparan ringan */
+  padding: 10px 16px;
+  border-radius: 12px;
+  color: var(--default-color); /* pakai variabel warna default kamu */
+  font-weight: 600;
+  font-size: 20px;
+  transition: 0.3s ease;
+}
+
+.btn-get-started i.bi-question-circle {
+  font-size: 1.5rem;
+  margin-right: 6px; /* agar ada jarak antara ikon dan teks */
+  vertical-align: middle; /* bantu sejajarkan */
+}
+
+/* Gaya ikon Play Store di dalam tombol */
+.btn-get-started .playstore-icon {
+  height: 24px;
+  margin-right: 8px;
+}
+
 .hero .btn-watch-video {
   font-size: 16px;
   transition: 0.5s;
@@ -1297,6 +1319,20 @@ section,
   .hero-card-custom .hero-right h2 {
     font-size: 1.6rem;
   }
+}
+
+/*--------------------------------------------------------------
+# backgound spesial services
+--------------------------------------------------------------*/
+.hero-section {
+  min-height: 100vh;
+  background-image: url('landing/img/background1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh; /* Biar tinggi penuh layar */
+  color: rgb(12, 4, 4);
+  padding: 100px 0;
 }
 
 /*--------------------------------------------------------------
@@ -2138,3 +2174,114 @@ section,
     background: #ddd;
     margin: 6px 0;
   }
+
+/* Takon Reang (FAQ Section) */
+
+/* Container khusus untuk #takon */
+.faq-section {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #1b83f1;
+  padding: 60px 0;
+}
+
+/* Container di dalam .faq-section */
+.faq-section .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+/* Judul utama */
+.faq-section .faq-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+/* Search bar */
+.faq-section .search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.faq-section .search-bar input[type="text"] {
+  flex: 1;
+  padding: 14px 20px;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  font-size: 16px;
+}
+
+.faq-section .search-bar button {
+  padding: 14px 28px;
+  background-color: #00b36b;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.faq-section .search-bar button:hover {
+  background-color: #019456;
+}
+
+/* FAQ Box */
+.faq-section .faq-box {
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.faq-section .faq-box h3 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2d2d8a;
+  margin-bottom: 20px;
+}
+
+/* FAQ List */
+.faq-section .faq-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.faq-section .faq-list li {
+  border-top: 1px solid #eee;
+}
+
+.faq-section .faq-list li:first-child {
+  border-top: none;
+}
+
+.faq-section .faq-list li a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.faq-section .faq-list li a:hover {
+  color: #00b36b;
+}
+
+.faq-section .faq-list li a span {
+  font-size: 20px;
+}
+
+.faq-answer {
+  padding: 10px 0 10px 16px;
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+}

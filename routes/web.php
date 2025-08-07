@@ -27,6 +27,10 @@ Route::get('/', function () {
     return view('landing/pages/dashboard/index');
 })->name('home');
 
+Route::get('/bantuan', function () {
+    return view('landing.pages.bantuan.takon');
+})->name('bantuan.takon');
+
 // Route Admin
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -49,6 +53,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/admin/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
         Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
         Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('admin.plesir.tempat.index');
+        Route::get('/ibadah/tempat/map', [PlesirController::class, 'map'])->name('plesir.tempat.map');
         Route::get('/admin/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard');
         Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');

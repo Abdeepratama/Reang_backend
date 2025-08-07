@@ -5,14 +5,8 @@
     <nav class="vertnav navbar navbar-light">
         <!-- nav bar -->
         <div class="w-100 mb-4 d-flex justify-content-center">
-            <a class="navbar-brand d-flex flex-column align-items-center text-white text-decoration-none" href="{{ route('admin.dashboard') }}">
-                <svg id="logo" class="navbar-brand-img brand-sm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="40" height="40">
-                    <g>
-                        <polygon class="st0" points="78,105 15,105 24,87 87,87" />
-                        <polygon class="st0" points="96,69 33,69 42,51 105,51" />
-                        <polygon class="st0" points="78,33 15,33 24,15 87,15" />
-                    </g>
-                </svg>
+            <a href="{{ route('admin.dashboard') }}" class="logo d-flex align-items-center">
+                <img src="{{ asset('landing/img/logo_wongreang_apps.png') }}" alt="Logo Reang Apps" style="height: 40px;">
             </a>
         </div>
 

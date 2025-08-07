@@ -4,13 +4,11 @@
     <div class="row gy-4">
       <div class="col-lg-4 col-md-6 footer-about">
         <a href="index.html" class="logo d-flex align-items-center">
-          <span class="sitename">Bootslander</span>
+          <span class="sitename">Selesaikan urusanmu di Indramayu dengan Wong Reang Apps</span>
         </a>
         <div class="footer-contact pt-3">
-          <p>A108 Adam Street</p>
-          <p>New York, NY 535022</p>
-          <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-          <p><strong>Email:</strong> <span>info@example.com</span></p>
+          <p ><strong>Ayo download Wong Reang Apps</strong></p>
+          <p><strong>Email:</strong> <span>raulharahap776@gmail.com</span></p>
         </div>
         <div class="social-links d-flex mt-4">
           <a href=""><i class="bi bi-twitter-x"></i></a>
@@ -21,15 +19,15 @@
       </div>
 
       <div class="col-lg-2 col-md-3 footer-links">
-        <h4>Useful Links</h4>
         <ul>
-          <div class="role-tabs" role="tablist" aria-label="Pilih kategori"></div></div>
-          <li><a href="#">Fitur</a></li>
+          <div class="role-tabs" role="tablist" aria-label="Pilih kategori"></div>
+          <li><a href="#fitur-section">Fitur</a></li>
           <li><a href="#">Tentang</a></li>
           <li><a href="#">Takon Reang</a></li>
           <li><a href="{{ route('admin.login') }}">Login</a></li>
         </ul>
       </div>
+
 
       <div class="col-lg-2 col-md-3 footer-links">
         <h4>Our Services</h4>
@@ -162,10 +160,10 @@
 <!-- Main JS File -->
 <script src="{{ asset('landing/js/main.js')}} "></script>
 
-<div style="margin-top:6px; display:flex; align-items:center; gap:6px;">
+<!-- <div style="margin-top:6px; display:flex; align-items:center; gap:6px;">
   <input type="checkbox" id="autoSpeakSelection" />
   <label for="autoSpeakSelection" style="font-size:12px;">Baca saat blok</label>
-</div>
+</div> -->
 
 <script>
   // STATE
@@ -705,7 +703,36 @@
   });
 </script>
 
+<script>
+  document.querySelectorAll('.faq-question').forEach(function (question) {
+    question.addEventListener('click', function () {
+      const answer = this.nextElementSibling;
 
+      // Toggle tampilan jawaban
+      if (answer.style.display === 'none' || answer.style.display === '') {
+        answer.style.display = 'block';
+      } else {
+        answer.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+<script>
+  function searchFAQ() {
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    const items = document.querySelectorAll('.faq-item');
+
+    items.forEach(item => {
+      const questionText = item.querySelector('.faq-question').textContent.toLowerCase();
+      if (questionText.includes(keyword)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 </body>
 

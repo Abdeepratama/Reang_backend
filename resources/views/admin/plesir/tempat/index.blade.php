@@ -1,44 +1,75 @@
 @extends('admin.partials.app')
 
-@section('title', 'PLESIR-YU')
+@section('title', 'Daftar Tempat Plesir')
 
 @section('content')
-<div class="container">
-    <div class="mb-3 text-start">
-        <a href="{{ route('admin.plesir.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-        </a>
-    </div>
-    <h2>Daftar Lokasi Plesir</h2>
-    <a href="{{ route('admin.plesir.create') }}" class="btn btn-primary mb-3">Tambah Lokasi</a>
-    <table class="table table-bordered">
+<div class="container mt-4">
+    <h2>Daftar Tempat Plesir</h2>
+
+    <a href="{{ route('admin.plesir.tempat.map') }}">🗺️ Lihat Peta</a>
+
+    <a href="{{ route('admin.plesir.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Plesir</a>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <table class="table datatables" id="plesirTable">
         <thead>
             <tr>
+                <th>No</th>
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
+                <th>Kategori</th>
+                <th>Foto</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($items as $item)
-            <tr>
-                <td>{{ $item->name }}</td>
-                <td>{{ $item->address }}</td>
-                <td>{{ $item->latitude }}</td>
-                <td>{{ $item->longitude }}</td>
-                <td>
-                    <a href="{{ route('admin.plesir.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                    <form action="{{ route('admin.plesir.destroy', $item->id) }}" method="POST" style="display:inline-block">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
+            @forelse($items as $index => $item)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->address }}</td>
+                    <td>{{ $item->latitude }}</td>
+                    <td>{{ $item->longitude }}</td>
+                    <td>{{ $item->fitur }}</td>
+                    <td>
+                        @if($item->foto)
+                            <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.plesir.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <form action="{{ route('admin.plesir.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="8" class="text-center">Belum ada data tempat plesir.</td></tr>
+            @endforelse
         </tbody>
     </table>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        $('#plesirTable').DataTable({
+            autoWidth: true,
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ]
+        });
+    });
+</script>
 @endsection
