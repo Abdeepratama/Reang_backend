@@ -9,7 +9,7 @@ class Pasar extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address', 'latitude', 'longitude'];
+    protected $fillable = ['name', 'address', 'latitude', 'longitude','fitur'];
 
-    protected $table = 'pasars'; // Sesuaikan jika nama tabel kamu bukan "pasars"
+    protected $table = 'tempat_pasars'; // Sesuaikan jika nama tabel kamu bukan "pasars"
 }

@@ -228,6 +228,16 @@
   gtag('js', new Date());
   gtag('config', 'UA-56159088-1');
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Auto trigger submenu jika punya class 'show'
+        document.querySelectorAll('.collapse.show').forEach(function (element) {
+            new bootstrap.Collapse(element, {
+                toggle: false
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

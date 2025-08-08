@@ -17,7 +17,6 @@
     <table class="table datatables" id="infoTable">
         <thead>
             <tr>
-                <th>No</th>
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Latitude</th>

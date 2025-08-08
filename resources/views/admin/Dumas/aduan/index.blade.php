@@ -16,7 +16,7 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered table-striped">
+    <table class="table datatables" id="infoTable">
         <thead class="table-dark">
             <tr>
                 <th>No</th>

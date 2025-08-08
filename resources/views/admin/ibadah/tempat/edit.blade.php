@@ -46,18 +46,18 @@
                 </div>
 
                 <div class="mb-3">
-    <label for="foto" class="form-label">Foto</label>
+                    <label for="foto" class="form-label">Foto</label>
 
-    <div class="mb-2">
-        @if($item->foto)
-            <img id="currentPreview" src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
-        @else
-            <img id="currentPreview" src="{{ asset('images/default-ibadah.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
-        @endif
-    </div>
+                    <div class="mb-2">
+                        @if($item->foto)
+                        <img id="currentPreview" src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                        @else
+                        <img id="currentPreview" src="{{ asset('images/default-ibadah.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                        @endif
+                    </div>
 
-    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
-</div>
+                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
+                </div>
 
                 <button type="submit" class="btn btn-primary">Update Lokasi</button>
             </div>

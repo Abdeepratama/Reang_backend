@@ -33,25 +33,22 @@
                     <input type="text" name="longitude" id="longitude" class="form-control" value="{{ $item->longitude }}" required readonly>
                 </div>
 
-                <div class="mb-3">
-                    <label for="fitur" class="form-label">Kategori</label>
-                    <select name="fitur" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoriPlesir as $kategori)
-                        <option value="{{ $kategori->id }}" {{ $item->fitur == $kategori->id ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
+                <select name="fitur" class="form-control" required>
+    <option value="">Pilih Kategori</option>
+    @foreach($kategoriPlesir as $kategori)
+        <option value="{{ $kategori->nama }}" {{ $item->fitur == $kategori->nama ? 'selected' : '' }}>
+            {{ $kategori->nama }}
+        </option>
+    @endforeach
+</select>
 
                 <div class="mb-3">
                     <label for="foto" class="form-label">Foto</label>
                     <div class="mb-2">
                         @if($item->foto)
-                        <img id="currentPreview" src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                            <img id="currentPreview" src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
                         @else
-                        <img id="currentPreview" src="{{ asset('images/default-plesir.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                            <img id="currentPreview" src="{{ asset('images/default-plesir.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
                         @endif
                     </div>
                     <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
@@ -75,13 +72,11 @@
     const map = L.map('peta').setView([-6.326511, 108.3202685], 13);
     let clickMarker = null;
 
-    // Tambah tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Marker awal dari database
     const currentLat = parseFloat(`{{ $item->latitude }}`);
     const currentLng = parseFloat(`{{ $item->longitude }}`);
     const currentName = `{{ $item->name }}` || 'Lokasi Saat Ini';
@@ -93,7 +88,6 @@
         map.setView([currentLat, currentLng], 16);
     }
 
-    // Klik map untuk ubah lokasi
     map.on('click', async function(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;

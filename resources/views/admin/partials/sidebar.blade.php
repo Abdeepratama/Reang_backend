@@ -34,8 +34,8 @@
 
                 <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'show' : '' }}" id="aduan">
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.dumas.index') ? 'active bg-primary text-white' : '' }}"
-                            href="{{ route('admin.dumas.index') }}">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.dumas.aduan.index') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.dumas.aduan.index') }}">
                             <span class="ml-1 item-text">Dumas-Yu</span>
                         </a>
                     </li>
@@ -120,10 +120,26 @@
                 <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'show' : '' }}" id="pariwisata">
                     <!-- Menu Plesir-Yu -->
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.index') ? 'active bg-primary text-white' : '' }}"
-                            href="{{ route('admin.plesir.index') }}">
+                        <a class="nav-link pl-3 {{ request()->is('admin/plesir*') ? 'active bg-light' : '' }}"
+                            href="#submenu-plesir" data-toggle="collapse"
+                            aria-expanded="{{ request()->is('admin/plesir*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Plesir-Yu</span>
                         </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/plesir*') ? 'show' : '' }}" id="submenu-plesir">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.tempat.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.plesir.tempat.index') }}">
+                                    Lokasi Tempat
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.plesir.info.index') }}">
+                                    Info Plesir
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <!-- Menu Ibadah-Yu (Submenu sebagai list biasa) -->
@@ -136,8 +152,8 @@
 
                         <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/ibadah*') ? 'show' : '' }}" id="submenu-ibadah">
                             <li class="nav-item">
-                                <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.index') ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('admin.ibadah.index') }}">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.tempat.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.ibadah.tempat.index') }}">
                                     Lokasi Tempat
                                 </a>
                             </li>

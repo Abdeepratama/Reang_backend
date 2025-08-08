@@ -1,31 +1,29 @@
 @extends('admin.partials.app')
 
-@section('title', 'PASAR-YU')
+@section('title', 'Daftar Pasar')
 
 @section('content')
 <div class="container mt-4">
-    <div class="mb-3 text-start">
-        <a href="{{ route('admin.pasar.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-        </a>
-    </div>
+    <h2>Daftar Pasar</h2>
 
-    <h2 class="mb-4">Daftar Pasar</h2>
+    <a href="{{ route('admin.pasar.tempat.map') }}">Lihat Peta</a>
 
-    <a href="{{ route('admin.pasar.create') }}" class="btn btn-primary mb-3">Tambah Pasar</a>
+    <a href="{{ route('admin.pasar.create') }}" class="btn btn-primary mb-3">+ Tambah Pasar</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+    <table class="table datatables" id="infoTable">
+        <thead>
             <tr>
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th class="text-center">Aksi</th>
+                <th>Fitur</th>
+                <th>Foto</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -35,22 +33,41 @@
                     <td>{{ $item->address }}</td>
                     <td>{{ $item->latitude }}</td>
                     <td>{{ $item->longitude }}</td>
-                    <td class="text-center">
-                        <a href="{{ route('admin.pasar.show', $item->id) }}" class="btn btn-sm btn-info">Detail</a>
-                        <a href="{{ route('admin.pasar.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('admin.pasar.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus pasar ini?')">
+                    <td>{{ $item->fitur }}</td>
+                    <td>
+                        @if($item->foto)
+                            <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.pasar.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <form action="{{ route('admin.pasar.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                            <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>
                         </form>
                     </td>
                 </tr>
             @empty
-                <tr>
-                    <td colspan="5" class="text-center">Tidak ada data pasar.</td>
-                </tr>
+                <tr><td colspan="7" class="text-center">Belum ada data pasar.</td></tr>
             @endforelse
         </tbody>
     </table>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        $('#pasarTable').DataTable({
+            autoWidth: true,
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ]
+        });
+    });
+</script>
 @endsection

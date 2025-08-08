@@ -73,12 +73,6 @@ class IbadahController extends Controller
         ]);
     }
 
-    public function info()
-    {
-        $infoItems = InfoKeagamaan::all(); // gunakan model yang benar
-        return view('admin.ibadah.info.index', compact('infoItems'));
-    }
-
     public function tempat()
     {
         $items = Ibadah::all();
@@ -181,6 +175,12 @@ class IbadahController extends Controller
 
         return redirect()->route('admin.ibadah.tempat.index')
             ->with('success', 'Lokasi berhasil diperbarui!');
+    }
+
+    public function info()
+    {
+        $infoItems = InfoKeagamaan::all(); // gunakan model yang benar
+        return view('admin.ibadah.info.index', compact('infoItems'));
     }
 
     public function infoIndex()

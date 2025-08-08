@@ -49,11 +49,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/ibadah/tempat', [IbadahController::class, 'tempat'])->name('ibadah.tempat.index');
-        Route::get('/admin/pasar/tempat', [PasarController::class, 'tempat'])->name('admin.pasar.tempat.index');
+        Route::get('/pasar/tempat', [PasarController::class, 'tempat'])->name('pasar.tempat.index');
         Route::post('/admin/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
         Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
-        Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('admin.plesir.tempat.index');
-        Route::get('/ibadah/tempat/map', [PlesirController::class, 'map'])->name('plesir.tempat.map');
+        Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('plesir.tempat.index');
+        Route::get('/plesir/tempat/map', [PlesirController::class, 'map'])->name('plesir.tempat.map');
         Route::get('/admin/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard');
         Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');
@@ -80,9 +80,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('ibadah/info/{id}', [IbadahController::class, 'infoUpdate'])->name('ibadah.info.update');
         Route::delete('ibadah/info/{id}', [IbadahController::class, 'infoDestroy'])->name('ibadah.info.destroy');
         Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+        Route::get('/plesir/info', [PlesirController::class, 'info'])->name('plesir.info.index');
+        Route::get('/plesir/info/create', [PlesirController::class, 'createInfo'])->name('plesir.info.create');
+        Route::post('/plesir/store', [PlesirController::class, 'storeInfo'])->name('plesir.info.store');
+        Route::get('/{id}/plesir/edit', [PlesirController::class, 'infoEdit'])->name('plesir.info.edit');
+        Route::put('/{id}/plesir/update', [PlesirController::class, 'infoUpdate'])->name('plesir.info.update');
+        Route::delete('/{id}/plesir/destroy', [PlesirController::class, 'infoDestroy'])->name('plesir.info.destroy');
+        Route::get('/pasar/tempat/map', [PasarController::class, 'map'])->name('pasar.tempat.map');
 
 
-        
+
+
         // Resource routes
         Route::resource('ibadah', IbadahController::class);
         Route::resource('/sehat', SehatController::class);
