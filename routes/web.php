@@ -50,11 +50,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/ibadah/tempat', [IbadahController::class, 'tempat'])->name('ibadah.tempat.index');
         Route::get('/pasar/tempat', [PasarController::class, 'tempat'])->name('pasar.tempat.index');
-        Route::post('/admin/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
+        Route::post('/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
         Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
-        Route::get('/admin/plesir/tempat', [PlesirController::class, 'tempat'])->name('plesir.tempat.index');
+        Route::get('/plesir/tempat', [PlesirController::class, 'tempat'])->name('plesir.tempat.index');
         Route::get('/plesir/tempat/map', [PlesirController::class, 'map'])->name('plesir.tempat.map');
-        Route::get('/admin/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
+        Route::get('/plesir/tempat/info-map', [PlesirController::class, 'infomap'])->name('plesir.info.map');
+        Route::get('/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
+        Route::get('/sehat/tempat/map', [SehatController::class, 'map'])->name('sehat.tempat.map');
         Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard');
         Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');
         Route::get('admin/kerja', [KerjaController::class, 'dashboard'])->name('kerja.index');
@@ -69,11 +71,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/slider/{id}/edit', [DashboardController::class, 'sliderEdit'])->name('slider.edit');
         Route::put('/slider/{id}', [DashboardController::class, 'sliderUpdate'])->name('slider.update');
         Route::delete('/slider/{id}', [DashboardController::class, 'sliderDestroy'])->name('slider.destroy');
-        Route::get('admin/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('renbang.deskripsi.index');
+        Route::get('/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('renbang.deskripsi.index');
         Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('dumas.aduan.index');
         Route::get('sekolah/aduan', [SekolahController::class, 'aduanIndex'])->name('sekolah.aduan.index');
         Route::get('ibadah/tempat/create', [IbadahController::class, 'createTempat'])->name('ibadah.tempat.create');
         Route::get('ibadah/info', [IbadahController::class, 'infoIndex'])->name('ibadah.info.index');
+        Route::get('/ibadah/info/map', [IbadahController::class, 'infomap'])->name('ibadah.info.map');
         Route::get('ibadah/info/create', [IbadahController::class, 'createInfo'])->name('ibadah.info.create');
         Route::post('ibadah/info', [IbadahController::class, 'storeInfo'])->name('ibadah.info.store');
         Route::get('ibadah/info/{id}/edit', [IbadahController::class, 'infoEdit'])->name('ibadah.info.edit');
@@ -85,11 +88,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/plesir/store', [PlesirController::class, 'storeInfo'])->name('plesir.info.store');
         Route::get('/{id}/plesir/edit', [PlesirController::class, 'infoEdit'])->name('plesir.info.edit');
         Route::put('/{id}/plesir/update', [PlesirController::class, 'infoUpdate'])->name('plesir.info.update');
-        Route::delete('/{id}/plesir/destroy', [PlesirController::class, 'infoDestroy'])->name('plesir.info.destroy');
+        Route::delete('/{id}/plesir/destroy', [PlesirController::class, 'infoDestroy'])->name('C');
         Route::get('/pasar/tempat/map', [PasarController::class, 'map'])->name('pasar.tempat.map');
 
+        Route::get('/tempat', [SekolahController::class, 'indexTempat'])->name('sekolah.tempat.index');
+        Route::get('tempat/create', [SekolahController::class, 'createTempat'])->name('sekolah.tempat.create');
+        Route::post('tempat', [SekolahController::class, 'storeTempat'])->name('sekolah.tempat.store');
+        Route::get('tempat/{id}/edit', [SekolahController::class, 'editTempat'])->name('sekolah.tempat.edit');
+        Route::put('tempat/{id}', [SekolahController::class, 'updateTempat'])->name('sekolah.tempat.update');
+        Route::get('tempat/map', [SekolahController::class, 'mapTempat'])->name('sekolah.tempat.map');
+        Route::delete('tempat/{id}', [SekolahController::class, 'tempatDestroy'])->name('sekolah.tempat.destroy');
 
-
+        Route::get('/aduan', [SekolahController::class, 'aduanindex'])->name('sekolah.aduan.index');
+        Route::get('aduan/create', [SekolahController::class, 'createAduan'])->name('sekolah.aduan.create');
+        Route::post('aduan', [SekolahController::class, 'storeAduan'])->name('sekolah.aduan.store');
+        Route::get('aduan/{id}/edit', [SekolahController::class, 'editAduan'])->name('sekolah.aduan.edit');
+        Route::put('aduan/{id}', [SekolahController::class, 'updateAduan'])->name('sekolah.aduan.update');
+        Route::delete('aduan/{id}', [SekolahController::class, 'aduanDestroy'])->name('sekolah.aduan.destroy');
+        Route::get('aduan/map', [SekolahController::class, 'mapAduan'])->name('sekolah.aduan.map');
 
         // Resource routes
         Route::resource('ibadah', IbadahController::class);
@@ -97,7 +113,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/pasar', PasarController::class);
         Route::resource('/plesir', PlesirController::class);
         Route::resource('/dumas', DumasController::class);
-        Route::resource('/sekolah', SekolahController::class);
         Route::resource('/info', InfoController::class);
         Route::resource('/pajak', PajakController::class);
         Route::resource('/Kerja', KerjaController::class);

@@ -1,11 +1,11 @@
-@extends('admin.layouts.app')
+@extends('admin.partials.app')
 
 @section('title', 'Aduan Sekolah')
 
 @section('content')
 <div class="container mt-4">
     <div class="mb-3 text-start">
-        <a href="{{ route('admin.sekolah.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('admin.sekolah.aduan.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
         </a>
     </div>
@@ -37,7 +37,7 @@
                 <td>{{ $item->kategori_laporan }}</td>
                 <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                 <td>
-                    <form action="{{ route('admin.sekolah.update', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.sekolah.aduan.update', $item->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="d-flex">
@@ -60,7 +60,7 @@
                 </td>
                 <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 80) }}</td>
                 <td class="text-center">
-                    <form action="{{ route('admin.sekolah.destroy', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.sekolah.aduan.destroy', $item->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-sm btn-danger">Hapus</button>

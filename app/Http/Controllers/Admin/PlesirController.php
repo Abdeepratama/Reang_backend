@@ -63,16 +63,16 @@ class PlesirController extends Controller
     }
 
     public function edit($id)
-{
-    $item = Plesir::findOrFail($id);
-    $kategoriPlesir = Kategori::where('fitur', 'plesir')->get(); // ambil khusus kategori untuk fitur 'plesir'
+    {
+        $item = Plesir::findOrFail($id);
+        $kategoriPlesir = Kategori::where('fitur', 'plesir')->get(); // ambil khusus kategori untuk fitur 'plesir'
 
-    return view('admin.Plesir.tempat.edit', [
-        'item' => $item,
-        'kategoriPlesir' => $kategoriPlesir,
-        'lokasi' => [],
-    ]);
-}
+        return view('admin.Plesir.tempat.edit', [
+            'item' => $item,
+            'kategoriPlesir' => $kategoriPlesir,
+            'lokasi' => [],
+        ]);
+    }
 
     public function update(Request $request, $id)
     {
@@ -150,84 +150,116 @@ class PlesirController extends Controller
     }
 
     public function info()
-{
-    $infoItems = InfoPlesir::all();
-    return view('admin.plesir.info.index', compact('infoItems'));
-}
-
-public function createInfo()
-{
-    $kategoriPlesir = Kategori::where('fitur', 'plesir')->orderBy('nama')->get();
-    return view('admin.plesir.info.create', compact('kategoriPlesir'));
-}
-
-public function storeInfo(Request $request)
-{
-    $request->validate([
-    'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-    'judul' => 'required|string|max:255',
-    'alamat' => 'required|string|max:255',
-    'deskripsi' => 'required|string',
-    'fitur' => 'required|string|max:255',
-]);
-
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $fotoName = time() . '_' . $file->getClientOriginalName();
-        $path = $file->storeAs('foto_plesir', $fotoName, 'public');
+    {
+        $infoItems = InfoPlesir::with('kategori')->get();
+        return view('admin.plesir.info.index', compact('infoItems'));
     }
 
-    InfoPlesir::create([
-        'foto' => $path,
-        'judul' => $request->judul,
-        'alamat' => $request->alamat,
-        'rating' => $request->rating,
-        'deskripsi' => $request->deskripsi,
-        'fitur' => $request->fitur,
-    ]);
+    public function createInfo()
+    {
+        $kategoriPlesir = Kategori::where('fitur', 'plesir')
+            ->orderBy('nama')
+            ->get();
 
-    return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil disimpan.');
-}
+        $lokasi = InfoPlesir::all();
 
-public function infoEdit($id)
-{
-    $info = InfoPlesir::findOrFail($id);
-    $kategoriPlesir = Kategori::where('fitur', 'plesir')->orderBy('nama')->get();
-    return view('admin.plesir.info.edit', compact('info', 'kategoriPlesir'));
-}
+        return view('admin.plesir.info.create', [
+            'kategoriPlesir' => $kategoriPlesir,
+            'lokasi' => $lokasi,
+        ]);
+    }
 
-public function infoUpdate(Request $request, $id)
-{
-    $item = InfoPlesir::findOrFail($id);
+    public function storeInfo(Request $request)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'judul' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'fitur' => 'required|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'rating' => 'required|numeric|between:0,5',
+        ]);
 
-    $data = $request->validate([
-    'judul' => 'required',
-    'deskripsi' => 'required',
-    'alamat' => 'required',
-    'fitur' => 'required',
-    'foto' => 'nullable|image|max:2048',
-    'rating' => 'required|numeric|between:0,5',
-]);
-
-    if ($request->hasFile('foto')) {
-        if ($item->foto) {
-            Storage::disk('public')->delete($item->foto);
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $fotoName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('foto_plesir', $fotoName, 'public');
         }
 
-        $data['foto'] = $request->file('foto')->store('foto_plesir', 'public');
+        InfoPlesir::create([
+            'foto' => $path,
+            'judul' => $request->judul,
+            'alamat' => $request->alamat,
+            'rating' => $request->rating,
+            'deskripsi' => $request->deskripsi,
+            'fitur' => $request->fitur,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude
+        ]);
+
+        return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil disimpan.');
     }
 
-    $item->update($data);
+    public function infoEdit($id)
+    {
+        $info = InfoPlesir::findOrFail($id);
+        $kategoriPlesir = Kategori::where('fitur', 'plesir')->orderBy('nama')->get();
+        return view('admin.plesir.info.edit', compact('info', 'kategoriPlesir'));
+    }
 
-    return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil diperbarui.');
-}
+    public function infoUpdate(Request $request, $id)
+    {
+        $item = InfoPlesir::findOrFail($id);
 
-public function infoDestroy($id)
-{
-    $item = InfoPlesir::findOrFail($id);
-    if ($item->foto) Storage::disk('public')->delete($item->foto);
-    $item->delete();
+        $data = $request->validate([
+            'judul' => 'required',
+            'deskripsi' => 'required',
+            'alamat' => 'required',
+            'fitur' => 'required',
+            'foto' => 'nullable|image|max:2048',
+            'rating' => 'required|numeric|between:0,5',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
 
-    return back()->with('success', 'Info plesir berhasil dihapus.');
-}
+        if ($request->hasFile('foto')) {
+            if ($item->foto) {
+                Storage::disk('public')->delete($item->foto);
+            }
+
+            $data['foto'] = $request->file('foto')->store('foto_plesir', 'public');
+        }
+
+        $item->update($data);
+
+        return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil diperbarui.');
+    }
+
+    public function infoDestroy($id)
+    {
+        $item = InfoPlesir::findOrFail($id);
+        if ($item->foto) Storage::disk('public')->delete($item->foto);
+        $item->delete();
+
+        return back()->with('success', 'Info plesir berhasil dihapus.');
+    }
+
+    public function infomap()
+    {
+        $lokasi = InfoPlesir::all()->map(function ($loc) {
+            return [
+                'name' => $loc->judul,          // ganti 'name' jadi 'judul'
+                'address' => $loc->alamat,      // ganti 'address' jadi 'alamat'
+                'latitude' => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+                'fitur' => $loc->fitur,         // kalau mau tampilkan kategori/fitur
+                'rating' => $loc->rating,       // rating juga bisa ditambahkan
+            ];
+        });
+
+        return view('admin.plesir.info.map', compact('lokasi'));
+    }
 }

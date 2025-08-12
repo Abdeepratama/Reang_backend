@@ -1,19 +1,19 @@
 @extends('admin.partials.app')
 
-@section('title', 'Tambah Data Sehat')
+@section('title', 'Tambah Data Sekolah')
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">🏥 Tambah Data Sehat</h3>
+    <h3 class="mb-4">🏫 Tambah Data Sekolah</h3>
 
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.sehat.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.sekolah.tempat.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nama Tempat</label>
+                    <label for="name" class="form-label">Nama Sekolah</label>
                     <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
                 </div>
 
@@ -36,7 +36,7 @@
                     <label for="fitur" class="form-label">Kategori</label>
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
-                        @foreach($kategoriSehat as $kategori)
+                        @foreach($kategoriSekolah as $kategori)
                             <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
                                 {{ $kategori->nama }}
                             </option>
@@ -72,12 +72,12 @@
 
     const locations = @json($lokasi);
 
-    // custom icon klinik/rumah sakit
-    const sehatIcon = L.divIcon({
+    // custom icon sekolah
+    const sekolahIcon = L.divIcon({
         html: `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#E76F51" stroke="white" stroke-width="2">
-            <rect x="14" y="20" width="36" height="28" rx="4" ry="4"/>
-            <path d="M32 16 v12 M26 22 h12" stroke="white" stroke-width="4" stroke-linecap="round"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#2A9D8F" stroke="white" stroke-width="2">
+            <path d="M32 8 L2 24 L32 40 L62 24 Z" />
+            <path d="M12 28 V44 H52 V28" fill="#2A9D8F" stroke="white" stroke-width="2"/>
         </svg>`,
         className: '',
         iconSize: [48, 48],
@@ -86,7 +86,7 @@
     });
 
     locations.forEach(loc => {
-        const marker = L.marker([loc.latitude, loc.longitude], { icon: sehatIcon }).addTo(map);
+        const marker = L.marker([loc.latitude, loc.longitude], { icon: sekolahIcon }).addTo(map);
         marker.bindPopup(`
             <strong>${loc.name}</strong><br>
             <em>${loc.address}</em><br>
@@ -107,9 +107,9 @@
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const data = await res.json();
             if (data.address) {
-                namaTempat = data.address.hospital ||
-                    data.address.clinic ||
-                    data.address.pharmacy ||
+                namaTempat = data.address.school ||
+                    data.address.university ||
+                    data.address.college ||
                     data.address.building ||
                     data.address.amenity || '';
             }
@@ -123,11 +123,10 @@
         }
 
         document.getElementById('address').value = alamat;
-        document.getElementById('name').value = namaTempat;
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], { icon: sehatIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], { icon: sekolahIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
@@ -140,5 +139,4 @@
         }
     });
 </script>
-
 @endsection

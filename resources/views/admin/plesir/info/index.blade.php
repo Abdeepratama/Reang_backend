@@ -12,22 +12,24 @@
                     <div class="col-md-12">
                         <div class="card shadow">
                             <div class="card-body">
-                                <a href="{{ route('admin.plesir.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info</a>
+                                <a href="{{ route('admin.plesir.info.map') }}">🗺️ Lihat Peta</a>
+                                <a href="{{ route('admin.plesir.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info Plesir</a>
 
                                 @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
+                                    <div class="alert alert-success">{{ session('success') }}</div>
                                 @endif
 
-                                <table class="table datatables" id="infoTable">
+                                <table class="table datatables" id="plesirTable">
                                     <thead>
                                         <tr>
                                             <th>No</th>
                                             <th>Foto</th>
                                             <th>Judul</th>
                                             <th>Alamat</th>
+                                            <th>Latitude</th>
+                                            <th>Longitude</th>
+                                            <th>Fitur</th>
                                             <th>Rating</th>
-                                            <th>Kategori</th>
-                                            <th>Deskripsi</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -35,12 +37,19 @@
                                         @forelse($infoItems as $info)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td><img src="{{ asset('storage/' . $info->foto) }}" width="100" alt="Foto"></td>
+                                            <td>
+                                                @if($info->foto)
+                                                    <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ $info->alamat }}</td>
-                                            <td>{{ $info->rating }}</td>
+                                            <td>{{ $info->latitude }}</td>
+                                            <td>{{ $info->longitude }}</td>
                                             <td>{{ $info->fitur }}</td>
-                                            <td>{{ Str::limit($info->deskripsi, 50) }}</td>
+                                            <td>{{ $info->rating }}</td>
                                             <td>
                                                 <a href="{{ route('admin.plesir.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                                 <form action="{{ route('admin.plesir.info.destroy', $info->id) }}" method="POST" style="display:inline;">
@@ -52,30 +61,32 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="8" class="text-center">Belum ada info.</td>
+                                            <td colspan="9" class="text-center">Belum ada info plesir.</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
-                    </div>
-                </div> <!-- end section -->
-            </div>
-        </div>
-    </div>
+                    </div> <!-- col-md-12 -->
+                </div> <!-- row -->
+            </div> <!-- col-12 -->
+        </div> <!-- row -->
+    </div> 
 </div>
 @endsection
 
 @section('scripts')
 <script>
     $(document).ready(function() {
-        $('#infoTable').DataTable({
+        $('#plesirTable').DataTable({
             autoWidth: true,
             "lengthMenu": [
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]
-            ]
+            ],
+            "order": [[0, "asc"]] // urut No dari kecil ke besar (baru di bawah)
         });
     });
 </script>

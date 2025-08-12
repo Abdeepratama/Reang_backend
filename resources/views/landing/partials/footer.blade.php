@@ -7,7 +7,7 @@
           <span class="sitename">Selesaikan urusanmu di Indramayu dengan Wong Reang Apps</span>
         </a>
         <div class="footer-contact pt-3">
-          <p ><strong>Ayo download Wong Reang Apps</strong></p>
+          <p><strong>Ayo download Wong Reang Apps</strong></p>
           <p><strong>Email:</strong> <span>raulharahap776@gmail.com</span></p>
         </div>
         <div class="social-links d-flex mt-4">
@@ -59,87 +59,80 @@
           <button class="a11y-close" aria-label="Tutup panel" id="closeBtn">&times;</button>
         </div>
 
-        <!-- Bahasa -->
-        <div class="control-row">
-          <div class="lang-toggle" aria-label="Pilih bahasa">
-            <button data-lang="id" class="active" aria-pressed="true">Indonesia</button>
-            <button data-lang="en" aria-pressed="false">Inggris</button>
-          </div>
-        </div>
+        <!-- 🔽 Pindahkan contenttoolbar_disabilitas ke sini -->
+        <div class="contenttoolbar_disabilitas" id="groupcekmenu">
+          <div class="titletools" id="taccessbility">Sarana</div>
 
-        <div class="separator"></div>
-
-        <!-- Mode Suara -->
-        <div class="section">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span class="icon" aria-hidden="true">🔊</span>
-            <strong class="small" id="voice-label">Moda Suara</strong>
-          </div>
-          <div class="voice-controls">
-            <button class="btn" id="startVoice" aria-label="Mulai membaca">▶️ Baca</button>
-            <button class="btn" id="pauseVoice" aria-label="Jeda" disabled>⏸️ Jeda</button>
-            <button class="btn" id="stopVoice" aria-label="Hentikan" disabled>⏹️ Hentikan</button>
-          </div>
-          <div style="margin-top:4px; font-size:11px;">
-            <label for="voice-rate">Kecepatan:</label>
-            <input type="range" id="voice-rate" min="0.5" max="2" step="0.1" value="1">
-            <span id="rateVal">1.0</span>
-          </div>
-        </div>
-
-        <div class="separator"></div>
-
-        <!-- Teks & Tema -->
-        <div class="section">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span class="icon" aria-hidden="true">🔍</span>
-            <strong class="small">Teks & Tema</strong>
-          </div>
-
-          <div class="control-row">
-            <div style="display:flex; gap:6px;">
-              <button class="btn" data-action="increase-text">Perbesar Teks</button>
-              <button class="btn" data-action="decrease-text">Perkecil Teks</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn" data-toggle="grayscale">Skala Abu - Abu</button>
-              <button class="btn" data-toggle="high-contrast">Kontras Tinggi</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn" data-toggle="dark-mode">Latar Gelap</button>
-              <button class="btn" data-toggle="light-mode">Latar Terang</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn" data-toggle="readable-font">Tulisan Dapat Dibaca</button>
-              <button class="btn" data-toggle="underline-links">Garis Bawah Tautan</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn" data-toggle="spacing-wide">Rata Tulisan</button>
+          <div class="btn-container">
+            <div class="mycheckbox switch btn-color-mode-switch" id="tmulticheckboxlang">
+              <input type="checkbox" id="checklang" value="1">
+              <label id="tmycheckbox" for="checklang" data-on="Inggris" data-off="Indonesia" class="btn-color-mode-switch-inner"></label>
             </div>
           </div>
-        </div>
 
-        <div class="separator"></div>
+          <div class="bodytools">
+            <!-- Semua subtitletools dari kode kamu -->
+            <div class="subtitletools" id="webspeach">
+              <div class="flexrowdata">
+                <span class="disabilitas-icon"> ... ikon SVG ... </span>
+                &nbsp;&nbsp;<div id="twebspeach" class="aksestexttools">Moda Suara</div>
+              </div>
+            </div>
+            <div class="voice-controls">
+              <button class="btn" id="startVoice" aria-label="Mulai membaca">▶️ Baca</button>
+              <button class="btn" id="pauseVoice" aria-label="Jeda" disabled>⏸️ Jeda</button>
+              <button class="btn" id="stopVoice" aria-label="Hentikan" disabled>⏹️ Hentikan</button>
+            </div>
 
-        <!-- Reset -->
-        <div class="section">
-          <button class="btn full" id="resetBtn">Atur Ulang</button>
+            <div class="separator"></div>
+
+            <!-- Teks & Tema -->
+            <div class="section">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="icon" aria-hidden="true">🔍</span>
+                <strong class="small">Teks & Tema</strong>
+              </div>
+
+              <div class="control-row">
+                <div style="display:flex; gap:6px;">
+                  <button class="btn" data-action="increase-text">Perbesar Teks</button>
+                  <button class="btn" data-action="decrease-text">Perkecil Teks</button>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn" data-toggle="grayscale">Skala Abu - Abu</button>
+                  <button class="btn" data-toggle="high-contrast">Kontras Tinggi</button>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn" data-toggle="dark-mode">Latar Gelap</button>
+                  <button class="btn" data-toggle="light-mode">Latar Terang</button>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn" data-toggle="spacing-wide">Rata Tulisan</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="separator"></div>
+
+            <!-- Reset -->
+            <div class="section">
+              <button class="btn full" id="resetBtn">Atur Ulang</button>
+            </div>
+          </div>
+
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <div class="container copyright text-center mt-4">
-    <p>© <span>Copyright</span> <strong class="px-1 sitename">Bootslander</strong> <span>All Rights Reserved</span></p>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you've purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed By <a href="https://themewagon.com">ThemeWagon</a>
-    </div>
-  </div>
+      <div class="container copyright text-center mt-4">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">Bootslander</strong> <span>All Rights Reserved</span></p>
+        <div class="credits">
+          <!-- All the links in the footer should remain intact. -->
+          <!-- You can delete the links only if you've purchased the pro version. -->
+          <!-- Licensing information: https://bootstrapmade.com/license/ -->
+          <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed By <a href="https://themewagon.com">ThemeWagon</a>
+        </div>
+      </div>
 
 </footer>
 
@@ -456,17 +449,26 @@
     speakText(text);
   }
 
-  document.addEventListener('selectionchange', () => {
-    clearTimeout(selectionTimer);
-    selectionTimer = setTimeout(handleSelectionChange, 150);
+  document.addEventListener("mouseup", function() {
+    const selectedText = window.getSelection().toString().trim();
+
+    if (selectedText) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(selectedText);
+        utterance.lang = 'id-ID'; // Bahasa Indonesia
+        speechSynthesis.cancel(); // hentikan pembacaan sebelumnya
+        speechSynthesis.speak(utterance);
+      } else {
+        console.warn("Browser tidak mendukung Speech Synthesis API.");
+      }
+    }
   });
 
   // panel open/close & focus trap
   function focusableIn(el) {
     return el ?
       Array.from(el.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])'))
-      .filter(e => !e.hasAttribute('disabled')) :
-      [];
+      .filter(e => !e.hasAttribute('disabled')) : [];
   }
 
   function trapFocus(e) {
@@ -542,8 +544,7 @@
     publik: {
       title: 'Informasi & Pelaporan Publik',
       desc: 'Akses berita terbaru, informasi penting daerah, dan laporkan masalah publik secara cepat.',
-      features: [
-        {
+      features: [{
           iconClass: 'bi bi-exclamation-circle',
           name: 'Dumas-Yu',
           subtitle: 'Segala bentuk pengaduan dari masyarakat',
@@ -560,8 +561,7 @@
     pelayanan: {
       title: 'Kesehatan & Pendidikan',
       desc: 'Cari fasilitas kesehatan, layanan darurat, dan informasi sekolah atau pelatihan terdekat.',
-      features: [
-        {
+      features: [{
           iconClass: 'bi bi-hospital',
           name: 'Sehat-Yu',
           subtitle: 'Cari layanan kesehatan di sekitar kamu',
@@ -578,8 +578,7 @@
     sosial: {
       title: 'Sosial & Ekonomi',
       desc: 'Temukan lowongan kerja, buat CV online, dan ikuti pelatihan pengembangan diri.',
-      features: [
-        {
+      features: [{
           iconClass: 'bi bi-journal-medical',
           name: 'Pajak-Yu',
           subtitle: 'Informasi pengecekan pajak dan pembayarannya',
@@ -601,8 +600,7 @@
     pariwisata: {
       title: 'Pariwisata & Keagamaan',
       desc: 'Jelajahi destinasi wisata, temukan agenda keagamaan, dan promosi usaha lokal.',
-      features: [
-        {
+      features: [{
           iconClass: 'bi bi-geo-alt',
           name: 'Plesir-Yu',
           subtitle: 'Rekomendasi tempat wisata menarik',
@@ -619,8 +617,7 @@
     lainnya: {
       title: 'Layanan Publik Lainnya',
       desc: 'Kelola keuangan, belanja kebutuhan harian, dan akses layanan umum lainnya.',
-      features: [
-        {
+      features: [{
           iconClass: 'bi bi-card-list',
           name: 'Adminduk-Yu',
           subtitle: 'Informasi pembuatan KTP elektronik dan lainnya',
@@ -684,7 +681,7 @@
   }
 
   // Inisialisasi awal (role default "publik")
- renderHeroCard('publik');
+  renderHeroCard('publik');
 
   // Event listener tab
   document.querySelectorAll('.role-tabs .tab').forEach(btn => {
@@ -704,8 +701,8 @@
 </script>
 
 <script>
-  document.querySelectorAll('.faq-question').forEach(function (question) {
-    question.addEventListener('click', function () {
+  document.querySelectorAll('.faq-question').forEach(function(question) {
+    question.addEventListener('click', function() {
       const answer = this.nextElementSibling;
 
       // Toggle tampilan jawaban

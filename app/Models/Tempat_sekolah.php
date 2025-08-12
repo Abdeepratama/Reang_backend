@@ -5,26 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class InfoKeagamaan extends Model
+class Tempat_sekolah extends Model
 {
-    protected $table = 'info_keagamaans';
+    // Nama tabel di database
+    protected $table = 'tempat_sekolahs';
+
+    public $timestamps = false;  
 
     protected $fillable = [
-        'foto',
-        'judul',
-        'tanggal',
-        'waktu',
-        'deskripsi',
-        'lokasi',
-        'alamat',
-        'fitur',
+        'name',
         'latitude',
-        'longitude'
+        'longitude',
+        'address',
+        'fitur',
+        'foto'
     ];
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'fitur', 'id');
+        return $this->belongsTo(Kategori::class, 'kategori_id');
     }
 
     public function getPhotoUrlAttribute()
@@ -33,6 +32,6 @@ class InfoKeagamaan extends Model
             return Storage::url($this->foto);
         }
 
-        return asset('images/default-sehat.jpg');
+        return asset('images/default-sekolah.jpg');
     }
 }

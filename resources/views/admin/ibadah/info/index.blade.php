@@ -14,6 +14,7 @@
                 <div class="col-md-12">
                     <div class="card shadow">
                     <div class="card-body">
+                        <a href="{{ route('admin.ibadah.info.map') }}">Lihat Peta</a>
                         <a href="{{ route('admin.ibadah.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info</a>
 
                         @if(session('success'))
@@ -31,6 +32,8 @@
                                     <th>Lokasi</th>
                                     <th>Kategori</th>
                                     <th>Deskripsi</th>
+                                    <th>Latitude</th>
+                                    <th>Longitude</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -45,6 +48,8 @@
                                     <td>{{ $info->lokasi }}</td>
                                     <td>{{ $info->fitur }}</td>
                                     <td>{{ Str::limit($info->deskripsi, 50) }}</td>
+                                    <td>{{ $info->latitude }}</td>
+                                    <td>{{ $info->longitude }}</td>
                                     <td>
                                         <a href="{{ route('admin.ibadah.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                         <form action="{{ route('admin.ibadah.info.destroy', $info->id) }}" method="POST" style="display:inline;">

@@ -34,21 +34,21 @@
                 </div>
 
                 <select name="fitur" class="form-control" required>
-    <option value="">Pilih Kategori</option>
-    @foreach($kategoriPlesir as $kategori)
-        <option value="{{ $kategori->nama }}" {{ $item->fitur == $kategori->nama ? 'selected' : '' }}>
-            {{ $kategori->nama }}
-        </option>
-    @endforeach
-</select>
+                    <option value="">Pilih Kategori</option>
+                    @foreach($kategoriPlesir as $kategori)
+                    <option value="{{ $kategori->nama }}" {{ $item->fitur == $kategori->nama ? 'selected' : '' }}>
+                        {{ $kategori->nama }}
+                    </option>
+                    @endforeach
+                </select>
 
                 <div class="mb-3">
                     <label for="foto" class="form-label">Foto</label>
                     <div class="mb-2">
                         @if($item->foto)
-                            <img id="currentPreview" src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                        <img id="currentPreview" src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
                         @else
-                            <img id="currentPreview" src="{{ asset('images/default-plesir.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                        <img id="currentPreview" src="{{ asset('images/default-plesir.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
                         @endif
                     </div>
                     <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">

@@ -177,23 +177,28 @@ class IbadahController extends Controller
             ->with('success', 'Lokasi berhasil diperbarui!');
     }
 
-    public function info()
+    public function infoIndex()
     {
         $infoItems = InfoKeagamaan::all(); // gunakan model yang benar
         return view('admin.ibadah.info.index', compact('infoItems'));
     }
 
-    public function infoIndex()
-    {
-        $infoItems = InfoKeagamaan::all();
-        return view('admin.ibadah.info.index', compact('infoItems')); // ganti jadi infoItems
-    }
-
     public function createInfo()
     {
-        $kategoriIbadah = Kategori::all();
+        $kategoriIbadah = Kategori::where('fitur', 'ibadah')->get();
 
-        return view('admin.ibadah.info.create', compact('kategoriIbadah'));
+        $lokasi = InfoKeagamaan::all()->map(function ($loc) {
+            return [
+                'name' => $loc->judul,
+                'address' => $loc->alamat,
+                'latitude' => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+                'fitur' => $loc->fitur,
+            ];
+        });
+
+        return view('admin.ibadah.info.create', compact('kategoriIbadah', 'lokasi'));
     }
 
     public function storeInfo(Request $request)
@@ -207,6 +212,8 @@ class IbadahController extends Controller
             'lokasi' => 'required|string',
             'alamat' => 'required|string',
             'fitur' => 'required|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         // Upload foto ke disk publik di folder 'foto_ibadah'
@@ -226,6 +233,8 @@ class IbadahController extends Controller
             'lokasi' => $request->lokasi,
             'alamat' => $request->alamat,
             'fitur' => $request->fitur,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude
         ]);
 
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info keagamaan berhasil disimpan.');
@@ -251,6 +260,8 @@ class IbadahController extends Controller
             'alamat' => 'required',
             'fitur' => 'required',
             'foto' => 'nullable|image|max:2048',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -275,5 +286,22 @@ class IbadahController extends Controller
         $item->delete();
 
         return back()->with('success', 'Info Keagamaan berhasil dihapus');
+    }
+
+    public function infomap()
+    {
+        $lokasi = InfoKeagamaan::all()->map(function ($loc) {
+            return [
+                'judul' => $loc->judul,          // ganti 'name' jadi 'judul'
+                'alamat' => $loc->alamat,      // ganti 'address' jadi 'alamat'
+                'latitude' => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+                'fitur' => $loc->fitur,         // kalau mau tampilkan kategori/fitur
+                'rating' => $loc->rating,       // rating juga bisa ditambahkan
+            ];
+        });
+
+        return view('admin.ibadah.info.map', compact('lokasi'));
     }
 }

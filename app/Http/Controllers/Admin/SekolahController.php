@@ -3,98 +3,226 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Traits\CRUDHelper;
 use App\Models\Sekolah;
+use App\Models\Kategori;
+use App\Models\Tempat_sekolah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class SekolahController extends Controller
 {
-    use CRUDHelper;
+    /**
+     * LIST TEMPAT SEKOLAH
+     */
+    public function indexTempat()
+{
+    $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
+    $items = Tempat_sekolah::all(); // ini yang dikirim ke blade sebagai $items
 
-    public function __construct()
+    return view('admin.sekolah.tempat.index', compact('items', 'kategoriSekolah'));
+}
+
+    /**
+     * FORM TAMBAH TEMPAT SEKOLAH
+     */
+    Public function createTempat()
+{
+    $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
+     $lokasi = Tempat_sekolah::all(); // untuk peta
+
+    return view('admin.sekolah.tempat.create', compact('kategoriSekolah', 'lokasi'));
+}
+
+    /**
+     * SIMPAN TEMPAT SEKOLAH
+     */
+    Public function storeTempat(Request $request)
     {
-        $this->model = Sekolah::class;
-        $this->routePrefix = 'sekolah'; // sesuai route name: admin.sekolah.aduan.index
-        $this->viewPrefix = 'sekolah';  // views/admin/sekolah/aduan/
-        $this->aktivitasTipe = 'Aduan Sekolah';
-        $this->aktivitasCreateMessage = 'Aduan sekolah baru telah ditambahkan';
+        $validated = $request->validate([
+            'name'      => 'required|string',
+            'address'   => 'required|string',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'foto'      => 'nullable|image|max:2048',
+            'fitur' => 'required|string',
+        ]);
 
-        $this->validationRules = [
-            'jenis_laporan'     => 'required',
-            'kategori_laporan'  => 'required',
-            'lokasi_laporan'    => 'nullable|string',
-            'bukti_laporan'     => 'nullable|image|max:2048',
-            'deskripsi'         => 'required',
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('sekolah_foto', 'public');
+        }
+
+        Tempat_sekolah::create($validated);
+
+        return redirect()->route('admin.sekolah.tempat.index')
+            ->with('success', 'Tempat sekolah berhasil ditambahkan.');
+    }
+
+    /**
+     * FORM EDIT TEMPAT SEKOLAH
+     */
+    Public function editTempat($id)
+    {
+        $item = Tempat_sekolah::findOrFail($id);
+        $kategoriSekolah = Kategori::where('fitur', 'sekolah')->get();
+        return view('admin.sekolah.tempat.edit', compact('item', 'kategoriSekolah'));
+    }
+
+    /**
+     * UPDATE TEMPAT SEKOLAH
+     */
+    Public function updateTempat(Request $request, $id)
+    {
+        $sekolah = Tempat_sekolah::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'      => 'required|string',
+            'address'   => 'required|string',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'foto'      => 'nullable|image|max:2048',
+            'fitur' => 'required|string',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            if ($sekolah->foto && Storage::disk('public')->exists($sekolah->foto)) {
+                Storage::disk('public')->delete($sekolah->foto);
+            }
+            $validated['foto'] = $request->file('foto')->store('sekolah_foto', 'public');
+        }
+
+        $sekolah->update($validated);
+
+        return redirect()->route('admin.sekolah.tempat.index')
+            ->with('success', 'Tempat sekolah berhasil diperbarui.');
+    }
+
+    /**
+     * MAP TEMPAT SEKOLAH
+     */
+    public function mapTempat()
+{
+    $lokasi = Tempat_sekolah::all()->map(function ($loc) {
+        return [
+            'name' => $loc->name,
+            'address' => $loc->address,
+            'latitude' => $loc->latitude,
+            'longitude' => $loc->longitude,
+            'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
         ];
-    }
-    public function index()
-    {
-        return view('admin.sekolah.index');
-    }
+    });
 
-    public function aduanIndex()
+    return view('admin.sekolah.tempat.map', compact('lokasi'));
+}
+
+    // ======================= ADUAN SEKOLAH =======================
+
+    /**
+     * LIST ADUAN SEKOLAH
+     */
+    Public function aduanindex()
     {
-        $items = Sekolah::latest()->get();
+        $items = Sekolah::whereNotNull('jenis_laporan')->get();
         return view('admin.sekolah.aduan.index', compact('items'));
     }
 
-
-    public function store(Request $request)
+    /**
+     * FORM TAMBAH ADUAN SEKOLAH
+     */
+    public function createAduan()
     {
-        $validated = $request->validate($this->validationRules);
+        $kategoriAduan = Kategori::where('fitur', 'aduan-sekolah')->orderBy('nama')->get();
+        return view('admin.sekolah.aduan.create', compact('kategoriAduan'));
+    }
+
+    /**
+     * SIMPAN ADUAN SEKOLAH
+     */
+    public function storeAduan(Request $request)
+    {
+        $validated = $request->validate([
+            'jenis_laporan'  => 'required|string',
+            'bukti_laporan'  => 'nullable|image|max:2048',
+            'lokasi_laporan' => 'required|string',
+            'kategori_laporan' => 'required|string',
+            'deskripsi'      => 'required|string',
+            'pernyataan'     => 'required|boolean',
+        ]);
 
         if ($request->hasFile('bukti_laporan')) {
-            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('bukti_sekolah', 'public');
+            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('aduan_sekolah', 'public');
         }
 
-        $aduan = Sekolah::create($validated);
+        Sekolah::create($validated);
 
-        // Catat aktivitas jika perlu
-        $this->logAktivitas($this->aktivitasTipe, $this->aktivitasCreateMessage);
-
-        return response()->json([
-            'message' => 'Aduan sekolah berhasil ditambahkan.',
-            'data' => $aduan
-        ]);
+        return redirect()->route('admin.sekolah.aduan.index')
+            ->with('success', 'Aduan sekolah berhasil ditambahkan.');
     }
 
-    public function update(Request $request, $id)
-    {
-        // Validasi hanya status (jika hanya ubah status)
-        $request->validate([
-            'status' => 'required|in:menunggu,diproses,selesai,ditolak',
-        ]);
-
-        // Ambil data berdasarkan ID
-        $dumas = Sekolah::findOrFail($id);
-
-        // Update status
-        $dumas->status = $request->status;
-        $dumas->save();
-
-        // Redirect balik ke halaman sebelumnya dengan pesan sukses
-        return redirect()->back()->with('success', 'Status aduan berhasil diperbarui.');
-    }
-
-    public function destroy($id)
+    /**
+     * FORM EDIT ADUAN SEKOLAH
+     */
+    public function editAduan($id)
     {
         $item = Sekolah::findOrFail($id);
+        $kategoriAduan = Kategori::where('fitur', 'aduan-sekolah')->get();
+        return view('admin.sekolah.aduan.edit', compact('item', 'kategoriAduan'));
+    }
 
-        // Hapus file bukti jika ada
-        if ($item->bukti_laporan && Storage::disk('public')->exists($item->bukti_laporan)) {
-            Storage::disk('public')->delete($item->bukti_laporan);
+    /**
+     * UPDATE ADUAN SEKOLAH
+     */
+    public function updateAduan(Request $request, $id)
+    {
+        $aduan = Sekolah::findOrFail($id);
+
+        $validated = $request->validate([
+            'jenis_laporan'  => 'required|string',
+            'bukti_laporan'  => 'nullable|image|max:2048',
+            'lokasi_laporan' => 'required|string',
+            'kategori_laporan' => 'required|string',
+            'deskripsi'      => 'required|string',
+            'pernyataan'     => 'required|boolean',
+        ]);
+
+        if ($request->hasFile('bukti_laporan')) {
+            if ($aduan->bukti_laporan && Storage::disk('public')->exists($aduan->bukti_laporan)) {
+                Storage::disk('public')->delete($aduan->bukti_laporan);
+            }
+            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('aduan_sekolah', 'public');
         }
 
-        $item->delete();
+        $aduan->update($validated);
 
-        // Simpan aktivitas & notifikasi jika diperlukan
-        $this->logAktivitas("Menghapus Aduan Sekolah");
-        $this->logNotifikasi("Aduan Sekolah telah dihapus.");
-
-        // Redirect ke halaman index dengan pesan sukses
-        return redirect()->route('admin.sekolah.index')
-            ->with('success', 'Aduan berhasil dihapus.');
+        return redirect()->route('admin.sekolah.aduan.index')
+            ->with('success', 'Aduan sekolah berhasil diperbarui.');
     }
+
+    public function tempatDestroy($id)
+{
+    $item = Sekolah::whereNull('jenis_laporan')->findOrFail($id);
+
+    if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+        Storage::disk('public')->delete($item->foto);
+    }
+
+    $item->delete();
+
+    return redirect()->route('admin.sekolah.tempat.index')
+        ->with('success', 'Tempat sekolah berhasil dihapus.');
+}
+
+public function aduanDestroy($id)
+{
+    $item = Sekolah::whereNotNull('jenis_laporan')->findOrFail($id);
+
+    if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+        Storage::disk('public')->delete($item->foto);
+    }
+
+    $item->delete();
+
+    return redirect()->route('admin.sekolah.aduan.index')
+        ->with('success', 'Aduan sekolah berhasil dihapus.');
+}
+
 }
