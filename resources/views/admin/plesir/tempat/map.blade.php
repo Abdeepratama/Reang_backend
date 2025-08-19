@@ -1,68 +1,216 @@
-@extends('admin.partials.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peta Lokasi</title>
 
-@section('title', 'Peta Info Plesir')
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-@section('content')
-<div class="container mt-4">
-    <h2>Peta Info Plesir</h2>
-    <div id="peta" style="height: 600px; border-radius: 10px; border: 1px solid #ccc;"></div>
-</div>
-@endsection
-
-@section('scripts')
-<script>
-    const lokasi = @json($lokasi);
-
-    const map = L.map('peta').setView([-2.5, 118], 5);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    const iconInfo = L.divIcon({
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="36" height="36" fill="#e76f51" stroke="white" stroke-width="2">
-            <circle cx="32" cy="32" r="28" />
-            <text x="32" y="40" text-anchor="middle" font-size="28" fill="white" font-family="Arial" font-weight="bold">i</text>
-        </svg>`,
-        className: '',
-        iconSize: [36, 36],
-        iconAnchor: [18, 36],
-        popupAnchor: [0, -36]
-    });
-
-    lokasi.forEach(item => {
-        const lat = parseFloat(item.latitude);
-        const lng = parseFloat(item.longitude);
-
-        if (!isNaN(lat) && !isNaN(lng)) {
-            const marker = L.marker([lat, lng], { icon: iconInfo }).addTo(map);
-
-            let fotoHtml = item.foto 
-                ? `<img src="${item.foto}" alt="Foto ${item.name}" style="max-width:150px; border-radius:6px; margin-top:5px;">`
-                : '';
-
-            const popupContent = `
-                <strong>${item.name}</strong><br>
-                <em>${item.address || '-'}</em><br>
-                ${fotoHtml}
-                <br>Fitur: ${item.fitur || '-'}
-                <br>Rating: ${item.rating ?? '-'}
-            `;
-
-            marker.bindPopup(popupContent);
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
         }
+
+        #mapContainer {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        #overlay {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+
+        #overlay input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background: #f2f2f2;
+        }
+
+        #peta {
+            flex-grow: 1;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="mapContainer">
+    <div id="overlay">
+        <input type="text" id="searchInput" placeholder="Cari lokasi...">
+        <div id="resultList"></div>
+    </div>
+    <div id="peta"></div>
+</div>
+
+<script>
+  function debounce(fn, delay) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  const map = L.map('peta').setView([-6.326511, 108.3202685], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // ambil data dari Laravel
+  const lokasi = @json($lokasi);
+
+  const resultList = document.getElementById('resultList');
+  const searchInput = document.getElementById('searchInput');
+
+  // hanya 1 icon universal 📍
+  const locationIcon = L.divIcon({
+    html: `<div style="font-size:28px; line-height:1;">📍</div>`,
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
+  let allMarkers = [];
+  let tempMarker = null;
+
+  async function cariEksternal(keyword) {
+    if (!keyword || keyword.trim().length < 3) return [];
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(keyword)}&limit=8&addressdetails=1`;
+    try {
+      const res = await fetch(url, {
+        headers: { 'Accept-Language': 'id' }
+      });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.map(d => {
+        const name = d.display_name.split(',')[0];
+        return {
+          name,
+          address: d.display_name,
+          latitude: d.lat,
+          longitude: d.lon,
+          eksternal: true
+        };
+      });
+    } catch (e) {
+      console.warn('gagal cari eksternal', e);
+      return [];
+    }
+  }
+
+  function distanceMeters(lat1, lon1, lat2, lon2) {
+    const toRad = x => x * Math.PI / 180;
+    const R = 6371000;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  async function tampilkanHasil(keyword) {
+    resultList.innerHTML = '';
+
+    const dbFiltered = lokasi.filter(loc =>
+      loc.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      (loc.address && loc.address.toLowerCase().includes(keyword.toLowerCase()))
+    ).map(loc => ({ ...loc, eksternal: false }));
+
+    const eksternalRaw = await cariEksternal(keyword);
+
+    const eksternal = eksternalRaw.filter(ext => {
+      return !dbFiltered.some(db => {
+        if (db.name.toLowerCase() === ext.name.toLowerCase()) return true;
+        const dist = distanceMeters(
+          parseFloat(db.latitude),
+          parseFloat(db.longitude),
+          parseFloat(ext.latitude),
+          parseFloat(ext.longitude)
+        );
+        return dist < 30;
+      });
     });
 
-    // Zoom agar semua marker terlihat
-    const group = new L.featureGroup(
-        lokasi
-        .filter(item => !isNaN(parseFloat(item.latitude)) && !isNaN(parseFloat(item.longitude)))
-        .map(item => L.marker([parseFloat(item.latitude), parseFloat(item.longitude)]))
-    );
+    const merged = [...dbFiltered, ...eksternal];
 
-    if(group.getLayers().length > 0){
-        map.fitBounds(group.getBounds().pad(0.2));
-    }
+    allMarkers.forEach(obj => map.removeLayer(obj.marker));
+    allMarkers = [];
+
+    dbFiltered.forEach(loc => {
+      const marker = L.marker([loc.latitude, loc.longitude], { icon: locationIcon }).addTo(map);
+      marker.bindPopup(`
+        <strong>${loc.name}</strong><br>
+        ${loc.address ? `<em>${loc.address}</em><br>` : ''}
+        ${loc.foto ? `<img src="${loc.foto}" width="100%" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
+      `);
+      allMarkers.push({ marker, data: loc });
+    });
+
+    eksternal.forEach(loc => {
+      const marker = L.marker([loc.latitude, loc.longitude], { icon: locationIcon }).addTo(map);
+      marker.bindPopup(`
+        <strong>${loc.name}</strong><br>
+        ${loc.address ? `<em>${loc.address}</em><br>` : ''}
+        <small>(hasil pencarian umum)</small>
+      `);
+      allMarkers.push({ marker, data: loc });
+    });
+
+    merged.forEach(loc => {
+      const item = document.createElement('div');
+      item.className = 'result-item';
+      item.innerHTML = `<strong>${loc.name}</strong><br><small>${loc.address || ''}</small>` + (loc.eksternal ? ' <em>(lainnya)</em>' : '');
+      item.onclick = () => {
+        const lat = parseFloat(loc.latitude);
+        const lng = parseFloat(loc.longitude);
+        map.setView([lat, lng], 17);
+        if (tempMarker) map.removeLayer(tempMarker);
+        tempMarker = L.marker([lat, lng], { icon: locationIcon }).addTo(map);
+        tempMarker.bindPopup(`<b>${loc.name}</b><br>${loc.address || ''}` + (loc.eksternal ? ' <em>(lainnya)</em>' : '')).openPopup();
+        setTimeout(() => {
+          if (tempMarker) {
+            map.removeLayer(tempMarker);
+            tempMarker = null;
+          }
+        }, 5000);
+      };
+      resultList.appendChild(item);
+    });
+  }
+
+  tampilkanHasil('');
+
+  searchInput.addEventListener('input', debounce(() => {
+    tampilkanHasil(searchInput.value.trim());
+  }, 300));
 </script>
-@endsection
+
+</body>
+</html>

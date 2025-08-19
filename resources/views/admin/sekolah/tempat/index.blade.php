@@ -14,9 +14,10 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table datatables" id="sekolahTable">
-        <thead>
+    <table class="table datatables" id="infoTable">
+        <thead class="table-dark">
             <tr>
+                <th>No</th>
                 <th>Nama Sekolah</th>
                 <th>Alamat</th>
                 <th>Latitude</th>
@@ -29,6 +30,7 @@
         <tbody>
             @forelse($items as $item)
                 <tr>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->name }}</td>
                     <td>{{ $item->address }}</td>
                     <td>{{ $item->latitude }}</td>

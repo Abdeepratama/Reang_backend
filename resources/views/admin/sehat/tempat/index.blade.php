@@ -15,8 +15,9 @@
     @endif
 
     <table class="table datatables" id="infoTable">
-        <thead>
+        <thead class="table-dark">
             <tr>
+                <th>No</th>
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Latitude</th>
@@ -29,6 +30,7 @@
         <tbody>
             @forelse($items as $item)
                 <tr>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->name }}</td>
                     <td>{{ $item->address }}</td>
                     <td>{{ $item->latitude }}</td>

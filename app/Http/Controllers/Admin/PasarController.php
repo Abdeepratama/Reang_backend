@@ -115,7 +115,7 @@ class PasarController extends Controller
                 'address' => $loc->address,
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
-                // pastikan sudah menjalankan `php artisan storage:link`
+                'fitur'     => $loc->fitur,
                 'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
             ];
         });

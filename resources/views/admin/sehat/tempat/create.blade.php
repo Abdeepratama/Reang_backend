@@ -19,12 +19,12 @@
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required readonly>
+                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required readonly>
+                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">

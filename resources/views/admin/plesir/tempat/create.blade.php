@@ -19,17 +19,20 @@
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required readonly>
+                    <input type="text" id="latitude" name="latitude" class="form-control" 
+                           value="{{ old('latitude', $latitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required readonly>
+                    <input type="text" id="longitude" name="longitude" class="form-control" 
+                           value="{{ old('longitude', $longitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Alamat</label>
-                    <input type="text" id="address" name="address" class="form-control" value="{{ old('address', $alamat ?? '') }}" required>
+                    <input type="text" id="address" name="address" class="form-control" 
+                           value="{{ old('address', $alamat ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -55,7 +58,7 @@
 
         <!-- Map -->
         <div class="col-md-8">
-            <label class="form-label">Klik pada Peta untuk memilih lokasi</label>
+            <label class="form-label">Klik pada Peta atau isi manual Latitude & Longitude</label>
             <div id="peta" style="height: 300px; border-radius: 10px; border: 1px solid #ccc;"></div>
         </div>
     </div>
@@ -74,62 +77,91 @@
 
     const placeIcon = L.divIcon({
         html: `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#E76F51" stroke="white" stroke-width="2">
-            <path d="M32 12 L12 32 H20 V52 H44 V32 H52 Z"/>
-            <circle cx="32" cy="40" r="5" fill="white"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="36" height="36" fill="#E76F51" stroke="white" stroke-width="2">
+            <path d="M32 4C20 4 10 14 10 26c0 12 22 34 22 34s22-22 22-34C54 14 44 4 32 4z"/>
+            <circle cx="32" cy="26" r="6" fill="white"/>
         </svg>`,
         className: '',
-        iconSize: [48, 48],
-        iconAnchor: [24, 48],
-        popupAnchor: [0, -48]
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -36]
     });
 
+    // tampilkan marker dari database
     locations.forEach(loc => {
         const marker = L.marker([loc.latitude, loc.longitude], { icon: placeIcon }).addTo(map);
         marker.bindPopup(`
             <strong>${loc.name}</strong><br>
             <em>${loc.address}</em><br>
-            ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
+            ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}" 
+            onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
         `);
     });
 
+    // === Klik peta untuk isi otomatis ===
     map.on('click', async function(e) {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
+        setLatLng(lat, lng, true);
+    });
+
+    // === Fungsi isi LatLng & marker ===
+    async function setLatLng(lat, lng, fetchAddress = false) {
         document.getElementById('latitude').value = lat;
         document.getElementById('longitude').value = lng;
 
-        let alamat = 'Alamat tidak ditemukan';
-        let namaTempat = '';
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-            const data = await res.json();
-            if (data.address) {
-                namaTempat = data.address.tourism ||
-                    data.address.attraction ||
-                    data.address.building ||
-                    data.address.natural ||
-                    data.address.amenity || '';
+        let alamat = document.getElementById('address').value;
+        let namaTempat = document.getElementById('name').value;
+
+        if (fetchAddress) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                const data = await res.json();
+                if (data.address) {
+                    namaTempat = data.address.tourism ||
+                        data.address.attraction ||
+                        data.address.building ||
+                        data.address.natural ||
+                        data.address.amenity || '';
+                }
+
+                if (!namaTempat && data.display_name) {
+                    namaTempat = data.display_name.split(',')[0];
+                }
+                alamat = data.display_name || alamat;
+            } catch (err) {
+                console.error('Gagal ambil alamat:', err);
             }
 
-            if (!namaTempat && data.display_name) {
-                namaTempat = data.display_name.split(',')[0];
+            document.getElementById('address').value = alamat;
+            if (!document.getElementById('name').value) {
+                document.getElementById('name').value = namaTempat;
             }
-            alamat = data.display_name || alamat;
-        } catch (err) {
-            console.error('Gagal ambil alamat:', err);
         }
-
-        document.getElementById('address').value = alamat;
-        document.getElementById('name').value = namaTempat;
 
         if (clickMarker) map.removeLayer(clickMarker);
 
         clickMarker = L.marker([lat, lng], { icon: placeIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
+
+        map.setView([lat, lng], 15);
+    }
+
+    // === Update marker kalau lat/lng diisi manual ===
+    document.getElementById('latitude').addEventListener('change', () => {
+        const lat = parseFloat(document.getElementById('latitude').value);
+        const lng = parseFloat(document.getElementById('longitude').value);
+        if (!isNaN(lat) && !isNaN(lng)) setLatLng(lat, lng, true);
     });
 
+    document.getElementById('longitude').addEventListener('change', () => {
+        const lat = parseFloat(document.getElementById('latitude').value);
+        const lng = parseFloat(document.getElementById('longitude').value);
+        if (!isNaN(lat) && !isNaN(lng)) setLatLng(lat, lng, true);
+    });
+
+    // Preview Foto
     document.getElementById('fotoInput').addEventListener('change', function () {
         const [file] = this.files;
         if (file) {

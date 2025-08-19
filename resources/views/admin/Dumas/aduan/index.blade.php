@@ -32,7 +32,7 @@
         <tbody>
             @foreach($items as $i => $item)
             <tr>
-                <td>{{ $i + 1 }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $item->jenis_laporan }}</td>
                 <td>{{ $item->kategori_laporan }}</td>
                 <td>{{ $item->lokasi_laporan ?? '-' }}</td>

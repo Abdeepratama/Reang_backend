@@ -19,12 +19,14 @@
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required readonly>
+                    <input type="text" id="latitude" name="latitude" class="form-control"
+                           value="{{ old('latitude', $latitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required readonly>
+                    <input type="text" id="longitude" name="longitude" class="form-control"
+                           value="{{ old('longitude', $longitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -45,7 +47,6 @@
                 </div>
 
                 @php
-                    // karena ini halaman create, tidak ada $item => pakai default preview
                     $previewSrc = asset('images/default-ibadah.jpg');
                 @endphp
 
@@ -60,7 +61,7 @@
 
         <!-- Map -->
         <div class="col-md-8">
-            <label class="form-label">Klik pada Peta untuk memilih lokasi</label>
+            <label class="form-label">Klik pada Peta atau isi manual Latitude & Longitude</label>
             <div id="peta" style="height: 300px; border-radius: 10px; border: 1px solid #ccc;"></div>
         </div>
     </div>
@@ -99,13 +100,8 @@
         `);
     });
 
-    // Event klik pada peta
-    map.on('click', async function(e) {
-        const lat = e.latlng.lat.toFixed(6);
-        const lng = e.latlng.lng.toFixed(6);
-        document.getElementById('latitude').value = lat;
-        document.getElementById('longitude').value = lng;
-
+    // fungsi ambil alamat dari Nominatim
+    async function getAlamat(lat, lng) {
         let alamat = 'Alamat tidak ditemukan';
         let namaTempat = '';
         try {
@@ -119,7 +115,6 @@
                     data.address.shop ||
                     data.address.amenity || '';
             }
-
             if (!namaTempat && data.display_name) {
                 namaTempat = data.display_name.split(',')[0];
             }
@@ -127,54 +122,59 @@
         } catch (err) {
             console.error('Gagal ambil alamat:', err);
         }
+        return { alamat, namaTempat };
+    }
 
-        document.getElementById('address').value = alamat;
-        document.getElementById('name').value = namaTempat;
+    // update marker dan alamat di form
+    async function updateMarker(lat, lng, isManual = false) {
+        map.setView([lat, lng], 16);
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)
-            .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
-            .openPopup();
+        clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map);
+
+        const { alamat, namaTempat } = await getAlamat(lat, lng);
+
+        if (!isManual) {
+            document.getElementById('address').value = alamat;
+            document.getElementById('name').value = namaTempat;
+        }
+
+        clickMarker.bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`).openPopup();
+    }
+
+    // Event klik pada peta
+    map.on('click', async function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+        await updateMarker(lat, lng);
     });
 
-    function goToLatLng() {
+    // Event isi manual latitude & longitude
+    async function updateMapFromInput() {
         const lat = parseFloat(document.getElementById('latitude').value);
         const lng = parseFloat(document.getElementById('longitude').value);
 
         if (!isNaN(lat) && !isNaN(lng)) {
-            map.setView([lat, lng], 16);
-
-            if (clickMarker) map.removeLayer(clickMarker);
-
-            clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)
-                .bindPopup(`Lokasi hasil pencarian:<br>Latitude: ${lat}<br>Longitude: ${lng}`)
-                .openPopup();
-        } else {
-            alert('Masukkan koordinat Latitude dan Longitude yang valid!');
+            await updateMarker(lat, lng, true);
         }
     }
 
-    function handleSimpan(e) {
-        e.preventDefault();
-
-        const nama = document.getElementById('nama').value;
-        const lat = document.getElementById('latitude').value;
-        const lng = document.getElementById('longitude').value;
-        const alamat = document.getElementById('alamat').value;
-
-        if (lat && lng && alamat) {
-            const url = `/admin/ibadah/tempat/create?nama=${nama}&latitude=${lat}&longitude=${lng}&alamat=${encodeURIComponent(alamat)}`;
-            window.location.href = url;
-        } else {
-            alert('Klik peta dulu untuk mengambil lokasi!');
-        }
-    }
+    document.getElementById('latitude').addEventListener('input', updateMapFromInput);
+    document.getElementById('longitude').addEventListener('input', updateMapFromInput);
 
     // preview image sebelum submit
     document.getElementById('fotoInput').addEventListener('change', function () {
         const [file] = this.files;
         if (file) {
+            if (!document.getElementById('preview')) {
+                const img = document.createElement('img');
+                img.id = 'preview';
+                img.className = 'mt-2 img-fluid rounded';
+                this.parentNode.appendChild(img);
+            }
             document.getElementById('preview').src = URL.createObjectURL(file);
         }
     });

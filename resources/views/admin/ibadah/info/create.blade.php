@@ -29,12 +29,12 @@
 
                 <div class="form-group mb-3">
                     <label>Latitude</label>
-                    <input type="text" name="latitude" id="latitude" class="form-control" readonly required>
+                    <input type="text" name="latitude" id="latitude" class="form-control" required>
                 </div>
 
                 <div class="form-group mb-3">
                     <label>Longitude</label>
-                    <input type="text" name="longitude" id="longitude" class="form-control" readonly required>
+                    <input type="text" name="longitude" id="longitude" class="form-control" required>
                 </div>
 
                 <div class="form-group mb-3">
@@ -74,7 +74,7 @@
 
             <!-- Bagian Peta -->
             <div style="flex: 1; min-width: 400px;">
-                <label class="form-label mb-2">Klik pada Peta untuk memilih lokasi</label>
+                <label class="form-label mb-2">Klik pada Peta atau isi manual Latitude & Longitude</label>
                 <div id="peta" style="height: 400px; border-radius: 10px; border: 1px solid #ccc;"></div>
             </div>
         </div>
@@ -84,7 +84,6 @@
 <script>
     // Inisialisasi peta
     const map = L.map('peta').setView([-6.326511, 108.3202685], 13);
-
     let clickMarker = null;
 
     // Tile OSM
@@ -125,47 +124,55 @@
         }
     });
 
-    // Event klik peta
-    map.on('click', async function(e) {
-        const lat = e.latlng.lat;
-        const lng = e.latlng.lng;
-
-        document.getElementById('latitude').value = lat.toFixed(6);
-        document.getElementById('longitude').value = lng.toFixed(6);
-
+    // fungsi ambil alamat dari Nominatim
+    async function getAlamat(lat, lng) {
         let alamat = 'Alamat tidak ditemukan';
-        let namaTempat = '';
-
         try {
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
             const data = await response.json();
-
-            if (data.address) {
-                namaTempat = data.address.place_of_worship ||
-                    data.address.mosque ||
-                    data.address.building ||
-                    data.address.amenity || '';
-            }
-            if (!namaTempat && data.display_name) {
-                namaTempat = data.display_name.split(',')[0];
-            }
-
             alamat = data.display_name || alamat;
         } catch (error) {
             console.error('Gagal mendapatkan alamat:', error);
         }
+        return alamat;
+    }
 
-        document.getElementById('alamat').value = alamat;
+    // update marker dan form
+    async function updateMarker(lat, lng, isManual = false) {
+        map.setView([lat, lng], 16);
 
-        if (clickMarker) {
-            map.removeLayer(clickMarker);
+        if (clickMarker) map.removeLayer(clickMarker);
+
+        const alamat = await getAlamat(lat, lng);
+        if (!isManual) {
+            document.getElementById('alamat').value = alamat;
         }
 
-        clickMarker = L.marker([lat, lng], {
-                icon: masjidIcon
-            }).addTo(map)
-            .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat.toFixed(6)}<br><b>Lng:</b> ${lng.toFixed(6)}`)
+        clickMarker = L.marker([lat, lng], { icon: masjidIcon }).addTo(map)
+            .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
+    }
+
+    // Event klik peta
+    map.on('click', async function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+        await updateMarker(lat, lng);
     });
+
+    // Event input manual lat/lng
+    async function updateMapFromInput() {
+        const lat = parseFloat(document.getElementById('latitude').value);
+        const lng = parseFloat(document.getElementById('longitude').value);
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            await updateMarker(lat, lng, true);
+        }
+    }
+
+    document.getElementById('latitude').addEventListener('input', updateMapFromInput);
+    document.getElementById('longitude').addEventListener('input', updateMapFromInput);
 </script>
 @endsection

@@ -8,6 +8,7 @@ use App\Models\Ibadah;
 use App\Models\Kategori;
 use App\Models\InfoKeagamaan;
 use App\Models\Aktivitas;
+use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -57,21 +58,35 @@ class IbadahController extends Controller
 
         Ibadah::create($validated);
 
+        $this->logAktivitas("Tempat ibadah telah ditambahkan");
+        $this->logNotifikasi("Tempat Ibadah telah ditambahkan.");
+
         return redirect()->route('admin.ibadah.tempat.index',)
             ->with('success', 'Tempat ibadah berhasil ditambahkan!');
     }
 
-    public function editTempat($id)
-    {
-        $item = Ibadah::findOrFail($id);
-        $kategoriIbadah = Ibadah::all(); // ambil daftar kategori yang benar
+    public function editTempat(Request $request, $id)
+{
+    $ibadah = Ibadah::findOrFail($id);
 
-        return view('admin.ibadah.edit', [
-            'item' => $item,
-            'kategoriIbadah' => $kategoriIbadah,
-            'lokasi' => [], // kalau memang diperlukan di view
-        ]);
-    }
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'address' => 'required|string',
+        'latitude' => 'required|numeric',
+        'longitude' => 'required|numeric',
+        'fitur' => 'required|string',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+    ]);
+
+    $ibadah->update($validated);
+
+    // Catat aktivitas dan notifikasi **setelah update berhasil**
+    $this->logAktivitas("Tempat ibadah telah diperbarui: " );
+    $this->logNotifikasi("Tempat Ibadah telah diperbarui: " );
+
+    return redirect()->route('admin.ibadah.tempat.index')
+                     ->with('success', 'Tempat ibadah berhasil diperbarui!');
+}
 
     public function tempat()
     {
@@ -87,7 +102,7 @@ class IbadahController extends Controller
                 'address' => $loc->address,
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
-                // pastikan sudah menjalankan `php artisan storage:link`
+                'fitur'     => $loc->fitur,
                 'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
             ];
         });
@@ -237,6 +252,8 @@ class IbadahController extends Controller
             'longitude' => $request->longitude
         ]);
 
+        $this->logAktivitas('InfoKeagamaan', 'Info keagamaan baru ditambahkan ', 'create');
+
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info keagamaan berhasil disimpan.');
     }
 
@@ -276,6 +293,8 @@ class IbadahController extends Controller
 
         $item->update($data);
 
+        $this->logAktivitas('InfoKeagamaan', 'Info keagamaan diperbarui ', 'update', $item->id);
+
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info Keagamaan berhasil diperbarui');
     }
 
@@ -284,6 +303,8 @@ class IbadahController extends Controller
         $item = InfoKeagamaan::findOrFail($id);
         if ($item->foto) Storage::disk('public')->delete($item->foto);
         $item->delete();
+
+        $this->logAktivitas('InfoKeagamaan', 'Info keagamaan dihapus ', 'delete', $item->id);
 
         return back()->with('success', 'Info Keagamaan berhasil dihapus');
     }
@@ -303,5 +324,25 @@ class IbadahController extends Controller
         });
 
         return view('admin.ibadah.info.map', compact('lokasi'));
+    }
+
+    protected function logAktivitas($pesan)
+    {
+        if (auth()->check()) {
+            Aktivitas::create([
+                'user_id' => auth()->id(),
+                'tipe' => $this->aktivitasTipe,
+                'keterangan' => $pesan,
+            ]);
+        }
+    }
+
+    protected function logNotifikasi($pesan)
+    {
+        NotifikasiAktivitas::create([
+            'keterangan' => $pesan,
+            'dibaca' => false,
+            'url' => route('admin.ibadah.tempat.index') // route yang valid
+        ]);
     }
 }

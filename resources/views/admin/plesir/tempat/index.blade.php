@@ -15,7 +15,7 @@
     @endif
 
     <table class="table datatables" id="infoTable">
-        <thead>
+        <thead class="table-dark">
             <tr>
                 <th>No</th>
                 <th>Nama</th>

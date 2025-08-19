@@ -94,7 +94,7 @@
       popupAnchor: [0, -32]
     }),
     default: L.divIcon({
-      html: `<div style="font-size:28px;">📍</div>`,
+      html: `<div style="font-size:28px;">🎒</div>`,
       className: '',
       iconSize: [32, 32],
       iconAnchor: [16, 32],

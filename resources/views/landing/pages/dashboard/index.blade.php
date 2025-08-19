@@ -142,4 +142,44 @@
     </div>
   </div>
 </section>
+
+<!-- Welcome Section -->
+<section id="welcome" class="welcome-section d-flex align-items-center">
+
+  <div class="container">
+    <div class="row align-items-center justify-content-between">
+      
+      <!-- Left Content -->
+      <div class="col-lg-6 text-white" data-aos="fade-right">
+        <h2 class="fw-bold mb-3">
+          Are you <span class="text-info">a Student?</span>
+        </h2>
+        <p class="fs-5 mb-4">
+          Get things done in Indramayu with <strong>Reang Apps</strong><br>
+          <span class="text-info">#makesiteasy</span>
+        </p>
+        <p class="fw-semibold mb-4">
+          Good to go? Download Reang now!
+        </p>
+
+        <!-- Download Buttons -->
+        <div class="d-flex gap-3">
+          <a href="#" class="btn btn-light d-flex align-items-center px-3 py-2 rounded-3 shadow-sm">
+            <i class="bi bi-google-play fs-5 me-2"></i> Play Store
+          </a>
+          <a href="#" class="btn btn-light d-flex align-items-center px-3 py-2 rounded-3 shadow-sm">
+            <i class="bi bi-apple fs-5 me-2"></i> App Store
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Content (Mockup) -->
+      <div class="col-lg-5 mt-5 mt-lg-0 text-center" data-aos="fade-left">
+        <img src="{{ asset('landing/img/color_wongreang_apps.png') }}" alt="Reang App" class="img-fluid mockup-img">
+      </div>
+    </div>
+  </div>
+
+</section>
+
 @endsection

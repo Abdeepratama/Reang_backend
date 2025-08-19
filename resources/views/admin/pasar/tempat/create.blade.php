@@ -19,12 +19,12 @@
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required readonly>
+                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required readonly>
+                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -47,6 +47,7 @@
                 <div class="mb-3">
                     <label for="foto">Foto</label>
                     <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
+                    <img id="preview" class="mt-2" style="max-width: 100%; display:none;">
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>
@@ -55,7 +56,7 @@
 
         <!-- Map -->
         <div class="col-md-8">
-            <label class="form-label">Klik pada Peta untuk memilih lokasi</label>
+            <label class="form-label">Klik pada Peta atau isi manual Latitude & Longitude</label>
             <div id="peta" style="height: 300px; border-radius: 10px; border: 1px solid #ccc;"></div>
         </div>
     </div>
@@ -72,17 +73,16 @@
 
     const locations = @json($lokasi);
 
-    // custom icon rumah
     const houseIcon = L.divIcon({
         html: `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#2A9D8F" stroke="white" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="40" height="40" fill="#2A9D8F" stroke="white" stroke-width="2">
             <path d="M32 12 L12 32 H20 V52 H44 V32 H52 Z"/>
             <circle cx="32" cy="40" r="5" fill="white"/>
         </svg>`,
         className: '',
-        iconSize: [48, 48],
-        iconAnchor: [24, 48],
-        popupAnchor: [0, -48]
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
     });
 
     locations.forEach(loc => {
@@ -94,7 +94,7 @@
         `);
     });
 
-    // Event klik pada peta
+    // Event klik peta
     map.on('click', async function(e) {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
@@ -107,14 +107,11 @@
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const data = await res.json();
             if (data.address) {
-                namaTempat = data.address.attraction ||
-                    data.address.building ||
-                    data.address.mosque ||
-                    data.address.church ||
-                    data.address.shop ||
-                    data.address.amenity || '';
+                namaTempat = data.address.marketplace || 
+                             data.address.shop || 
+                             data.address.building || 
+                             data.address.amenity || '';
             }
-
             if (!namaTempat && data.display_name) {
                 namaTempat = data.display_name.split(',')[0];
             }
@@ -124,55 +121,41 @@
         }
 
         document.getElementById('address').value = alamat;
-        document.getElementById('name').value = namaTempat;
+        if (!document.getElementById('name').value) {
+            document.getElementById('name').value = namaTempat;
+        }
 
         if (clickMarker) map.removeLayer(clickMarker);
-
         clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
 
-    function goToLatLng() {
+    // Event manual input lat/lng
+    function updateMarkerFromInput() {
         const lat = parseFloat(document.getElementById('latitude').value);
         const lng = parseFloat(document.getElementById('longitude').value);
 
         if (!isNaN(lat) && !isNaN(lng)) {
             map.setView([lat, lng], 16);
-
             if (clickMarker) map.removeLayer(clickMarker);
-
             clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)
-                .bindPopup(`Lokasi hasil pencarian:<br>Latitude: ${lat}<br>Longitude: ${lng}`)
+                .bindPopup(`Lokasi manual:<br>Latitude: ${lat}<br>Longitude: ${lng}`)
                 .openPopup();
-        } else {
-            alert('Masukkan koordinat Latitude dan Longitude yang valid!');
         }
     }
 
-    function handleSimpan(e) {
-        e.preventDefault();
+    document.getElementById('latitude').addEventListener('input', updateMarkerFromInput);
+    document.getElementById('longitude').addEventListener('input', updateMarkerFromInput);
 
-        const nama = document.getElementById('nama').value;
-        const lat = document.getElementById('latitude').value;
-        const lng = document.getElementById('longitude').value;
-        const alamat = document.getElementById('alamat').value;
-
-        if (lat && lng && alamat) {
-            const url = `/admin/ibadah/tempat/create?nama=${nama}&latitude=${lat}&longitude=${lng}&alamat=${encodeURIComponent(alamat)}`;
-            window.location.href = url;
-        } else {
-            alert('Klik peta dulu untuk mengambil lokasi!');
-        }
-    }
-
-    // preview image sebelum submit
+    // preview foto
     document.getElementById('fotoInput').addEventListener('change', function () {
         const [file] = this.files;
         if (file) {
-            document.getElementById('preview').src = URL.createObjectURL(file);
+            const preview = document.getElementById('preview');
+            preview.style.display = 'block';
+            preview.src = URL.createObjectURL(file);
         }
     });
 </script>
-
 @endsection

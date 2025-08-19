@@ -20,7 +20,7 @@
                                 @endif
 
                                 <table class="table datatables" id="plesirTable">
-                                    <thead>
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>No</th>
                                             <th>Foto</th>

@@ -88,7 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/plesir/store', [PlesirController::class, 'storeInfo'])->name('plesir.info.store');
         Route::get('/{id}/plesir/edit', [PlesirController::class, 'infoEdit'])->name('plesir.info.edit');
         Route::put('/{id}/plesir/update', [PlesirController::class, 'infoUpdate'])->name('plesir.info.update');
-        Route::delete('/{id}/plesir/destroy', [PlesirController::class, 'infoDestroy'])->name('C');
+        Route::delete('/{id}/plesir/destroy', [PlesirController::class, 'infoDestroy'])->name('plesir.info.destroy');
         Route::get('/pasar/tempat/map', [PasarController::class, 'map'])->name('pasar.tempat.map');
 
         Route::get('/tempat', [SekolahController::class, 'indexTempat'])->name('sekolah.tempat.index');
