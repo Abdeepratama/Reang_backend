@@ -33,4 +33,18 @@ class InfoPlesir extends Model
 
         return asset('images/default-sehat.jpg');
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'info_plesir_id');
+    }
+
+    // akses rata-rata rating langsung
+    protected $appends = ['avg_rating'];
+
+    public function getAvgRatingAttribute()
+    {
+        $avg = $this->ratings()->avg('rating');   // bisa null
+        return $avg !== null ? round((float) $avg, 1) : 0.0;
+    }
 }

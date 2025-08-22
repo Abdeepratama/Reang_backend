@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Plesir;
 use App\Models\Kategori;
+use App\Models\Aktivitas;
+use App\Models\NotifikasiAktivitas;
 use App\Models\InfoPlesir;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +22,7 @@ class PlesirController extends Controller
         $this->routePrefix = 'plesir';
         $this->viewPrefix = 'plesir';
         $this->viewSubfolder = 'tempat';
-        $this->aktivitasTipe = 'Plesir';
+        $this->aktivitasTipe = 'Tempat Plesir';
         $this->aktivitasCreateMessage = 'Tempat plesir baru ditambahkan';
         $this->validationRules = [
             'name' => 'required|string',
@@ -57,6 +59,9 @@ class PlesirController extends Controller
         }
 
         Plesir::create($validated);
+
+        $this->logAktivitas("Lokasi Plesir telah ditambahkan");
+        $this->logNotifikasi("Lokasi Plesir telah ditambahkan");
 
         return redirect()->route('admin.plesir.tempat.index',)
             ->with('success', 'Tempat plesir berhasil ditambahkan!');
@@ -105,6 +110,9 @@ class PlesirController extends Controller
         }
 
         $plesir->save();
+
+        $this->logAktivitas("Lokasi Plesir telah diupdate");
+        $this->logNotifikasi("Lokasi Plesir telah diupdate");
 
         return redirect()->route('admin.plesir.tempat.index')
             ->with('success', 'Lokasi berhasil diperbarui!');
@@ -199,6 +207,9 @@ class PlesirController extends Controller
             'longitude' => $request->longitude
         ]);
 
+        $this->logAktivitas("Info Plesir telah ditambahkan");
+        $this->logNotifikasi("Info Plesir telah ditambahkan");
+
         return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil disimpan.');
     }
 
@@ -234,6 +245,9 @@ class PlesirController extends Controller
 
         $item->update($data);
 
+        $this->logAktivitas("Info Plesir telah diupdate");
+        $this->logNotifikasi("Info Plesir telah diupdate");
+
         return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil diperbarui.');
     }
 
@@ -242,6 +256,9 @@ class PlesirController extends Controller
         $item = InfoPlesir::findOrFail($id);
         if ($item->foto) Storage::disk('public')->delete($item->foto);
         $item->delete();
+
+        $this->logAktivitas("Info Plesir telah dihapus");
+        $this->logNotifikasi("Info Plesir telah dihapus");
 
         return back()->with('success', 'Info plesir berhasil dihapus.');
     }
@@ -261,5 +278,25 @@ class PlesirController extends Controller
         });
 
         return view('admin.plesir.info.map', compact('lokasi'));
+    }
+
+    protected function logAktivitas($pesan)
+    {
+        if (auth()->check()) {
+            Aktivitas::create([
+                'user_id' => auth()->id(),
+                'tipe' => $this->aktivitasTipe,
+                'keterangan' => $pesan,
+            ]);
+        }
+    }
+
+    protected function logNotifikasi($pesan)
+    {
+        NotifikasiAktivitas::create([
+            'keterangan' => $pesan,
+            'dibaca' => false,
+            'url' => route('admin.ibadah.tempat.index') // route yang valid
+        ]);
     }
 }

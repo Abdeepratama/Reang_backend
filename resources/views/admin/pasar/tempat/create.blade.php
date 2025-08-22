@@ -44,10 +44,13 @@
                     </select>
                 </div>
 
-                <div class="mb-3">
+                @php
+                    $previewSrc = asset('images/default-ibadah.jpg');
+                @endphp
+
+                <div class="form-group mb-3">
                     <label for="foto">Foto</label>
                     <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
-                    <img id="preview" class="mt-2" style="max-width: 100%; display:none;">
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>

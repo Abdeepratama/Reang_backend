@@ -5,7 +5,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\IbadahController;
 use App\Http\Controllers\Admin\DumasController;
 use App\Http\Controllers\Admin\SekolahController;
+use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\Api\RatingController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -37,4 +39,11 @@ Route::post('/sekolah-aduan', [SekolahController::class, 'store']);
 
 Route::get('/sliders', [DashboardController::class, 'apiSlider']);
 
+Route::post('/rating', [RatingController::class, 'store']);
+Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
 
+// list semua lokasi sehat
+Route::get('/sehat/{id?}', [SehatController::class, 'show']);      // detail lokasi sehat 
+
+// list semua info
+Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // tambah info baru

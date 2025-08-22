@@ -33,7 +33,7 @@
         <div class="d-flex img-fluid animated">
   <a href="#about" class="btn-get-started me-3 d-inline-flex align-items-center gap-2">
   <i class="bi bi-question-circle"></i>
-  <span>Takon Reang</span>
+  <span>Wadul Reang</span>
 </a>
   <a href="https://www.youtube.com/embed/1YkkDHue270"
      class="glightbox btn-get-started d-flex align-items-center">
@@ -152,10 +152,10 @@
       <!-- Left Content -->
       <div class="col-lg-6 text-white" data-aos="fade-right">
         <h2 class="fw-bold mb-3">
-          Are you <span class="text-info">a Student?</span>
+          Want everything easier <span class="text-info">in Indramayu?</span>
         </h2>
         <p class="fs-5 mb-4">
-          Get things done in Indramayu with <strong>Reang Apps</strong><br>
+          Get things done in Indramayu with <strong>Wong Reang Apps</strong><br>
           <span class="text-info">#makesiteasy</span>
         </p>
         <p class="fw-semibold mb-4">

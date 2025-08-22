@@ -11,7 +11,7 @@ trait CRUDHelper
     protected $model;
     protected $routePrefix;
     protected $viewPrefix;
-    protected $viewSubfolder = ''; // 👈 ini opsional
+    protected $viewSubfolder = ''; 
     protected $aktivitasTipe;
     protected $aktivitasCreateMessage;
     protected $validationRules = [];

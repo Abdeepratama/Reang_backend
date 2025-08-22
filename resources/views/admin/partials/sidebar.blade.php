@@ -71,6 +71,12 @@
                                     Lokasi Tempat
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.sehat.info.index') }}">
+                                    Info Pasar
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -126,6 +132,12 @@
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.pasar.tempat.index') }}">
                                     Lokasi Tempat
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.pasar.info.index') }}">
+                                    Info Pasar
                                 </a>
                             </li>
                         </ul>

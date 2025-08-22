@@ -123,4 +123,6 @@ class DashboardController extends Controller
 
         return redirect()->route('admin.slider.index')->with('success', 'Slider berhasil dihapus.');
     }
+
+    //bannner
 }

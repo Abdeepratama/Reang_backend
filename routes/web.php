@@ -28,8 +28,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/bantuan', function () {
-    return view('landing.pages.bantuan.takon');
-})->name('bantuan.takon');
+    return view('landing.pages.bantuan.wadul');
+})->name('bantuan.wadul');
 
 // Route Admin
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -83,6 +83,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('ibadah/info/{id}', [IbadahController::class, 'infoUpdate'])->name('ibadah.info.update');
         Route::delete('ibadah/info/{id}', [IbadahController::class, 'infoDestroy'])->name('ibadah.info.destroy');
         Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+
         Route::get('/plesir/info', [PlesirController::class, 'info'])->name('plesir.info.index');
         Route::get('/plesir/info/create', [PlesirController::class, 'createInfo'])->name('plesir.info.create');
         Route::post('/plesir/store', [PlesirController::class, 'storeInfo'])->name('plesir.info.store');
@@ -97,7 +98,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('tempat/{id}/edit', [SekolahController::class, 'editTempat'])->name('sekolah.tempat.edit');
         Route::put('tempat/{id}', [SekolahController::class, 'updateTempat'])->name('sekolah.tempat.update');
         Route::get('tempat/map', [SekolahController::class, 'mapTempat'])->name('sekolah.tempat.map');
-        Route::delete('tempat/{id}', [SekolahController::class, 'tempatDestroy'])->name('sekolah.tempat.destroy');
+        Route::delete('tempat/{id}', [SekolahController::class, 'destroyTempat'])->name('sekolah.tempat.destroy');
 
         Route::get('/aduan', [SekolahController::class, 'aduanindex'])->name('sekolah.aduan.index');
         Route::get('aduan/create', [SekolahController::class, 'createAduan'])->name('sekolah.aduan.create');
@@ -106,6 +107,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('aduan/{id}', [SekolahController::class, 'updateAduan'])->name('sekolah.aduan.update');
         Route::delete('aduan/{id}', [SekolahController::class, 'aduanDestroy'])->name('sekolah.aduan.destroy');
         Route::get('aduan/map', [SekolahController::class, 'mapAduan'])->name('sekolah.aduan.map');
+
+        Route::get('/pasar/info', [PasarController::class, 'info'])->name('pasar.info.index');
+        Route::get('/pasar/info/create', [PasarController::class, 'createInfo'])->name('pasar.info.create');
+        Route::post('/pasar/store', [PasarController::class, 'storeInfo'])->name('pasar.info.store');
+        Route::get('/{id}/pasar/edit', [PasarController::class, 'infoEdit'])->name('pasar.info.edit');
+        Route::put('/{id}/pasar/update', [PasarController::class, 'infoUpdate'])->name('pasar.info.update');
+        Route::delete('/{id}/pasar/destroy', [PasarController::class, 'infoDestroy'])->name('pasar.info.destroy');
+        // Opsional: untuk peta
+        Route::get('/pasar/info/map', [PasarController::class, 'map'])->name('pasar.info.map');
+
+        Route::get('/sehat/info', [SehatController::class, 'infoindex'])->name('sehat.info.index');
+        Route::get('/sehat/info/create', [SehatController::class, 'infocreate'])->name('sehat.info.create');
+        Route::post('/sehat/store', [SehatController::class, 'infostore'])->name('sehat.info.store');
+        Route::get('/{id}/sehat/edit', [SehatController::class, 'infoedit'])->name('sehat.info.edit');
+        Route::put('/{id}/sehat/update', [SehatController::class, 'infoupdate'])->name('sehat.info.update');
+        Route::delete('/{id}/sehat/destroy', [SehatController::class, 'infodestroy'])->name('sehat.info.destroy');
 
         // Resource routes
         Route::resource('ibadah', IbadahController::class);

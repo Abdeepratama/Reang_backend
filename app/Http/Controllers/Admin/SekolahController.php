@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Sekolah;
 use App\Models\Kategori;
 use App\Models\Tempat_sekolah;
+use App\Models\Aktivitas;
+use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,28 +17,28 @@ class SekolahController extends Controller
      * LIST TEMPAT SEKOLAH
      */
     public function indexTempat()
-{
-    $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
-    $items = Tempat_sekolah::all(); // ini yang dikirim ke blade sebagai $items
+    {
+        $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
+        $items = Tempat_sekolah::all(); // ini yang dikirim ke blade sebagai $items
 
-    return view('admin.sekolah.tempat.index', compact('items', 'kategoriSekolah'));
-}
+        return view('admin.sekolah.tempat.index', compact('items', 'kategoriSekolah'));
+    }
 
     /**
      * FORM TAMBAH TEMPAT SEKOLAH
      */
-    Public function createTempat()
-{
-    $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
-     $lokasi = Tempat_sekolah::all(); // untuk peta
+    public function createTempat()
+    {
+        $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
+        $lokasi = Tempat_sekolah::all(); // untuk peta
 
-    return view('admin.sekolah.tempat.create', compact('kategoriSekolah', 'lokasi'));
-}
+        return view('admin.sekolah.tempat.create', compact('kategoriSekolah', 'lokasi'));
+    }
 
     /**
      * SIMPAN TEMPAT SEKOLAH
      */
-    Public function storeTempat(Request $request)
+    public function storeTempat(Request $request)
     {
         $validated = $request->validate([
             'name'      => 'required|string',
@@ -53,6 +55,9 @@ class SekolahController extends Controller
 
         Tempat_sekolah::create($validated);
 
+        $this->logAktivitas("Lokasi Sekolah telah ditambahkan");
+        $this->logNotifikasi("Lokasi Sekolah telah ditambahkan");
+
         return redirect()->route('admin.sekolah.tempat.index')
             ->with('success', 'Tempat sekolah berhasil ditambahkan.');
     }
@@ -60,7 +65,7 @@ class SekolahController extends Controller
     /**
      * FORM EDIT TEMPAT SEKOLAH
      */
-    Public function editTempat($id)
+    public function editTempat($id)
     {
         $item = Tempat_sekolah::findOrFail($id);
         $kategoriSekolah = Kategori::where('fitur', 'sekolah')->get();
@@ -70,7 +75,7 @@ class SekolahController extends Controller
     /**
      * UPDATE TEMPAT SEKOLAH
      */
-    Public function updateTempat(Request $request, $id)
+    public function updateTempat(Request $request, $id)
     {
         $sekolah = Tempat_sekolah::findOrFail($id);
 
@@ -92,34 +97,54 @@ class SekolahController extends Controller
 
         $sekolah->update($validated);
 
+        $this->logAktivitas("Lokasi Sekolah telah diupdate");
+        $this->logNotifikasi("Lokasi Sekolah telah diupdate");
+
         return redirect()->route('admin.sekolah.tempat.index')
-            ->with('success', 'Tempat sekolah berhasil diperbarui.');
+            ->with('success', 'Tempat sekolah berhasil diupdate');
     }
 
+    public function destroyTempat($id)
+    {
+        $sekolah = Tempat_sekolah::findOrFail($id);
+
+        // Hapus foto jika ada
+        if ($sekolah->foto && Storage::disk('public')->exists($sekolah->foto)) {
+            Storage::disk('public')->delete($sekolah->foto);
+        }
+
+        $sekolah->delete();
+
+        $this->logAktivitas("Lokasi Sekolah telah dihapus");
+        $this->logNotifikasi("Lokasi Sekolah telah dihapus");
+
+        return redirect()->route('admin.sekolah.tempat.index')
+            ->with('success', 'Tempat sekolah berhasil dihapus.');
+    }
     /**
      * MAP TEMPAT SEKOLAH
      */
     public function mapTempat()
-{
-    $lokasi = Tempat_sekolah::all()->map(function ($loc) {
-        return [
-            'name' => $loc->name,
-            'address' => $loc->address,
-            'latitude' => $loc->latitude,
-            'longitude' => $loc->longitude,
-            'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
-        ];
-    });
+    {
+        $lokasi = Tempat_sekolah::all()->map(function ($loc) {
+            return [
+                'name' => $loc->name,
+                'address' => $loc->address,
+                'latitude' => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+            ];
+        });
 
-    return view('admin.sekolah.tempat.map', compact('lokasi'));
-}
+        return view('admin.sekolah.tempat.map', compact('lokasi'));
+    }
 
     // ======================= ADUAN SEKOLAH =======================
 
     /**
      * LIST ADUAN SEKOLAH
      */
-    Public function aduanindex()
+    public function aduanindex()
     {
         $items = Sekolah::whereNotNull('jenis_laporan')->get();
         return view('admin.sekolah.aduan.index', compact('items'));
@@ -198,31 +223,50 @@ class SekolahController extends Controller
     }
 
     public function tempatDestroy($id)
-{
-    $item = Sekolah::whereNull('jenis_laporan')->findOrFail($id);
+    {
+        $item = Sekolah::whereNull('jenis_laporan')->findOrFail($id);
 
-    if ($item->foto && Storage::disk('public')->exists($item->foto)) {
-        Storage::disk('public')->delete($item->foto);
+        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+            Storage::disk('public')->delete($item->foto);
+        }
+
+        $item->delete();
+
+        return redirect()->route('admin.sekolah.tempat.index')
+            ->with('success', 'Tempat sekolah berhasil dihapus.');
     }
 
-    $item->delete();
+    public function aduanDestroy($id)
+    {
+        $item = Sekolah::whereNotNull('jenis_laporan')->findOrFail($id);
 
-    return redirect()->route('admin.sekolah.tempat.index')
-        ->with('success', 'Tempat sekolah berhasil dihapus.');
-}
+        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+            Storage::disk('public')->delete($item->foto);
+        }
 
-public function aduanDestroy($id)
-{
-    $item = Sekolah::whereNotNull('jenis_laporan')->findOrFail($id);
+        $item->delete();
 
-    if ($item->foto && Storage::disk('public')->exists($item->foto)) {
-        Storage::disk('public')->delete($item->foto);
+        return redirect()->route('admin.sekolah.aduan.index')
+            ->with('success', 'Aduan sekolah berhasil dihapus.');
     }
 
-    $item->delete();
+     protected function logAktivitas($pesan)
+    {
+        if (auth()->check()) {
+            Aktivitas::create([
+                'user_id' => auth()->id(),
+                'tipe' => 'sekolah',
+                'keterangan' => $pesan,
+            ]);
+        }
+    }
 
-    return redirect()->route('admin.sekolah.aduan.index')
-        ->with('success', 'Aduan sekolah berhasil dihapus.');
-}
-
+    protected function logNotifikasi($pesan)
+    {
+        NotifikasiAktivitas::create([
+            'keterangan' => $pesan,
+            'dibaca' => false,
+            'url' => route('admin.ibadah.tempat.index') // route yang valid
+        ]);
+    }
 }

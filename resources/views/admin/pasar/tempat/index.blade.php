@@ -38,9 +38,9 @@
                     <td>{{ $item->fitur }}</td>
                     <td>
                         @if($item->foto)
-                            <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
+                            <img src="{{ Storage::url($item->foto) }}" alt="foto {{ $item->name }}" style="max-width:80px; height:auto;">
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-muted">Tidak ada foto</span>
                         @endif
                     </td>
                     <td>

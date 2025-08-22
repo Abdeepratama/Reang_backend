@@ -22,7 +22,7 @@ class IbadahController extends Controller
         $this->routePrefix = 'ibadah';
         $this->viewPrefix = 'ibadah';
         $this->viewSubfolder = 'tempat';
-        $this->aktivitasTipe = 'Ibadah';
+        $this->aktivitasTipe = 'Tempat ibadah';
         $this->aktivitasCreateMessage = 'Tempat ibadah baru ditambahkan';
         $this->validationRules = [
             'name' => 'required|string',
@@ -64,29 +64,6 @@ class IbadahController extends Controller
         return redirect()->route('admin.ibadah.tempat.index',)
             ->with('success', 'Tempat ibadah berhasil ditambahkan!');
     }
-
-    public function editTempat(Request $request, $id)
-{
-    $ibadah = Ibadah::findOrFail($id);
-
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'address' => 'required|string',
-        'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
-        'fitur' => 'required|string',
-        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-    ]);
-
-    $ibadah->update($validated);
-
-    // Catat aktivitas dan notifikasi **setelah update berhasil**
-    $this->logAktivitas("Tempat ibadah telah diperbarui: " );
-    $this->logNotifikasi("Tempat Ibadah telah diperbarui: " );
-
-    return redirect()->route('admin.ibadah.tempat.index')
-                     ->with('success', 'Tempat ibadah berhasil diperbarui!');
-}
 
     public function tempat()
     {
@@ -169,24 +146,21 @@ class IbadahController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
-        // Update field dasar
-        $ibadah->name = $validated['name'];
-        $ibadah->address = $validated['address'];
-        $ibadah->latitude = $validated['latitude'];
-        $ibadah->longitude = $validated['longitude'];
-        $ibadah->fitur = $validated['fitur'];
+        $ibadah->update($validated);
 
-        // Jika ada file foto baru, ganti
+        // Jika ada file foto baru
         if ($request->hasFile('foto')) {
-            // hapus foto lama kalau ada
             if ($ibadah->foto && Storage::disk('public')->exists($ibadah->foto)) {
                 Storage::disk('public')->delete($ibadah->foto);
             }
             $path = $request->file('foto')->store('ibadah_foto', 'public');
             $ibadah->foto = $path;
+            $ibadah->save();
         }
 
-        $ibadah->save();
+        // 🔔 Tambahkan log aktivitas dan notifikasi
+        $this->logAktivitas("Tempat ibadah diperbarui");
+        $this->logNotifikasi("Tempat Ibadah diperbarui");
 
         return redirect()->route('admin.ibadah.tempat.index')
             ->with('success', 'Lokasi berhasil diperbarui!');
@@ -252,7 +226,8 @@ class IbadahController extends Controller
             'longitude' => $request->longitude
         ]);
 
-        $this->logAktivitas('InfoKeagamaan', 'Info keagamaan baru ditambahkan ', 'create');
+        $this->logAktivitas("Info keagamaan telah ditambahkan");
+        $this->logNotifikasi("Info keagamaan telah ditambahkan");
 
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info keagamaan berhasil disimpan.');
     }
@@ -293,7 +268,8 @@ class IbadahController extends Controller
 
         $item->update($data);
 
-        $this->logAktivitas('InfoKeagamaan', 'Info keagamaan diperbarui ', 'update', $item->id);
+        $this->logAktivitas("Info keagamaan telah diperbarui");
+        $this->logNotifikasi("Info keagamaan telah diperbarui");
 
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info Keagamaan berhasil diperbarui');
     }
@@ -304,7 +280,8 @@ class IbadahController extends Controller
         if ($item->foto) Storage::disk('public')->delete($item->foto);
         $item->delete();
 
-        $this->logAktivitas('InfoKeagamaan', 'Info keagamaan dihapus ', 'delete', $item->id);
+        $this->logAktivitas("Info keagamaan telah dihapus");
+        $this->logNotifikasi("Info keagamaan telah dihapus");
 
         return back()->with('success', 'Info Keagamaan berhasil dihapus');
     }

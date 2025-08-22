@@ -9,7 +9,7 @@
       <ul>
         <li><a href="{{ route('home') }}#fitur-section">Fitur</a></li>
         <li><a href="{{ route('home') }}#hero-section">Tentang</a></li>
-        <li><a href="{{ route('bantuan.takon') }}#takon">Takon Reang</a></li>
+        <li><a href="{{ route('bantuan.wadul') }}#wadul">Wadul Reang</a></li>
         <li><div class="accessibility-trigger" style="margin-left:10px;">
       <button id="open-a11y"
         aria-label="Pengaturan aksesibilitas"

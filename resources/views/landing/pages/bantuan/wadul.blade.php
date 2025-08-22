@@ -1,7 +1,7 @@
 @extends('landing.partials.app')
 
 @section('content')
-<section id="takon" class="faq-section">
+<section id="wadul" class="faq-section">
   <div class="container">
     <h2 class="faq-title">Need Help?</h2>
 

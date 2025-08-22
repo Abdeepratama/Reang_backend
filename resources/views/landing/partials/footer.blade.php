@@ -23,7 +23,7 @@
           <div class="role-tabs" role="tablist" aria-label="Pilih kategori"></div>
           <li><a href="#fitur-section">Fitur</a></li>
           <li><a href="#">Tentang</a></li>
-          <li><a href="#">Takon Reang</a></li>
+          <li><a href="#">Wadul Reang</a></li>
           <li><a href="{{ route('admin.login') }}">Login</a></li>
         </ul>
       </div>
@@ -387,8 +387,13 @@
   }
 
   function speak() {
-    speakText(getTextForReading());
-  }
+    const sel = window.getSelection().toString().trim();
+    if (sel) {
+        speakText(sel);
+    } else {
+        speakText(getTextForReading());
+    }
+}
 
   // voice controls
   if (startBtn) {
@@ -451,18 +456,10 @@
 
   document.addEventListener("mouseup", function() {
     const selectedText = window.getSelection().toString().trim();
-
-    if (selectedText) {
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(selectedText);
-        utterance.lang = 'id-ID'; // Bahasa Indonesia
-        speechSynthesis.cancel(); // hentikan pembacaan sebelumnya
-        speechSynthesis.speak(utterance);
-      } else {
-        console.warn("Browser tidak mendukung Speech Synthesis API.");
-      }
+    if (selectedText && autoSpeakCheckbox && autoSpeakCheckbox.checked) {
+        speakText(selectedText); // pakai fungsi global
     }
-  });
+});
 
   // panel open/close & focus trap
   function focusableIn(el) {
