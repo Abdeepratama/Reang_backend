@@ -28,7 +28,6 @@
   <!-- Main CSS File -->
   <link href="{{ asset('landing/css/main.css') }}" rel="stylesheet">
 
-
   <!-- =======================================================
   * Template Name: Bootslander
   * Template URL: https://bootstrapmade.com/bootslander-free-bootstrap-landing-page-template/

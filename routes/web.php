@@ -119,10 +119,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/sehat/info', [SehatController::class, 'infoindex'])->name('sehat.info.index');
         Route::get('/sehat/info/create', [SehatController::class, 'infocreate'])->name('sehat.info.create');
-        Route::post('/sehat/store', [SehatController::class, 'infostore'])->name('sehat.info.store');
+        Route::post('/sehat/info/store', [SehatController::class, 'infostore'])->name('sehat.info.store');
         Route::get('/{id}/sehat/edit', [SehatController::class, 'infoedit'])->name('sehat.info.edit');
         Route::put('/{id}/sehat/update', [SehatController::class, 'infoupdate'])->name('sehat.info.update');
         Route::delete('/{id}/sehat/destroy', [SehatController::class, 'infodestroy'])->name('sehat.info.destroy');
+        // routes/web.php
+        Route::post('/upload-image', [SehatController::class, 'upload'])->name('sehat.info.upload.image');
+
 
         // Resource routes
         Route::resource('ibadah', IbadahController::class);

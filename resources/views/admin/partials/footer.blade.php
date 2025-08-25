@@ -17,7 +17,6 @@
 <script src="{{ asset('admin/js/jquery.dataTables.min.js') }} "></script>
 <script src="{{ asset('admin/js/dataTables.bootstrap4.min.js') }} "></script>
 
-
 <script>
   /* defind global options */
   Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;

@@ -272,6 +272,32 @@ class SehatController extends Controller
         }
     }
 
+    public function upload(Request $request)
+{
+    if ($request->hasFile('upload')) {
+        $file = $request->file('upload');
+        $filename = time().'_'.$file->getClientOriginalName();
+
+        // simpan ke storage/app/public/uploads
+        $file->storeAs('uploads', $filename, 'public');
+
+        $url = asset('storage/uploads/' . $filename);
+
+        // CKEditor 5 format
+        return response()->json([
+            'uploaded' => true,
+            'url' => $url
+        ]);
+    }
+
+    return response()->json([
+        'uploaded' => false,
+        'error' => [
+            'message' => 'No file uploaded'
+        ]
+    ], 400);
+}
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
