@@ -34,16 +34,16 @@ Route::prefix('dumas')->group(function () {
 // 📌 Ibadah API (contoh endpoint publik)
 Route::get('/ibadah', [IbadahController::class, 'api']);
 
-// 📌 sekolah API 
+//  sekolah API 
 Route::post('/sekolah-aduan', [SekolahController::class, 'store']);
-
+// slider
 Route::get('/sliders', [DashboardController::class, 'apiSlider']);
 
+// rating
 Route::post('/rating', [RatingController::class, 'store']);
 Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
 
-// list semua lokasi sehat
+// sehat-yu
 Route::get('/sehat/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
 Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // info sehat
-
-Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // ambil semua lokasi olahraga
+Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga
