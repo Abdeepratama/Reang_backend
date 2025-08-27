@@ -18,10 +18,15 @@ class Tempat_olahraga extends Model
         'latitude',
         'longitude',
         'address',
+        'foto'
     ];
 
-    public function kategori()
+    public function getPhotoUrlAttribute()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id');
+        if ($this->foto && Storage::disk('public')->exists($this->foto)) {
+            return Storage::url($this->foto);
+        }
+
+        return asset('images/default-olahraga.jpg');
     }
 }

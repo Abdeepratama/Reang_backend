@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.olahraga.update', $olahraga->id) }}" method="POST">
+            <form action="{{ route('admin.sehat.olahraga.update', $olahraga->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -38,15 +38,15 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="fitur" class="form-label">Kategori</label>
-                    <select name="fitur" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoriSehat as $kategori)
-                            <option value="{{ $kategori->nama }}" {{ $item->fitur == $kategori->nama ? 'selected' : '' }}>
-                                {{ $kategori->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <label for="foto" class="form-label">Foto</label>
+                    <div class="mb-2">
+                        @if($olahraga->foto)
+                        <img id="currentPreview" src="{{ Storage::url($olahraga->foto) }}" alt="Foto {{ $olahraga->name }}" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                        @else
+                        <img id="currentPreview" src="{{ asset('images/default-olahraga.jpg') }}" alt="Default" style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
+                        @endif
+                    </div>
+                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Update Data</button>

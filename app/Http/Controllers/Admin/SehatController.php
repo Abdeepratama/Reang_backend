@@ -115,6 +115,24 @@ class SehatController extends Controller
             ->with('success', 'Lokasi Kesehatan berhasil diupdate!');
     }
 
+    public function destroy($id)
+    {
+        $sehat = Sehat::findOrFail($id);
+
+        // Hapus foto kalau ada
+        if ($sehat->foto && Storage::disk('public')->exists($sehat->foto)) {
+            Storage::disk('public')->delete($sehat->foto);
+        }
+
+        $sehat->delete();
+
+        $this->logAktivitas("Lokasi Kesehatan telah dihapus");
+        $this->logNotifikasi("Lokasi Kesehatan telah dihapus");
+
+        return redirect()->route('admin.sehat.tempat.index')
+            ->with('success', 'Lokasi Kesehatan berhasil dihapus!');
+    }
+
     public function map()
     {
         $lokasi = Sehat::all()->map(function ($loc) {
@@ -355,22 +373,30 @@ class SehatController extends Controller
     }
 
     public function storeolahraga(Request $request)
-    {
-        $validated = $request->validate([
-            'name'      => 'required|string|max:255',
-            'address'   => 'required|string',
-            'latitude'  => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
+{
+    $validated = $request->validate([
+        'name'      => 'required|string|max:255',
+        'address'   => 'required|string',
+        'latitude'  => 'required|numeric',
+        'longitude' => 'required|numeric',
+        'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+    ]);
 
-        Tempat_olahraga::create($validated);
-
-        $this->logAktivitas("Tempat olahraga telah ditambahkan");
-        $this->logNotifikasi("Tempat olahraga telah ditambahkan");
-
-        return redirect()->route('admin.sehat.olahraga.index')
-            ->with('success', 'Tempat olahraga berhasil ditambahkan!');
+    if ($request->hasFile('foto')) {
+        $file = $request->file('foto');
+        $fotoName = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('tempat_olahraga', $fotoName, 'public');
+        $validated['foto'] = $path; // 🔥 masukin foto ke array validated
     }
+
+    Tempat_olahraga::create($validated);
+
+    $this->logAktivitas("Tempat olahraga telah ditambahkan");
+    $this->logNotifikasi("Tempat olahraga telah ditambahkan");
+
+    return redirect()->route('admin.sehat.olahraga.index')
+        ->with('success', 'Tempat olahraga berhasil ditambahkan!');
+}
 
     public function editolahraga($id)
     {
@@ -383,28 +409,46 @@ class SehatController extends Controller
     }
 
     public function updateolahraga(Request $request, $id)
-    {
-        $olahraga = Tempat_olahraga::findOrFail($id);
+{
+    $olahraga = Tempat_olahraga::findOrFail($id);
 
-        $validated = $request->validate([
-            'name'      => 'required|string|max:255',
-            'address'   => 'required|string',
-            'latitude'  => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
+    $validated = $request->validate([
+        'name'      => 'required|string|max:255',
+        'address'   => 'required|string',
+        'latitude'  => 'required|numeric',
+        'longitude' => 'required|numeric',
+        'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+    ]);
 
-        $olahraga->update($validated);
+    // simpan data dulu
+    $data = $validated;
 
-        $this->logAktivitas("Tempat olahraga telah diperbarui");
-        $this->logNotifikasi("Tempat olahraga telah diperbarui");
-
-        return redirect()->route('admin.sehat.olahraga.index')
-            ->with('success', 'Tempat olahraga berhasil diperbarui!');
+    // cek apakah ada upload file baru
+    if ($request->hasFile('foto')) {
+        // hapus foto lama
+        if ($olahraga->foto) {
+            Storage::disk('public')->delete($olahraga->foto);
+        }
+        // upload baru
+        $data['foto'] = $request->file('foto')->store('tempat_olahraga', 'public');
+    } else {
+        // kalau tidak upload, jangan hapus foto lama
+        $data['foto'] = $olahraga->foto;
     }
 
-    public function destroy($id)
+    $olahraga->update($data);
+
+    $this->logAktivitas("Tempat olahraga telah diperbarui");
+    $this->logNotifikasi("Tempat olahraga telah diperbarui");
+
+    return redirect()->route('admin.sehat.olahraga.index')
+        ->with('success', 'Tempat olahraga berhasil diperbarui!');
+}
+
+    public function destroyolahraga($id)
     {
         $olahraga = Tempat_olahraga::findOrFail($id);
+         if ($olahraga->foto) Storage::disk('public')->delete($olahraga->foto);
         $olahraga->delete();
 
         $this->logAktivitas("Tempat olahraga telah dihapus");
@@ -422,6 +466,7 @@ class SehatController extends Controller
                 'address'   => $loc->address,
                 'latitude'  => $loc->latitude,
                 'longitude' => $loc->longitude,
+                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
             ];
         });
 

@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.sehat.olahraga.store') }}" method="POST">
+            <form action="{{ route('admin.sehat.olahraga.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -34,6 +34,11 @@
                     <label for="address" class="form-label">Alamat</label>
                     <input type="text" id="address" name="address" class="form-control"
                         value="{{ old('address', $address ?? '') }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="foto">Foto</label>
+                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>

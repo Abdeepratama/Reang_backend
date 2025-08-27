@@ -17,20 +17,28 @@
                     <th>Latitude</th>
                     <th>Longitude</th>
                     <th>Alamat</th>
+                    <th>Foto</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($items as $item)
+                @forelse($items as $olahraga)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->latitude }}</td>
-                        <td>{{ $item->longitude }}</td>
-                        <td>{{ $item->address }}</td>
+                        <td>{{ $olahraga->name }}</td>
+                        <td>{{ $olahraga->latitude }}</td>
+                        <td>{{ $olahraga->longitude }}</td>
+                        <td>{{ $olahraga->address }}</td>
                         <td>
-                            <a href="{{ route('admin.sehat.olahraga.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('admin.sehat.olahraga.destroy', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin hapus data ini?')">
+                        @if($olahraga->foto)
+                            <img src="{{ Storage::url($olahraga->foto) }}" alt="Foto {{ $olahraga->name }}" style="max-width:80px; height:auto;">
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                        <td>
+                            <a href="{{ route('admin.sehat.olahraga.edit', $olahraga->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ route('admin.sehat.olahraga.destroy', $olahraga->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin hapus data ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>

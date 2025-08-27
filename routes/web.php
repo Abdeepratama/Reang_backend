@@ -68,6 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // sehat
         Route::get('/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/sehat/tempat/map', [SehatController::class, 'map'])->name('sehat.tempat.map');
+        Route::delete('/sehat/tempat/{id}', [SehatController::class, 'destroy'])->name('sehat.tempat.destroy');
 
         // pajak
         Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');
@@ -159,7 +160,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/olahraga/tempat/store', [SehatController::class, 'storeolahraga'])->name('sehat.olahraga.store');
         Route::get('/olahraga/tempat/edit/{id}', [SehatController::class, 'editolahraga'])->name('sehat.olahraga.edit');
         Route::put('/olahraga/tempat/update/{id}', [SehatController::class, 'updateolahraga'])->name('sehat.olahraga.update');
-        Route::delete('/olahraga/tempat/delete/{id}', [SehatController::class, 'destroy'])->name('sehat.olahraga.destroy');
+        Route::delete('/olahraga/tempat/delete/{id}', [SehatController::class, 'destroyolahraga'])->name('sehat.olahraga.destroy');
         Route::get('/olahraga/tempat/map', [SehatController::class, 'mapolahraga'])->name('sehat.olahraga.map');
 
 
