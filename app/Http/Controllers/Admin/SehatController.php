@@ -133,6 +133,20 @@ class SehatController extends Controller
             ->with('success', 'Lokasi Kesehatan berhasil dihapus!');
     }
 
+    public function show($id = null)
+    {
+        if ($id) {
+            $data = Sehat::find($id);
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+            return response()->json($data, 200);
+        } else {
+            $data = Sehat::all();
+            return response()->json($data, 200);
+        }
+    }
+
     public function map()
     {
         $lokasi = Sehat::all()->map(function ($loc) {
@@ -261,20 +275,6 @@ class SehatController extends Controller
         $this->logNotifikasi("Lokasi Kesehatan telah dihapus");
 
         return back()->with('success', 'Info kesehatan berhasil dihapus.');
-    }
-
-    public function show($id = null)
-    {
-        if ($id) {
-            $data = Sehat::find($id);
-            if (!$data) {
-                return response()->json(['message' => 'Data tidak ditemukan'], 404);
-            }
-            return response()->json($data, 200);
-        } else {
-            $data = Sehat::all();
-            return response()->json($data, 200);
-        }
     }
 
     public function infoshow($id = null)

@@ -32,6 +32,17 @@
                     <input type="text" id="address" name="address" class="form-control" value="{{ old('address', $address ?? '') }}" required>
                 </div>
 
+                <div class="mb-3">
+                    <label for="fitur" class="form-label">Kategori</label>
+                    <select name="fitur" id="fitur" class="form-control" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        @foreach($kategoriSehat as $kategori)
+                            <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                                {{ $kategori->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <div class="mb-3">
                     <label for="foto">Foto</label>
@@ -61,7 +72,7 @@
 
     const locations = @json($lokasi);
 
-    // custom icon klinik/rumah sakit
+    // custom icon
     const sehatIcon = L.divIcon({
         html: `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#E76F51" stroke="white" stroke-width="2">
@@ -83,7 +94,7 @@
         `);
     });
 
-    // Event klik pada peta
+    // Event klik peta
     map.on('click', async function(e) {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
@@ -119,14 +130,6 @@
         clickMarker = L.marker([lat, lng], { icon: sehatIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
-    });
-
-    // preview image sebelum submit
-    document.getElementById('fotoInput').addEventListener('change', function () {
-        const [file] = this.files;
-        if (file) {
-            document.getElementById('preview').src = URL.createObjectURL(file);
-        }
     });
 </script>
 
