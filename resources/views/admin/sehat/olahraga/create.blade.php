@@ -1,41 +1,39 @@
 @extends('admin.partials.app')
 
-@section('title', 'Tambah Data Sehat')
+@section('title', 'Tambah Data Tempat Olahraga')
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">🏥 Tambah Data Sehat</h3>
+    <h3 class="mb-4">🏟️ Tambah Data Tempat Olahraga</h3>
 
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.sehat.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.sehat.olahraga.store') }}" method="POST">
                 @csrf
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Tempat</label>
-                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                    <input type="text" name="name" id="name" class="form-control"
+                        value="{{ old('name') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required>
+                    <input type="text" id="latitude" name="latitude" class="form-control"
+                        value="{{ old('latitude', $latitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required>
+                    <input type="text" id="longitude" name="longitude" class="form-control"
+                        value="{{ old('longitude', $longitude ?? '') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Alamat</label>
-                    <input type="text" id="address" name="address" class="form-control" value="{{ old('address', $address ?? '') }}" required>
-                </div>
-
-
-                <div class="mb-3">
-                    <label for="foto">Foto</label>
-                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
+                    <input type="text" id="address" name="address" class="form-control"
+                        value="{{ old('address', $address ?? '') }}" required>
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>
@@ -61,26 +59,20 @@
 
     const locations = @json($lokasi);
 
-    // custom icon klinik/rumah sakit
-    const sehatIcon = L.divIcon({
+    // icon olahraga (bola)
+    const olahragaIcon = L.divIcon({
         html: `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#E76F51" stroke="white" stroke-width="2">
-            <rect x="14" y="20" width="36" height="28" rx="4" ry="4"/>
-            <path d="M32 16 v12 M26 22 h12" stroke="white" stroke-width="4" stroke-linecap="round"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="#2A9D8F" viewBox="0 0 24 24">
+            <path d="M12 2C6.49 2 2 6.49 2 12c0 5.52 
+                     4.49 10 10 10s10-4.48 10-10C22 6.49 
+                     17.51 2 12 2zm0 2c4.42 0 8 3.58 
+                     8 8s-3.58 8-8 8-8-3.58-8-8 
+                     3.58-8 8-8z"/>
         </svg>`,
         className: '',
-        iconSize: [48, 48],
-        iconAnchor: [24, 48],
-        popupAnchor: [0, -48]
-    });
-
-    locations.forEach(loc => {
-        const marker = L.marker([loc.latitude, loc.longitude], { icon: sehatIcon }).addTo(map);
-        marker.bindPopup(`
-            <strong>${loc.name}</strong><br>
-            <em>${loc.address}</em><br>
-            ${loc.foto ? `<img src="${loc.foto}" width="100%" alt="${loc.name}" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
-        `);
+        iconSize: [42, 42],
+        iconAnchor: [21, 42],
+        popupAnchor: [0, -42]
     });
 
     // Event klik pada peta
@@ -96,13 +88,11 @@
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const data = await res.json();
             if (data.address) {
-                namaTempat = data.address.hospital ||
-                    data.address.clinic ||
-                    data.address.pharmacy ||
+                namaTempat = data.address.stadium ||
+                    data.address.sports_centre ||
                     data.address.building ||
                     data.address.amenity || '';
             }
-
             if (!namaTempat && data.display_name) {
                 namaTempat = data.display_name.split(',')[0];
             }
@@ -112,22 +102,12 @@
         }
 
         document.getElementById('address').value = alamat;
-        document.getElementById('name').value = namaTempat;
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], { icon: sehatIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], { icon: olahragaIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
-
-    // preview image sebelum submit
-    document.getElementById('fotoInput').addEventListener('change', function () {
-        const [file] = this.files;
-        if (file) {
-            document.getElementById('preview').src = URL.createObjectURL(file);
-        }
-    });
 </script>
-
 @endsection

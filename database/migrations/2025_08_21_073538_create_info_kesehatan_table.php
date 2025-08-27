@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('foto')->nullable();
             $table->string('judul');
             $table->longText('deskripsi'); // panjang untuk artikel
-            $table->string('kategori');   // contoh: gizi, olahraga, penyakit, dll
             $table->timestamps();
         });
     }

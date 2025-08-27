@@ -126,6 +126,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // routes/web.php
         Route::post('/upload-image', [SehatController::class, 'upload'])->name('sehat.info.upload.image');
 
+        //tempat olahraga
+        Route::get('/olahraga/tempat', [SehatController::class, 'indexolahraga'])->name('sehat.olahraga.index');
+        Route::get('/olahraga/tempat/create', [SehatController::class, 'createolahraga'])->name('sehat.olahraga.create');
+        Route::post('/olahraga/tempat/store', [SehatController::class, 'storeolahraga'])->name('sehat.olahraga.store');
+        Route::get('/olahraga/tempat/edit/{id}', [SehatController::class, 'editolahraga'])->name('sehat.olahraga.edit');
+        Route::put('/olahraga/tempat/update/{id}', [SehatController::class, 'updateolahraga'])->name('sehat.olahraga.update');
+        Route::delete('/olahraga/tempat/delete/{id}', [SehatController::class, 'destroy'])->name('sehat.olahraga.destroy');
+        Route::get('/olahraga/tempat/map', [SehatController::class, 'mapolahraga'])->name('sehat.olahraga.map');
+
 
         // Resource routes
         Route::resource('ibadah', IbadahController::class);

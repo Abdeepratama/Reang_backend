@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Sehat;
 use App\Models\InfoKesehatan;
+use App\Models\Tempat_olahraga;
 use App\Models\Kategori;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
@@ -49,7 +50,7 @@ class SehatController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120'
         ]);
 
         if (isset($validated['foto'])) {
@@ -88,7 +89,7 @@ class SehatController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120'
         ]);
 
         $sehat->name = $validated['name'];
@@ -173,7 +174,7 @@ class SehatController extends Controller
     public function infostore(Request $request)
     {
         $data = $request->validate([
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'fitur' => 'required|string|max:255',
@@ -210,7 +211,7 @@ class SehatController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'fitur' => 'required|string|max:255',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -261,42 +262,171 @@ class SehatController extends Controller
     public function infoshow($id = null)
     {
         if ($id) {
-            $data = InfoKesehatan::find($id);
+            $data = InfoKesehatan::with('kategori')->find($id);
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
-            return response()->json($data, 200);
+
+            $result = $data->toArray();
+            $result['foto'] = $data->foto ? asset('storage/' . $data->foto) : null;
+
+            return response()->json($result, 200);
         } else {
-            $data = InfoKesehatan::all();
+            $data = InfoKesehatan::with('kategori')->get()->map(function ($item) {
+                $arr = $item->toArray();
+                $arr['foto'] = $item->foto ? asset('storage/' . $item->foto) : null;
+                return $arr;
+            });
+
+            return response()->json($data, 200);
+        }
+    }
+
+    public function showolahraga($id = null)
+    {
+        if ($id) {
+            $data = Tempat_olahraga::find($id);
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $result = [
+                'id'        => $data->id,
+                'name'      => $data->name,
+                'address'   => $data->address,
+                'latitude'  => $data->latitude,
+                'longitude' => $data->longitude,
+            ];
+
+            return response()->json($result, 200);
+        } else {
+            $data = Tempat_olahraga::all()->map(function ($item) {
+                return [
+                    'id'        => $item->id,
+                    'name'      => $item->name,
+                    'address'   => $item->address,
+                    'latitude'  => $item->latitude,
+                    'longitude' => $item->longitude,
+                ];
+            });
+
             return response()->json($data, 200);
         }
     }
 
     public function upload(Request $request)
-{
-    if ($request->hasFile('upload')) {
-        $file = $request->file('upload');
-        $filename = time().'_'.$file->getClientOriginalName();
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
 
-        // simpan ke storage/app/public/uploads
-        $file->storeAs('uploads', $filename, 'public');
+            // simpan ke storage/app/public/uploads
+            $file->storeAs('uploads', $filename, 'public');
 
-        $url = asset('storage/uploads/' . $filename);
+            $url = asset('storage/uploads/' . $filename);
 
-        // CKEditor 5 format
+            // CKEditor 5 format
+            return response()->json([
+                'uploaded' => true,
+                'url' => $url
+            ]);
+        }
+
         return response()->json([
-            'uploaded' => true,
-            'url' => $url
+            'uploaded' => false,
+            'error' => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
+    }
+
+    //Tempat olahraga
+    public function indexolahraga()
+    {
+        $items = Tempat_olahraga::all();
+        return view('admin.sehat.olahraga.index', compact('items'));
+    }
+
+    public function createolahraga()
+    {
+        $lokasi = Tempat_olahraga::all(); // untuk peta
+
+        return view('admin.sehat.olahraga.create', compact('lokasi'));
+    }
+
+    public function storeolahraga(Request $request)
+    {
+        $validated = $request->validate([
+            'name'      => 'required|string|max:255',
+            'address'   => 'required|string',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        Tempat_olahraga::create($validated);
+
+        $this->logAktivitas("Tempat olahraga telah ditambahkan");
+        $this->logNotifikasi("Tempat olahraga telah ditambahkan");
+
+        return redirect()->route('admin.sehat.olahraga.index')
+            ->with('success', 'Tempat olahraga berhasil ditambahkan!');
+    }
+
+    public function editolahraga($id)
+    {
+        $item = Tempat_olahraga::findOrFail($id);
+
+        return view('admin.sehat.olahraga.edit', [
+            'olahraga' => $item,
+            'lokasi' => [],
         ]);
     }
 
-    return response()->json([
-        'uploaded' => false,
-        'error' => [
-            'message' => 'No file uploaded'
-        ]
-    ], 400);
-}
+    public function updateolahraga(Request $request, $id)
+    {
+        $olahraga = Tempat_olahraga::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'      => 'required|string|max:255',
+            'address'   => 'required|string',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        $olahraga->update($validated);
+
+        $this->logAktivitas("Tempat olahraga telah diperbarui");
+        $this->logNotifikasi("Tempat olahraga telah diperbarui");
+
+        return redirect()->route('admin.sehat.olahraga.index')
+            ->with('success', 'Tempat olahraga berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $olahraga = Tempat_olahraga::findOrFail($id);
+        $olahraga->delete();
+
+        $this->logAktivitas("Tempat olahraga telah dihapus");
+        $this->logNotifikasi("Tempat olahraga telah dihapus");
+
+        return redirect()->route('admin.sehat.olahraga.index')
+            ->with('success', 'Tempat olahraga berhasil dihapus!');
+    }
+
+    public function mapolahraga()
+    {
+        $lokasi = Tempat_olahraga::all()->map(function ($loc) {
+            return [
+                'name'      => $loc->name,
+                'address'   => $loc->address,
+                'latitude'  => $loc->latitude,
+                'longitude' => $loc->longitude,
+            ];
+        });
+
+        return view('admin.sehat.olahraga.map', compact('lokasi'));
+    }
 
     protected function logAktivitas($pesan)
     {
