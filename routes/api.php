@@ -22,7 +22,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// 📌 Rute API Pengaduan (tidak harus login)
+// Dumas-yu
 Route::prefix('dumas')->group(function () {
     Route::get('/', [DumasController::class, 'index']);     // List semua
     Route::get('/{id}', [DumasController::class, 'show']);  // Detail
@@ -31,11 +31,12 @@ Route::prefix('dumas')->group(function () {
     Route::delete('/{id}', [DumasController::class, 'destroy']); // Hapus
 });
 
-// 📌 Ibadah API (contoh endpoint publik)
+// Ibadah-yu
 Route::get('/ibadah', [IbadahController::class, 'api']);
 
-//  sekolah API 
+// sekolah-yu
 Route::post('/sekolah-aduan', [SekolahController::class, 'store']);
+
 // slider
 Route::get('/sliders', [DashboardController::class, 'apiSlider']);
 

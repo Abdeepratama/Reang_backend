@@ -47,31 +47,58 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // ✅ Semua route di bawah butuh login admin
     Route::middleware('auth:admin')->group(function () {
+
+        // dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard'); // info di dashboard
+
+        // ibadah-yu
         Route::get('/ibadah/tempat', [IbadahController::class, 'tempat'])->name('ibadah.tempat.index');
-        Route::get('/pasar/tempat', [PasarController::class, 'tempat'])->name('pasar.tempat.index');
         Route::post('/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
         Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
+
+        // pasar-yu
+        Route::get('/pasar/tempat', [PasarController::class, 'tempat'])->name('pasar.tempat.index');
+
+        // plesir
         Route::get('/plesir/tempat', [PlesirController::class, 'tempat'])->name('plesir.tempat.index');
         Route::get('/plesir/tempat/map', [PlesirController::class, 'map'])->name('plesir.tempat.map');
         Route::get('/plesir/tempat/info-map', [PlesirController::class, 'infomap'])->name('plesir.info.map');
+
+        // sehat
         Route::get('/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/sehat/tempat/map', [SehatController::class, 'map'])->name('sehat.tempat.map');
-        Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard');
+
+        // pajak
         Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');
+
+        // kerja
         Route::get('admin/kerja', [KerjaController::class, 'dashboard'])->name('kerja.index');
+
+        // adminduk
         Route::get('admin/adminduk', [AdmindukController::class, 'dashboard'])->name('adminduk.index');
+
+        // renbang
         Route::get('admin/renbang', [RenbangController::class, 'dashboard'])->name('renbang.index');
+        Route::get('/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('renbang.deskripsi.index');
+
+        // dumas
         Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('dumas.aduan.index');
+
+        // izin-yu
         Route::get('admin/izin', [IzinController::class, 'dashboard'])->name('izin.index');
+
+        // wifi
         Route::get('admin/wifi', [WifiController::class, 'dashboard'])->name('wifi.index');
+
+        //slider
         Route::get('/slider', [DashboardController::class, 'sliderIndex'])->name('slider.index');
         Route::get('/slider/create', [DashboardController::class, 'sliderCreate'])->name('slider.create');
         Route::post('/slider', [DashboardController::class, 'sliderStore'])->name('slider.store');
         Route::get('/slider/{id}/edit', [DashboardController::class, 'sliderEdit'])->name('slider.edit');
         Route::put('/slider/{id}', [DashboardController::class, 'sliderUpdate'])->name('slider.update');
         Route::delete('/slider/{id}', [DashboardController::class, 'sliderDestroy'])->name('slider.destroy');
-        Route::get('/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('renbang.deskripsi.index');
+
         Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('dumas.aduan.index');
         Route::get('sekolah/aduan', [SekolahController::class, 'aduanIndex'])->name('sekolah.aduan.index');
         Route::get('ibadah/tempat/create', [IbadahController::class, 'createTempat'])->name('ibadah.tempat.create');
