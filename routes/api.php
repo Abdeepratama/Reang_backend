@@ -45,6 +45,6 @@ Route::post('/rating', [RatingController::class, 'store']);
 Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
 
 // sehat-yu
-Route::get('/sehat/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
+Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
 Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // info sehat
 Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga

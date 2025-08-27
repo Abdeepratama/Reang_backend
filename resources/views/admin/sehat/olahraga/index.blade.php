@@ -23,32 +23,33 @@
             </thead>
             <tbody>
                 @forelse($items as $olahraga)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $olahraga->name }}</td>
-                        <td>{{ $olahraga->latitude }}</td>
-                        <td>{{ $olahraga->longitude }}</td>
-                        <td>{{ $olahraga->address }}</td>
-                        <td>
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $olahraga->name }}</td>
+                    <td>{{ $olahraga->latitude }}</td>
+                    <td>{{ $olahraga->longitude }}</td>
+                    <td>{{ $olahraga->address }}</td>
+                    <td>
                         @if($olahraga->foto)
-                            <img src="{{ Storage::url($olahraga->foto) }}" alt="Foto {{ $olahraga->name }}" style="max-width:80px; height:auto;">
+                        <img src="{{ $olahraga->foto }}" alt="{{ $olahraga->name }}" width="80" height="80"
+                            onerror="this.onerror=null; this.src='/images/placeholder.png';">
                         @else
-                            <span class="text-muted">-</span>
+                        <span class="text-muted">Tidak ada foto</span>
                         @endif
                     </td>
-                        <td>
-                            <a href="{{ route('admin.sehat.olahraga.edit', $olahraga->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('admin.sehat.olahraga.destroy', $olahraga->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin hapus data ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
+                    <td>
+                        <a href="{{ route('admin.sehat.olahraga.edit', $olahraga->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('admin.sehat.olahraga.destroy', $olahraga->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin hapus data ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="text-center">Belum ada data tempat olahraga</td>
-                    </tr>
+                <tr>
+                    <td colspan="7" class="text-center">Belum ada data tempat olahraga</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

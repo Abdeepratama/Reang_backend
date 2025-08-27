@@ -11,7 +11,7 @@
     <a href="{{ route('admin.sehat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Sehat</a>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <table class="table datatables" id="infoTable">
@@ -29,31 +29,34 @@
         </thead>
         <tbody>
             @forelse($items as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->name }}</td>
-                    <td>{{ $item->address }}</td>
-                    <td>{{ $item->latitude }}</td>
-                    <td>{{ $item->longitude }}</td>
-                    <td>{{ $item->fitur }}</td>
-                    <td>
-                        @if($item->foto)
-                            <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('admin.sehat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
-                        <form action="{{ route('admin.sehat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->address }}</td>
+                <td>{{ $item->latitude }}</td>
+                <td>{{ $item->longitude }}</td>
+                <td>{{ $item->fitur }}</td>
+                <td>
+                    @if($item->foto)
+                    <img src="{{ $item->foto }}" alt="Foto {{ $item->name }}" width="80" height="80"
+                        onerror="this.onerror=null; this.src='/images/placeholder.png';">
+                    @else
+                    <span class="text-muted">Tidak ada foto</span>
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('admin.sehat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                    <form action="{{ route('admin.sehat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>
+                    </form>
+                </td>
+            </tr>
             @empty
-                <tr><td colspan="7" class="text-center">Belum ada data tempat sehat.</td></tr>
+            <tr>
+                <td colspan="7" class="text-center">Belum ada data tempat sehat.</td>
+            </tr>
             @endforelse
         </tbody>
     </table>
