@@ -166,6 +166,51 @@ class IbadahController extends Controller
             ->with('success', 'Lokasi berhasil diperbarui!');
     }
 
+    public function showtempat($id = null)
+{
+    if ($id) {
+        $data = Ibadah::with('kategori')->find($id);
+
+        if (!$data) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $arr = [
+            'id'         => $data->id,
+            'name'       => $data->name,
+            'address'    => $data->address,
+            'latitude'   => $data->latitude,
+            'longitude'  => $data->longitude,
+            'fitur'      => $data->kategori->nama ?? $data->fitur,
+            'foto'       => $data->foto
+                ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                : null,
+            'created_at' => $data->created_at,
+            'updated_at' => $data->updated_at,
+        ];
+
+        return response()->json($arr, 200);
+    } else {
+        $data = Ibadah::with('kategori')->get()->map(function ($item) {
+            return [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                    : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        });
+
+        return response()->json($data, 200);
+    }
+}
+
     public function infoIndex()
     {
         $infoItems = InfoKeagamaan::all(); // gunakan model yang benar
@@ -303,6 +348,61 @@ class IbadahController extends Controller
         return view('admin.ibadah.info.map', compact('lokasi'));
     }
 
+    public function infoshow($id = null)
+{
+    if ($id) {
+        // Ambil data tunggal dengan relasi kategori
+        $data = InfoKeagamaan::with('kategori')->find($id);
+
+        if (!$data) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $arr = [
+            'id'         => $data->id,
+            'judul'      => $data->judul,
+            'tanggal'    => $data->tanggal,
+            'waktu'      => $data->waktu,
+            'deskripsi'  => $this->replaceImageUrlsInHtml($data->deskripsi),
+            'lokasi'     => $data->lokasi,
+            'alamat'     => $data->alamat,
+            'foto'       => $data->foto
+                ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                : null,
+            'kategori'   => $data->kategori->nama ?? ($data->fitur ?? null),
+            'latitude'   => $data->latitude,
+            'longitude'  => $data->longitude,
+            'created_at' => $data->created_at,
+            'updated_at' => $data->updated_at,
+        ];
+
+        return response()->json($arr, 200);
+    } else {
+        // Ambil semua data
+        $data = InfoKeagamaan::with('kategori')->get()->map(function ($item) {
+            return [
+                'id'         => $item->id,
+                'judul'      => $item->judul,
+                'tanggal'    => $item->tanggal,
+                'waktu'      => $item->waktu,
+                'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                'lokasi'     => $item->lokasi,
+                'alamat'     => $item->alamat,
+                'foto'       => $item->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                    : null,
+                'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        });
+
+        return response()->json($data, 200);
+    }
+}
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
@@ -322,4 +422,93 @@ class IbadahController extends Controller
             'url' => route('admin.ibadah.tempat.index') // route yang valid
         ]);
     }
+
+    private function getStoragePathFromFoto($foto)
+{
+    if (!$foto) return null;
+
+    // Jika sudah berbentuk path relatif (tidak ada http/https), kembalikan langsung
+    if (strpos($foto, 'http://') !== 0 && strpos($foto, 'https://') !== 0) {
+        return $foto;
+    }
+
+    // jika berisi '/storage/...', ambil bagian setelah '/storage/'
+    if (preg_match('#/storage/(.+)$#', $foto, $matches)) {
+        return $matches[1];
+    }
+
+    // jika tidak menemukan '/storage/', ambil path dari URL, dan hapus leading '/'
+    $path = parse_url($foto, PHP_URL_PATH);
+    if ($path) {
+        $path = ltrim($path, '/');
+        if (strpos($path, 'storage/') === 0) {
+            return substr($path, strlen('storage/'));
+        }
+        return $path;
+    }
+
+    return null;
+}
+
+/**
+ * Utility: bangun foto URL dinamis berdasarkan host yang sedang diakses
+ */
+private function buildFotoUrl($storagePath)
+{
+    if (!$storagePath) return null;
+    return request()->getSchemeAndHttpHost() . '/storage/' . ltrim($storagePath, '/');
+}
+
+/**
+ * Replace image URLs dalam deskripsi HTML agar pakai host saat ini
+ */
+private function replaceImageUrlsInHtml($content)
+{
+    if (!$content) return $content;
+
+    return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
+        $prefix = $m[1];
+        $src = $m[2];
+        $suffix = $m[3];
+
+        // Biarkan data URI atau external CDN
+        if (preg_match('/^data:/i', $src)) {
+            return $m[0];
+        }
+
+        // Jika absolute URL
+        if (preg_match('/^https?:\/\//i', $src)) {
+            if (preg_match('#/storage/(.+)#i', $src, $matches)) {
+                $rel = $matches[1];
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+                return $prefix . $new . $suffix;
+            }
+            if (preg_match('#/(uploads/.+)$#i', $src, $m2)) {
+                $rel = $m2[1];
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+                return $prefix . $new . $suffix;
+            }
+            return $m[0]; // external lain biarkan
+        }
+
+        // Jika relative
+        $parsedPath = $src;
+        if (strpos($parsedPath, '/storage/') === 0) {
+            $rel = ltrim(substr($parsedPath, strlen('/storage/')), '/');
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
+            return $prefix . $new . $suffix;
+        }
+        if (strpos($parsedPath, '/uploads/') === 0) {
+            $rel = ltrim($parsedPath, '/');
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
+            return $prefix . $new . $suffix;
+        }
+        if (preg_match('#^(uploads/|foto_ibadah/|foto_keagamaan/|tempat_ibadah/)#i', $parsedPath)) {
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($parsedPath, '/');
+            return $prefix . $new . $suffix;
+        }
+
+        return $m[0];
+    }, $content);
+}
 }

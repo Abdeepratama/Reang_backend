@@ -155,7 +155,12 @@
       marker.bindPopup(`
         <strong>${loc.name}</strong><br>
         ${loc.address ? `<em>${loc.address}</em><br>` : ''}
-        ${loc.foto ? `<img src="${loc.foto}" width="100%" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
+        ${loc.foto ? `
+    <div style="text-align:center">
+        <img src="${loc.foto}" width="50%" 
+             onerror="this.onerror=null; this.src='/images/placeholder.png';">
+    </div>
+` : ''}
       `);
       allMarkers.push({ marker, data: loc });
     });

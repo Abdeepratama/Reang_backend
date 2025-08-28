@@ -66,7 +66,7 @@
 
                 <div class="form-group mb-3">
                     <label>Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
+                    <textarea name="deskripsi" id="editor" class="form-control" rows="5"></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>
@@ -148,7 +148,9 @@
             document.getElementById('alamat').value = alamat;
         }
 
-        clickMarker = L.marker([lat, lng], { icon: masjidIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], {
+                icon: masjidIcon
+            }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     }
@@ -174,5 +176,46 @@
 
     document.getElementById('latitude').addEventListener('input', updateMapFromInput);
     document.getElementById('longitude').addEventListener('input', updateMapFromInput);
+</script>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+<script>
+// Inisialisasi CKEditor
+let editor;
+
+ClassicEditor
+.create(document.querySelector('#editor'), {
+    ckfinder: {
+        uploadUrl: "{{ route('admin.sehat.info.upload.image') }}?_token={{ csrf_token() }}"
+    }
+})
+.then(instance => {
+    editor = instance;
+})
+.catch(error => {
+    console.error(error);
+});
+
+// Validasi manual sebelum submit
+document.getElementById('infoForm').addEventListener('submit', function(e) {
+    // Validasi CKEditor content
+    if (editor && editor.getData().trim() === '') {
+        e.preventDefault();
+        alert('Deskripsi harus diisi');
+        return false;
+    }
+    
+    // Validasi file type
+    const fileInput = document.querySelector('input[name="foto"]');
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!validTypes.includes(file.type)) {
+            e.preventDefault();
+            alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
+            return false;
+        }
+    }
+});
 </script>
 @endsection

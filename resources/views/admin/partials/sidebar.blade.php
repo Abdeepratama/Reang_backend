@@ -105,6 +105,12 @@
                                     Aduan sekolah
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.sekolah.info.index') }}">
+                                    Berita sekolah
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

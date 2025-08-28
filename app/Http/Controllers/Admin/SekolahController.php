@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Sekolah;
 use App\Models\Kategori;
 use App\Models\Tempat_sekolah;
+use App\Models\InfoSekolah;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
@@ -250,7 +251,182 @@ class SekolahController extends Controller
             ->with('success', 'Aduan sekolah berhasil dihapus.');
     }
 
-     protected function logAktivitas($pesan)
+    // info sekolah
+    public function infoindex()
+    {
+        $infoItems = InfoSekolah::latest()->get();
+        return view('admin.sekolah.info.index', compact('infoItems'));
+    }
+
+    public function infocreate()
+    {
+        return view('admin.sekolah.info.create');
+    }
+
+    public function infostore(Request $request)
+    {
+        $data = $request->validate([
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('foto_sekolah', 'public');
+        }
+
+        InfoSekolah::create($data);
+
+        $this->logAktivitas("Info Sekolah telah ditambahkan");
+        $this->logNotifikasi("Info Sekolah telah ditambahkan");
+
+        return redirect()->route('admin.sekolah.info.index')->with('success', 'Info sekolah berhasil ditambahkan.');
+    }
+
+    public function infoedit($id)
+    {
+        $info = InfoSekolah::findOrFail($id);
+
+        return view('admin.sekolah.info.edit', compact('info'));
+    }
+
+    public function infoupdate(Request $request, $id)
+    {
+        $info = InfoSekolah::findOrFail($id);
+
+        $data = $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            // hapus foto lama bila ada
+            $oldPath = $this->getStoragePathFromFoto($info->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+            $data['foto'] = $request->file('foto')->store('foto_sekolah', 'public');
+        }
+
+        $info->update($data);
+
+        $this->logAktivitas("Info Sekolah telah diupdate");
+        $this->logNotifikasi("Info Sekolah telah diupdate");
+
+        return redirect()->route('admin.sekolah.info.index')->with('success', 'Info sekolah berhasil diperbarui.');
+    }
+
+    public function infodestroy($id)
+    {
+        $info = InfoSekolah::findOrFail($id);
+
+        if ($info->foto) {
+            $oldPath = $this->getStoragePathFromFoto($info->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
+
+        $info->delete();
+
+        $this->logAktivitas("Info Sekolah telah dihapus");
+        $this->logNotifikasi("Info Sekolah telah dihapus");
+
+        return back()->with('success', 'Info sekolah berhasil dihapus.');
+    }
+
+    public function infoupload(Request $request)
+{
+    if ($request->hasFile('upload')) {
+        $file = $request->file('upload');
+
+        // bikin nama file unik + hilangkan spasi
+        $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
+
+        // simpan ke folder storage/app/public/foto_sekolah
+        $file->storeAs('foto_sekolah', $filename, 'public');
+
+        // bikin URL dinamis sesuai IP/domain server
+        $url = $request->getSchemeAndHttpHost() . '/storage/foto_sekolah/' . $filename;
+
+        return response()->json([
+            'uploaded' => true,
+            'url'      => $url
+        ]);
+    }
+
+    return response()->json([
+        'uploaded' => false,
+        'error'    => [
+            'message' => 'No file uploaded'
+        ]
+    ], 400);
+}
+
+    public function infoshow($id = null)
+    {
+        if ($id) {
+            // Ambil data tunggal (kalau nanti InfoSekolah ada relasi kategori, bisa tambahkan with('kategori'))
+            $data = InfoSekolah::find($id);
+
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $arr = [
+                'id'         => $data->id,
+                'judul'      => $data->judul,
+                'deskripsi'  => $this->replaceImageUrlsInHtml($data->deskripsi),
+                'foto'       => $data->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                    : null,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
+            ];
+
+            return response()->json($arr, 200);
+        } else {
+            // Ambil semua data
+            $data = InfoSekolah::all()->map(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'judul'      => $item->judul,
+                    'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($data, 200);
+        }
+    }
+
+    private function replaceImageUrlsInHtml($html)
+    {
+        return preg_replace_callback(
+            '/<img[^>]+src="([^">]+)"/i',
+            function ($matches) {
+                $src = $matches[1];
+
+                // kalau sudah absolute URL, biarkan
+                if (preg_match('/^https?:\/\//', $src)) {
+                    return $matches[0];
+                }
+
+                // ubah relative path -> URL publik (storage)
+                $url = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($src, '/');
+
+                return str_replace($src, $url, $matches[0]);
+            },
+            $html
+        );
+    }
+
+    protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
             Aktivitas::create([
@@ -269,4 +445,24 @@ class SekolahController extends Controller
             'url' => route('admin.ibadah.tempat.index') // route yang valid
         ]);
     }
+
+    private function buildFotoUrl($path)
+{
+    if (!$path) {
+        return null;
+    }
+
+    // kembalikan URL publik untuk file di storage
+    return asset('storage/' . ltrim($path, '/'));
+}
+
+private function getStoragePathFromFoto($foto)
+{
+    if (!$foto) {
+        return null;
+    }
+
+    // misalnya foto sudah tersimpan "foto_sekolah/namafile.png"
+    return ltrim($foto, '/');
+}
 }

@@ -32,17 +32,19 @@ Route::prefix('dumas')->group(function () {
 });
 
 // Ibadah-yu
-Route::get('/ibadah', [IbadahController::class, 'api']);
+Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']); // tempat ibadah
+Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  event agama
 
 // sekolah-yu
-Route::post('/sekolah-aduan', [SekolahController::class, 'store']);
+Route::post('/sekolah-aduan', [SekolahController::class, 'store']); // aduan sekolah
+Route::get('/info-sekolah/{id?}', [SekolahController::class, 'infoshow']); // info sekolah
 
 // slider
 Route::get('/sliders', [DashboardController::class, 'apiSlider']);
 
 // rating
 Route::post('/rating', [RatingController::class, 'store']);
-Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
+Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']); 
 
 // sehat-yu
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 

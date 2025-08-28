@@ -50,14 +50,13 @@ class SehatController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120'
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120'
         ]);
 
         if ($request->hasFile('foto')) {
+            // simpan PATH relatif di DB, bukan URL penuh
             $path = $request->file('foto')->store('foto_kesehatan', 'public');
-
-            // Simpan full URL
-            $validated['foto'] = asset('storage/' . $path);
+            $validated['foto'] = $path;
         }
 
         Sehat::create($validated);
@@ -91,7 +90,7 @@ class SehatController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120'
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120'
         ]);
 
         $sehat->name = $validated['name'];
@@ -101,10 +100,13 @@ class SehatController extends Controller
         $sehat->fitur = $validated['fitur'];
 
         if ($request->hasFile('foto')) {
-            if ($sehat->foto && Storage::disk('public')->exists($sehat->foto)) {
-                Storage::disk('public')->delete($sehat->foto);
+            // Hapus file lama bila ada (support jika db menyimpan URL penuh atau path)
+            $oldPath = $this->getStoragePathFromFoto($sehat->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
             }
-            $path = $request->file('foto')->store('tempat_Sehat_foto', 'public');
+
+            $path = $request->file('foto')->store('foto_kesehatan', 'public');
             $sehat->foto = $path;
         }
 
@@ -121,9 +123,12 @@ class SehatController extends Controller
     {
         $sehat = Sehat::findOrFail($id);
 
-        // Hapus foto kalau ada
-        if ($sehat->foto && Storage::disk('public')->exists($sehat->foto)) {
-            Storage::disk('public')->delete($sehat->foto);
+        // Hapus foto kalau ada (support untuk URL penuh atau path relatif)
+        if ($sehat->foto) {
+            $path = $this->getStoragePathFromFoto($sehat->foto);
+            if ($path && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
 
         $sehat->delete();
@@ -135,16 +140,52 @@ class SehatController extends Controller
             ->with('success', 'Lokasi Kesehatan berhasil dihapus!');
     }
 
+    // API: show all or single, mengembalikan foto sebagai URL dinamis sesuai request
     public function show($id = null)
     {
         if ($id) {
-            $data = Sehat::find($id);
+            // load relasi kategori kalau ada
+            $data = Sehat::with('kategori')->find($id);
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
-            return response()->json($data, 200);
+
+            $arr = $data->toArray();
+
+            // mapping foto url
+            $arr['foto'] = $data->foto
+                ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                : null;
+
+            // kalau relasi kategori kosong, fallback pakai fitur
+            if (empty($arr['kategori'])) {
+                $arr['kategori'] = $arr['fitur'] ?? null;
+            }
+
+            // hapus fitur biar tidak dobel
+            unset($arr['fitur']);
+
+            return response()->json($arr, 200);
         } else {
-            $data = Sehat::all();
+            $data = Sehat::with('kategori')->get()->map(function ($item) {
+                $arr = $item->toArray();
+
+                // mapping foto url
+                $arr['foto'] = $item->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                    : null;
+
+                // kalau relasi kategori kosong, fallback pakai fitur
+                if (empty($arr['kategori'])) {
+                    $arr['kategori'] = $arr['fitur'] ?? null;
+                }
+
+                // hapus fitur biar tidak dobel
+                unset($arr['fitur']);
+
+                return $arr;
+            });
+
             return response()->json($data, 200);
         }
     }
@@ -157,7 +198,7 @@ class SehatController extends Controller
                 'address' => $loc->address,
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
-                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+                'foto' => $loc->foto ?: null,
             ];
         });
 
@@ -208,13 +249,14 @@ class SehatController extends Controller
     public function infostore(Request $request)
     {
         $data = $request->validate([
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'fitur' => 'required|string|max:255',
         ]);
 
         if ($request->hasFile('foto')) {
+            // simpan PATH relatif
             $data['foto'] = $request->file('foto')->store('foto_kesehatan', 'public');
         }
 
@@ -245,12 +287,14 @@ class SehatController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'fitur' => 'required|string|max:255',
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
         ]);
 
         if ($request->hasFile('foto')) {
-            if ($info->foto) {
-                Storage::disk('public')->delete($info->foto);
+            // hapus foto lama bila ada
+            $oldPath = $this->getStoragePathFromFoto($info->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
             }
             $data['foto'] = $request->file('foto')->store('foto_kesehatan', 'public');
         }
@@ -268,7 +312,10 @@ class SehatController extends Controller
         $info = InfoKesehatan::findOrFail($id);
 
         if ($info->foto) {
-            Storage::disk('public')->delete($info->foto);
+            $oldPath = $this->getStoragePathFromFoto($info->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
         }
 
         $info->delete();
@@ -282,53 +329,39 @@ class SehatController extends Controller
     public function infoshow($id = null)
     {
         if ($id) {
+            // Ambil data tunggal dengan relasi kategori
             $data = InfoKesehatan::with('kategori')->find($id);
+
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
 
-            $result = $data->toArray();
-            $result['foto'] = $data->foto ? asset('storage/' . $data->foto) : null;
-
-            return response()->json($result, 200);
-        } else {
-            $data = InfoKesehatan::with('kategori')->get()->map(function ($item) {
-                $arr = $item->toArray();
-                $arr['foto'] = $item->foto ? asset('storage/' . $item->foto) : null;
-                return $arr;
-            });
-
-            return response()->json($data, 200);
-        }
-    }
-
-    public function showolahraga($id = null)
-    {
-        if ($id) {
-            $data = Tempat_olahraga::find($id);
-            if (!$data) {
-                return response()->json(['message' => 'Data tidak ditemukan'], 404);
-            }
-
-            $result = [
-                'id'        => $data->id,
-                'name'      => $data->name,
-                'address'   => $data->address,
-                'latitude'  => $data->latitude,
-                'longitude' => $data->longitude,
-                'foto'      => $data->foto,
+            $arr = [
+                'id'         => $data->id,
+                'judul'      => $data->judul,
+                'deskripsi'  => $this->replaceImageUrlsInHtml($data->deskripsi),
+                'foto'       => $data->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                    : null,
+                'kategori'   => $data->kategori->nama ?? ($data->fitur ?? null),
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
             ];
 
-            return response()->json($result, 200);
+            return response()->json($arr, 200);
         } else {
-            $data = Tempat_olahraga::all()->map(function ($item) {
+            // Ambil semua data
+            $data = InfoKesehatan::with('kategori')->get()->map(function ($item) {
                 return [
-                    'id'        => $item->id,
-                    'name'      => $item->name,
-                    'address'   => $item->address,
-                    'latitude'  => $item->latitude,
-                    'longitude' => $item->longitude,
-                    'foto'      => $item->foto,
+                    'id'         => $item->id,
+                    'judul'      => $item->judul,
+                    'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
                 ];
             });
 
@@ -336,13 +369,14 @@ class SehatController extends Controller
         }
     }
 
+    // Upload endpoint (ckeditor) -> simpan file dan kembalikan URL dinamis
     public function upload(Request $request)
     {
         if ($request->hasFile('upload')) {
             $file = $request->file('upload');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time() . '' . preg_replace('/\s+/', '', $file->getClientOriginalName());
 
-            // simpan ke storage/app/public/uploads
+            // simpan ke storage/app/public/uploads sebagai PATH relatif
             $file->storeAs('uploads', $filename, 'public');
 
             // URL dinamis sesuai IP/domain yg sedang diakses
@@ -383,14 +417,13 @@ class SehatController extends Controller
             'address'   => 'required|string',
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
-            'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
         ]);
 
         if ($request->hasFile('foto')) {
+            // simpan PATH relatif
             $path = $request->file('foto')->store('tempat_olahraga', 'public');
-
-            // Simpan full URL
-            $validated['foto'] = asset('storage/' . $path);
+            $validated['foto'] = $path;
         }
 
         Tempat_olahraga::create($validated);
@@ -421,7 +454,7 @@ class SehatController extends Controller
             'address'   => 'required|string',
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
-            'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
         ]);
 
         // simpan data dulu
@@ -429,11 +462,12 @@ class SehatController extends Controller
 
         // cek apakah ada upload file baru
         if ($request->hasFile('foto')) {
-            // hapus foto lama
-            if ($olahraga->foto) {
-                Storage::disk('public')->delete($olahraga->foto);
+            // hapus foto lama (support URL penuh atau path relatif)
+            $oldPath = $this->getStoragePathFromFoto($olahraga->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
             }
-            // upload baru
+            // upload baru -> simpan path relatif
             $data['foto'] = $request->file('foto')->store('tempat_olahraga', 'public');
         } else {
             // kalau tidak upload, jangan hapus foto lama
@@ -452,7 +486,12 @@ class SehatController extends Controller
     public function destroyolahraga($id)
     {
         $olahraga = Tempat_olahraga::findOrFail($id);
-        if ($olahraga->foto) Storage::disk('public')->delete($olahraga->foto);
+        if ($olahraga->foto) {
+            $oldPath = $this->getStoragePathFromFoto($olahraga->foto);
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
         $olahraga->delete();
 
         $this->logAktivitas("Tempat olahraga telah dihapus");
@@ -470,11 +509,45 @@ class SehatController extends Controller
                 'address'   => $loc->address,
                 'latitude'  => $loc->latitude,
                 'longitude' => $loc->longitude,
-                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
+                'foto' => $loc->foto ?: null,
             ];
         });
 
         return view('admin.sehat.olahraga.map', compact('lokasi'));
+    }
+    
+    public function showolahraga($id = null)
+    {
+        if ($id) {
+            $data = Tempat_olahraga::find($id);
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $result = [
+                'id'        => $data->id,
+                'name'      => $data->name,
+                'address'   => $data->address,
+                'latitude'  => $data->latitude,
+                'longitude' => $data->longitude,
+                'foto'      => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
+            ];
+
+            return response()->json($result, 200);
+        } else {
+            $data = Tempat_olahraga::all()->map(function ($item) {
+                return [
+                    'id'        => $item->id,
+                    'name'      => $item->name,
+                    'address'   => $item->address,
+                    'latitude'  => $item->latitude,
+                    'longitude' => $item->longitude,
+                    'foto'      => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                ];
+            });
+
+            return response()->json($data, 200);
+        }
     }
 
     protected function logAktivitas($pesan)
@@ -495,5 +568,112 @@ class SehatController extends Controller
             'dibaca' => false,
             'url' => route('admin.sehat.tempat.index') // route yang valid
         ]);
+    }
+
+    /**
+     * Utility: menerima value foto dari DB (bisa URL penuh atau path relatif)
+     * dan mengembalikan path relatif di storage disk public (contoh: "foto_kesehatan/abc.jpg")
+     */
+    private function getStoragePathFromFoto($foto)
+    {
+        if (!$foto) return null;
+
+        // Jika sudah berbentuk path relatif (tidak ada http/https), kembalikan langsung
+        if (strpos($foto, 'http://') !== 0 && strpos($foto, 'https://') !== 0) {
+            // kemungkinan sudah path relatif seperti 'foto_kesehatan/xxx.jpg' atau 'uploads/xxx.jpg'
+            return $foto;
+        }
+
+        // jika berisi '/storage/...', ambil bagian setelah '/storage/'
+        if (preg_match('#/storage/(.+)$#', $foto, $matches)) {
+            return $matches[1];
+        }
+
+        // jika tidak menemukan '/storage/', ambil path dari URL, dan hapus leading '/'
+        $path = parse_url($foto, PHP_URL_PATH);
+        if ($path) {
+            $path = ltrim($path, '/');
+            // jika path mengandung 'storage/' di awal, buang segmen 'storage/'
+            if (strpos($path, 'storage/') === 0) {
+                return substr($path, strlen('storage/'));
+            }
+            return $path;
+        }
+
+        return null;
+    }
+
+    /**
+     * Utility: bangun foto URL dinamis berdasarkan host yang sedang diakses
+     * menerima path relatif seperti 'foto_kesehatan/abc.jpg'
+     */
+    private function buildFotoUrl($storagePath)
+    {
+        if (!$storagePath) return null;
+        return request()->getSchemeAndHttpHost() . '/storage/' . ltrim($storagePath, '/');
+    }
+
+    /**
+     * replaceImageUrlsInHtml:
+     * - mencari semua atribut src="..." di HTML deskripsi
+     * - jika src mengarah ke /storage/... atau mengandung '/storage/...', ganti dengan host saat ini
+     * - jika src relative seperti 'uploads/..' juga diubah ke storage URL saat ini
+     * - biarkan data URI dan external CDN tidak diubah
+     */
+    private function replaceImageUrlsInHtml($content)
+    {
+        if (!$content) return $content;
+
+        return preg_replace_callback('/(<img\b[^>]\bsrc\s=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
+            $prefix = $m[1];
+            $src = $m[2];
+            $suffix = $m[3];
+
+            // Biarkan data URI atau external CDN http(s) yang bukan storage
+            if (preg_match('/^data:/i', $src)) {
+                return $m[0];
+            }
+
+            // Jika src sudah absolute http(s)
+            if (preg_match('/^https?:\\/\\//i', $src)) {
+                // jika mengandung '/storage/' maka ekstrak path setelah storage dan rebuild URL dinamis
+                if (preg_match('#/storage/(.+)#i', $src, $matches)) {
+                    $rel = $matches[1];
+                    $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+                    return $prefix . $new . $suffix;
+                }
+                // jika path mengandung '/uploads/' atau '/foto_kesehatan/' di URL, juga ubah
+                if (preg_match('#/(uploads/.+)$#i', $src, $m2)) {
+                    $rel = $m2[1];
+                    $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+                    return $prefix . $new . $suffix;
+                }
+                // external non-storage: jangan ubah
+                return $m[0];
+            }
+
+            // src relative (mis. 'uploads/xxx.jpg' atau 'storage/uploads/xxx.jpg' atau '/storage/uploads/xxx.jpg')
+            $parsedPath = $src;
+            // jika mengandung leading '/storage/' -> ambil setelahnya
+            if (strpos($parsedPath, '/storage/') === 0) {
+                $rel = ltrim(substr($parsedPath, strlen('/storage/')), '/');
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
+                return $prefix . $new . $suffix;
+            }
+            // jika mengandung leading '/uploads/' -> treat as storage uploads
+            if (strpos($parsedPath, '/uploads/') === 0) {
+                $rel = ltrim($parsedPath, '/');
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
+                return $prefix . $new . $suffix;
+            }
+            // jika src like 'uploads/..' or 'foto_kesehatan/..' -> make storage URL
+            if (preg_match('#^(uploads/|foto_kesehatan/|tempat_olahraga/)#i', $parsedPath, $dummy)) {
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($parsedPath, '/');
+                return $prefix . $new . $suffix;
+            }
+
+            // default: leave unchanged
+            return $m[0];
+        }, $content);
     }
 }
