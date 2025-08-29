@@ -52,11 +52,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/admin/info', [InfoController::class, 'dashboard'])->name('admin.info.dashboard'); // info di dashboard
 
-        // ibadah-yu
+        //--------------------------------------------ibadah-yu----------------------------------------------------------
+        // tempat ibadah
         Route::get('/ibadah/tempat', [IbadahController::class, 'tempat'])->name('ibadah.tempat.index');
         Route::post('/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
         Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
         Route::get('/ibadah/tempat/create', [IbadahController::class, 'createTempat'])->name('ibadah.tempat.create');
+        // info ibadah
         Route::get('/ibadah/info', [IbadahController::class, 'infoIndex'])->name('ibadah.info.index');
         Route::get('/ibadah/info/map', [IbadahController::class, 'infomap'])->name('ibadah.info.map');
         Route::get('/ibadah/info/create', [IbadahController::class, 'createInfo'])->name('ibadah.info.create');
@@ -65,51 +67,71 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/ibadah/info/{id}', [IbadahController::class, 'infoUpdate'])->name('ibadah.info.update');
         Route::delete('/ibadah/info/{id}', [IbadahController::class, 'infoDestroy'])->name('ibadah.info.destroy');
 
-        // pasar-yu
+        //--------------------------------------------pasar-yu---------------------------------------------------------
         // tempat pasar
         Route::get('/pasar/tempat', [PasarController::class, 'tempat'])->name('pasar.tempat.index');
         Route::get('/pasar/tempat/map', [PasarController::class, 'map'])->name('pasar.tempat.map');
-         // info pasar
+        // info pasar
         Route::get('/pasar/info', [PasarController::class, 'info'])->name('pasar.info.index');
         Route::get('/pasar/info/create', [PasarController::class, 'createInfo'])->name('pasar.info.create');
         Route::post('/pasar/store', [PasarController::class, 'storeInfo'])->name('pasar.info.store');
-        Route::get('/{id}/pasar/edit', [PasarController::class, 'infoEdit'])->name('pasar.info.edit');
-        Route::put('/{id}/pasar/update', [PasarController::class, 'infoUpdate'])->name('pasar.info.update');
-        Route::delete('/{id}/pasar/destroy', [PasarController::class, 'infoDestroy'])->name('pasar.info.destroy');
+        Route::get('/pasar/edit/{id}', [PasarController::class, 'infoEdit'])->name('pasar.info.edit');
+        Route::put('/pasar/update/{id}', [PasarController::class, 'infoUpdate'])->name('pasar.info.update');
+        Route::delete('/pasar/destroy/{id}', [PasarController::class, 'infoDestroy'])->name('pasar.info.destroy');
+        Route::get('/pasar/info/map', [PasarController::class, 'map'])->name('pasar.info.map');
 
-        // plesir
+        //--------------------------------------------plesir-yu-----------------------------------------------------------
+        //tempat plesir
         Route::get('/plesir/tempat', [PlesirController::class, 'tempat'])->name('plesir.tempat.index');
         Route::get('/plesir/tempat/map', [PlesirController::class, 'map'])->name('plesir.tempat.map');
+        // info map
         Route::get('/plesir/tempat/info-map', [PlesirController::class, 'infomap'])->name('plesir.info.map');
         Route::get('/plesir/info', [PlesirController::class, 'info'])->name('plesir.info.index');
         Route::get('/plesir/info/create', [PlesirController::class, 'createInfo'])->name('plesir.info.create');
         Route::post('/plesir/store', [PlesirController::class, 'storeInfo'])->name('plesir.info.store');
-        Route::get('/{id}/plesir/edit', [PlesirController::class, 'infoEdit'])->name('plesir.info.edit');
-        Route::put('/{id}/plesir/update', [PlesirController::class, 'infoUpdate'])->name('plesir.info.update');
-        Route::delete('/{id}/plesir/destroy', [PlesirController::class, 'infoDestroy'])->name('plesir.info.destroy');
+        Route::get('/plesir/edit/{id}', [PlesirController::class, 'infoEdit'])->name('plesir.info.edit');
+        Route::put('/plesir/update/{id}', [PlesirController::class, 'infoUpdate'])->name('plesir.info.update');
+        Route::delete('/plesir/destroy/{id}', [PlesirController::class, 'infoDestroy'])->name('plesir.info.destroy');
 
-        // sehat
+        //-----------------------------------------------sehat------------------------------------------------------------
+        // lokasi rumahsakit/puskesmas
         Route::get('/sehat/tempat', [SehatController::class, 'tempat'])->name('sehat.tempat.index');
         Route::get('/sehat/tempat/map', [SehatController::class, 'map'])->name('sehat.tempat.map');
         Route::delete('/sehat/tempat/{id}', [SehatController::class, 'destroy'])->name('sehat.tempat.destroy');
+        //info kesehatan
         Route::get('/sehat/info', [SehatController::class, 'infoindex'])->name('sehat.info.index');
         Route::get('/sehat/info/create', [SehatController::class, 'infocreate'])->name('sehat.info.create');
         Route::post('/sehat/info/store', [SehatController::class, 'infostore'])->name('sehat.info.store');
-        Route::get('/{id}/sehat/edit', [SehatController::class, 'infoedit'])->name('sehat.info.edit');
-        Route::put('/{id}/sehat/update', [SehatController::class, 'infoupdate'])->name('sehat.info.update');
-        Route::delete('/{id}/sehat/destroy', [SehatController::class, 'infodestroy'])->name('sehat.info.destroy');
+        Route::get('/sehat/edit/{id}', [SehatController::class, 'infoedit'])->name('sehat.info.edit');
+        Route::put('/sehat/update/{id}', [SehatController::class, 'infoupdate'])->name('sehat.info.update');
+        Route::delete('/sehat/destroy/{id}', [SehatController::class, 'infodestroy'])->name('sehat.info.destroy');
+        Route::post('/upload-image', [SehatController::class, 'upload'])->name('sehat.info.upload.image');
+        //tempat olahraga
+        Route::get('/olahraga/tempat', [SehatController::class, 'indexolahraga'])->name('sehat.olahraga.index');
+        Route::get('/olahraga/tempat/create', [SehatController::class, 'createolahraga'])->name('sehat.olahraga.create');
+        Route::post('/olahraga/tempat/store', [SehatController::class, 'storeolahraga'])->name('sehat.olahraga.store');
+        Route::get('/olahraga/tempat/edit/{id}', [SehatController::class, 'editolahraga'])->name('sehat.olahraga.edit');
+        Route::put('/olahraga/tempat/update/{id}', [SehatController::class, 'updateolahraga'])->name('sehat.olahraga.update');
+        Route::delete('/olahraga/tempat/delete/{id}', [SehatController::class, 'destroyolahraga'])->name('sehat.olahraga.destroy');
+        Route::get('/olahraga/tempat/map', [SehatController::class, 'mapolahraga'])->name('sehat.olahraga.map');
 
         // pajak
-        Route::get('admin/pajak', [PajakController::class, 'dashboard'])->name('pajak.index');
+        Route::get('/pajak/info/index', [PajakController::class, 'infoindex'])->name('pajak.info.index');
+        Route::get('/pajak/info/create', [PajakController::class, 'infocreate'])->name('pajak.info.create');
+        Route::post('/pajak/info/store', [PajakController::class, 'infostore'])->name('pajak.info.store');
+        Route::get('/pajak/info/{id}/edit', [PajakController::class, 'infoedit'])->name('pajak.info.edit');
+        Route::put('/pajak/info/{id}', [PajakController::class, 'infoupdate'])->name('pajak.info.update');
+        Route::delete('/pajak/info/{id}', [PajakController::class, 'infodestroy'])->name('pajak.info.destroy');
+        Route::post('/pajak/info/upload-image', [PajakController::class, 'infoupload'])->name('pajak.info.upload.image');
 
         // kerja
-        Route::get('admin/kerja', [KerjaController::class, 'dashboard'])->name('kerja.index');
+        Route::get('/kerja', [KerjaController::class, 'dashboard'])->name('kerja.index');
 
         // adminduk
-        Route::get('admin/adminduk', [AdmindukController::class, 'dashboard'])->name('adminduk.index');
+        Route::get('/adminduk', [AdmindukController::class, 'dashboard'])->name('adminduk.index');
 
         // renbang
-        Route::get('admin/renbang', [RenbangController::class, 'dashboard'])->name('renbang.index');
+        Route::get('/renbang', [RenbangController::class, 'dashboard'])->name('renbang.index');
         Route::get('/renbang/deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('renbang.deskripsi.index');
 
         // dumas
@@ -159,21 +181,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // setting
         Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
 
-        // Opsional: untuk peta
-        Route::get('/pasar/info/map', [PasarController::class, 'map'])->name('pasar.info.map');
-
-        // routes/web.php
-        Route::post('/upload-image', [SehatController::class, 'upload'])->name('sehat.info.upload.image');
-
-        //tempat olahraga
-        Route::get('/olahraga/tempat', [SehatController::class, 'indexolahraga'])->name('sehat.olahraga.index');
-        Route::get('/olahraga/tempat/create', [SehatController::class, 'createolahraga'])->name('sehat.olahraga.create');
-        Route::post('/olahraga/tempat/store', [SehatController::class, 'storeolahraga'])->name('sehat.olahraga.store');
-        Route::get('/olahraga/tempat/edit/{id}', [SehatController::class, 'editolahraga'])->name('sehat.olahraga.edit');
-        Route::put('/olahraga/tempat/update/{id}', [SehatController::class, 'updateolahraga'])->name('sehat.olahraga.update');
-        Route::delete('/olahraga/tempat/delete/{id}', [SehatController::class, 'destroyolahraga'])->name('sehat.olahraga.destroy');
-        Route::get('/olahraga/tempat/map', [SehatController::class, 'mapolahraga'])->name('sehat.olahraga.map');
-
 
         // Resource routes
         Route::resource('ibadah', IbadahController::class);
@@ -182,7 +189,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/plesir', PlesirController::class);
         Route::resource('/dumas', DumasController::class);
         Route::resource('/info', InfoController::class);
-        Route::resource('/pajak', PajakController::class);
         Route::resource('/Kerja', KerjaController::class);
         Route::resource('/adminduk', AdmindukController::class);
         Route::resource('/renbang', RenbangController::class);

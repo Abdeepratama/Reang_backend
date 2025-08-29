@@ -140,6 +140,51 @@ class SekolahController extends Controller
         return view('admin.sekolah.tempat.map', compact('lokasi'));
     }
 
+    public function showTempat($id = null)
+    {
+        if ($id) {
+            $data = Tempat_sekolah::with('kategori')->find($id);
+
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $arr = [
+                'id'         => $data->id,
+                'name'       => $data->name,
+                'address'    => $data->address,
+                'latitude'   => $data->latitude,
+                'longitude'  => $data->longitude,
+                'fitur'      => $data->kategori->nama ?? $data->fitur, // ambil nama kategori jika ada
+                'foto'       => $data->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                    : null,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
+            ];
+
+            return response()->json($arr, 200);
+        } else {
+            $data = Tempat_sekolah::with('kategori')->get()->map(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'name'       => $item->name,
+                    'address'    => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'fitur'      => $item->kategori->nama ?? $item->fitur,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($data, 200);
+        }
+    }
+
     // ======================= ADUAN SEKOLAH =======================
 
     /**
@@ -337,32 +382,32 @@ class SekolahController extends Controller
     }
 
     public function infoupload(Request $request)
-{
-    if ($request->hasFile('upload')) {
-        $file = $request->file('upload');
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
 
-        // bikin nama file unik + hilangkan spasi
-        $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
+            // bikin nama file unik + hilangkan spasi
+            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
 
-        // simpan ke folder storage/app/public/foto_sekolah
-        $file->storeAs('foto_sekolah', $filename, 'public');
+            // simpan ke folder storage/app/public/foto_sekolah
+            $file->storeAs('foto_sekolah', $filename, 'public');
 
-        // bikin URL dinamis sesuai IP/domain server
-        $url = $request->getSchemeAndHttpHost() . '/storage/foto_sekolah/' . $filename;
+            // bikin URL dinamis sesuai IP/domain server
+            $url = $request->getSchemeAndHttpHost() . '/storage/foto_sekolah/' . $filename;
+
+            return response()->json([
+                'uploaded' => true,
+                'url'      => $url
+            ]);
+        }
 
         return response()->json([
-            'uploaded' => true,
-            'url'      => $url
-        ]);
+            'uploaded' => false,
+            'error'    => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
     }
-
-    return response()->json([
-        'uploaded' => false,
-        'error'    => [
-            'message' => 'No file uploaded'
-        ]
-    ], 400);
-}
 
     public function infoshow($id = null)
     {
@@ -447,22 +492,22 @@ class SekolahController extends Controller
     }
 
     private function buildFotoUrl($path)
-{
-    if (!$path) {
-        return null;
+    {
+        if (!$path) {
+            return null;
+        }
+
+        // kembalikan URL publik untuk file di storage
+        return asset('storage/' . ltrim($path, '/'));
     }
 
-    // kembalikan URL publik untuk file di storage
-    return asset('storage/' . ltrim($path, '/'));
-}
+    private function getStoragePathFromFoto($foto)
+    {
+        if (!$foto) {
+            return null;
+        }
 
-private function getStoragePathFromFoto($foto)
-{
-    if (!$foto) {
-        return null;
+        // misalnya foto sudah tersimpan "foto_sekolah/namafile.png"
+        return ltrim($foto, '/');
     }
-
-    // misalnya foto sudah tersimpan "foto_sekolah/namafile.png"
-    return ltrim($foto, '/');
-}
 }

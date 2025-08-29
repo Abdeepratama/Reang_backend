@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\IbadahController;
 use App\Http\Controllers\Admin\DumasController;
 use App\Http\Controllers\Admin\SekolahController;
 use App\Http\Controllers\Admin\SehatController;
+use App\Http\Controllers\Admin\PajakController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Api\RatingController;
 
@@ -36,6 +37,7 @@ Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']); // 
 Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  event agama
 
 // sekolah-yu
+Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);
 Route::post('/sekolah-aduan', [SekolahController::class, 'store']); // aduan sekolah
 Route::get('/info-sekolah/{id?}', [SekolahController::class, 'infoshow']); // info sekolah
 
@@ -50,3 +52,6 @@ Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
 Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // info sehat
 Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga
+
+// pajak-yu
+Route::get('/info-pajak/{id?}', [PajakController::class, 'infoshow']);

@@ -155,10 +155,20 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.index') ? 'active bg-primary text-white' : '' }}"
-                            href="{{ route('admin.pajak.index') }}">
+                        <a class="nav-link pl-3 {{ request()->is('admin/pajak*') ? 'active bg-light' : '' }}"
+                            href="#submenu-pajak" data-toggle="collapse"
+                            aria-expanded="{{ request()->is('admin/pajak*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Pajak-Yu</span>
                         </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/pajak*') ? 'show' : '' }}" id="submenu-pajak">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.pajak.info.index') }}">
+                                    Info Pajak
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.index') ? 'active bg-primary text-white' : '' }}"
@@ -257,7 +267,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.pajak.index') }}">
+                    <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.pajak.info.index') }}">
                         <span class="ml-1 item-text">Pajak-Yu</span>
                     </a>
                 </li>
