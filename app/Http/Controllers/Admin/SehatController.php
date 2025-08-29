@@ -371,31 +371,31 @@ class SehatController extends Controller
 
     // Upload endpoint (ckeditor) -> simpan file dan kembalikan URL dinamis
     public function upload(Request $request)
-{
-    if ($request->hasFile('upload')) {
-        $file = $request->file('upload');
-        $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
 
-        // simpan ke storage/app/public/uploads -> hasilnya "uploads/namafile.jpg"
-        $path = $file->storeAs('uploads', $filename, 'public');
+            // simpan ke storage/app/public/uploads -> hasilnya "uploads/namafile.jpg"
+            $path = $file->storeAs('uploads', $filename, 'public');
 
-        // kirim ke CKEditor relative path, bukan absolute
-        // CKEditor butuh URL, jadi kita kasih absolute berdasarkan host sekarang
-        $url = request()->getSchemeAndHttpHost() . '/storage/' . $path;
+            // kirim ke CKEditor relative path, bukan absolute
+            // CKEditor butuh URL, jadi kita kasih absolute berdasarkan host sekarang
+            $url = request()->getSchemeAndHttpHost() . '/storage/' . $path;
+
+            return response()->json([
+                'uploaded' => true,
+                'url' => $url
+            ]);
+        }
 
         return response()->json([
-            'uploaded' => true,
-            'url' => $url
-        ]);
+            'uploaded' => false,
+            'error' => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
     }
-
-    return response()->json([
-        'uploaded' => false,
-        'error' => [
-            'message' => 'No file uploaded'
-        ]
-    ], 400);
-}
 
     //Tempat olahraga
     public function indexolahraga()
@@ -516,7 +516,7 @@ class SehatController extends Controller
 
         return view('admin.sehat.olahraga.map', compact('lokasi'));
     }
-    
+
     public function showolahraga($id = null)
     {
         if ($id) {
@@ -622,48 +622,48 @@ class SehatController extends Controller
      * - biarkan data URI dan external CDN tidak diubah
      */
     private function replaceImageUrlsInHtml($content)
-{
-    if (!$content) return $content;
+    {
+        if (!$content) return $content;
 
-    return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
-        $prefix = $m[1];
-        $src = $m[2];
-        $suffix = $m[3];
+        return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
+            $prefix = $m[1];
+            $src = $m[2];
+            $suffix = $m[3];
 
-        // Biarkan data URI
-        if (preg_match('/^data:/i', $src)) {
+            // Biarkan data URI
+            if (preg_match('/^data:/i', $src)) {
+                return $m[0];
+            }
+
+            // CASE 1: absolute URL dengan /storage/
+            if (preg_match('#^https?://[^/]+/storage/(.+)$#i', $src, $matches)) {
+                $rel = $matches[1];
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+                return $prefix . $new . $suffix;
+            }
+
+            // CASE 2: absolute URL dengan /uploads/, /foto_kesehatan/, /tempat_olahraga/
+            if (preg_match('#^https?://[^/]+/(uploads/.+|foto_kesehatan/.+|tempat_olahraga/.+)$#i', $src, $matches)) {
+                $rel = $matches[1];
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+                return $prefix . $new . $suffix;
+            }
+
+            // CASE 3: relative path (uploads/xxx.jpg, foto_kesehatan/xxx.jpg, dst)
+            if (preg_match('#^(uploads/|foto_kesehatan/|tempat_olahraga/)#i', $src)) {
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($src, '/');
+                return $prefix . $new . $suffix;
+            }
+
+            // CASE 4: path diawali /storage/
+            if (strpos($src, '/storage/') === 0) {
+                $rel = ltrim(substr($src, strlen('/storage/')), '/');
+                $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
+                return $prefix . $new . $suffix;
+            }
+
+            // selain itu (CDN atau external image) → biarkan
             return $m[0];
-        }
-
-        // CASE 1: absolute URL dengan /storage/
-        if (preg_match('#^https?://[^/]+/storage/(.+)$#i', $src, $matches)) {
-            $rel = $matches[1];
-            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
-            return $prefix . $new . $suffix;
-        }
-
-        // CASE 2: absolute URL dengan /uploads/, /foto_kesehatan/, /tempat_olahraga/
-        if (preg_match('#^https?://[^/]+/(uploads/.+|foto_kesehatan/.+|tempat_olahraga/.+)$#i', $src, $matches)) {
-            $rel = $matches[1];
-            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
-            return $prefix . $new . $suffix;
-        }
-
-        // CASE 3: relative path (uploads/xxx.jpg, foto_kesehatan/xxx.jpg, dst)
-        if (preg_match('#^(uploads/|foto_kesehatan/|tempat_olahraga/)#i', $src)) {
-            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($src, '/');
-            return $prefix . $new . $suffix;
-        }
-
-        // CASE 4: path diawali /storage/
-        if (strpos($src, '/storage/') === 0) {
-            $rel = ltrim(substr($src, strlen('/storage/')), '/');
-            $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
-            return $prefix . $new . $suffix;
-        }
-
-        // selain itu (CDN atau external image) → biarkan
-        return $m[0];
-    }, $content);
-}
+        }, $content);
+    }
 }
