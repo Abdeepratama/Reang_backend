@@ -621,6 +621,7 @@ class SehatController extends Controller
      * - jika src relative seperti 'uploads/..' juga diubah ke storage URL saat ini
      * - biarkan data URI dan external CDN tidak diubah
      */
+    
     private function replaceImageUrlsInHtml($content)
     {
         if (!$content) return $content;
