@@ -54,4 +54,4 @@ Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // inf
 Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga
 
 // pajak-yu
-Route::get('/info-pajak/{id?}', [PajakController::class, 'infoshow']);
+Route::get('/info-pajak/{id?}', [PajakController::class, 'infoshow']); //info
