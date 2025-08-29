@@ -24,7 +24,7 @@ Route::prefix('auth')->group(function () {
 });
 
 // Dumas-yu
-Route::prefix('dumas')->group(function () {
+Route::prefix('/dumas')->group(function () {
     Route::get('/', [DumasController::class, 'index']);     // List semua
     Route::get('/{id}', [DumasController::class, 'show']);  // Detail
     Route::post('/', [DumasController::class, 'store']);    // Kirim pengaduan

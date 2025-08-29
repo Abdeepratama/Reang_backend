@@ -93,28 +93,32 @@ class PajakController extends Controller
         return back()->with('success', 'Info pajak berhasil dihapus.');
     }
 
-    public function infoupload(Request $request)
-    {
-        if ($request->hasFile('upload')) {
-            $file = $request->file('upload');
-            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
-            $file->storeAs('foto_pajak', $filename, 'public');
+    public function upload(Request $request)
+{
+    if ($request->hasFile('upload')) {
+        $file = $request->file('upload');
+        $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
 
-            $url = $request->getSchemeAndHttpHost() . '/storage/foto_pajak/' . $filename;
+        // simpan ke storage/app/public/uploads -> hasilnya "uploads/namafile.jpg"
+        $path = $file->storeAs('uploads', $filename, 'public');
 
-            return response()->json([
-                'uploaded' => true,
-                'url'      => $url
-            ]);
-        }
+        // kirim ke CKEditor relative path, bukan absolute
+        // CKEditor butuh URL, jadi kita kasih absolute berdasarkan host sekarang
+        $url = request()->getSchemeAndHttpHost() . '/storage/' . $path;
 
         return response()->json([
-            'uploaded' => false,
-            'error'    => [
-                'message' => 'No file uploaded'
-            ]
-        ], 400);
+            'uploaded' => true,
+            'url' => $url
+        ]);
     }
+
+    return response()->json([
+        'uploaded' => false,
+        'error' => [
+            'message' => 'No file uploaded'
+        ]
+    ], 400);
+}
 
     public function infoshow($id = null)
     {
@@ -155,26 +159,52 @@ class PajakController extends Controller
         }
     }
 
-    private function replaceImageUrlsInHtml($html)
-    {
-        return preg_replace_callback(
-            '/<img[^>]+src="([^">]+)"/i',
-            function ($matches) {
-                $src = $matches[1];
+    private function replaceImageUrlsInHtml($content)
+{
+    if (!$content) return $content;
 
-                // kalau sudah absolute URL, biarkan
-                if (preg_match('/^https?:\/\//', $src)) {
-                    return $matches[0];
-                }
+    return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
+        $prefix = $m[1];
+        $src = $m[2];
+        $suffix = $m[3];
 
-                // ubah relative path -> URL publik (storage)
-                $url = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($src, '/');
+        // Biarkan data URI
+        if (preg_match('/^data:/i', $src)) {
+            return $m[0];
+        }
 
-                return str_replace($src, $url, $matches[0]);
-            },
-            $html
-        );
-    }
+        // CASE 1: absolute URL dengan /storage/
+        if (preg_match('#^https?://[^/]+/storage/(.+)$#i', $src, $matches)) {
+            $rel = $matches[1];
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+            return $prefix . $new . $suffix;
+        }
+
+        // CASE 2: absolute URL dengan /uploads/, /foto_kesehatan/, /tempat_olahraga/
+        if (preg_match('#^https?://[^/]+/(uploads/.+|foto_kesehatan/.+|tempat_olahraga/.+)$#i', $src, $matches)) {
+            $rel = $matches[1];
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
+            return $prefix . $new . $suffix;
+        }
+
+        // CASE 3: relative path (uploads/xxx.jpg, foto_kesehatan/xxx.jpg, dst)
+        if (preg_match('#^(uploads/|foto_kesehatan/|tempat_olahraga/)#i', $src)) {
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($src, '/');
+            return $prefix . $new . $suffix;
+        }
+
+        // CASE 4: path diawali /storage/
+        if (strpos($src, '/storage/') === 0) {
+            $rel = ltrim(substr($src, strlen('/storage/')), '/');
+            $new = request()->getSchemeAndHttpHost() . '/storage/' . $rel;
+            return $prefix . $new . $suffix;
+        }
+
+        // selain itu (CDN atau external image) → biarkan
+        return $m[0];
+    }, $content);
+}
+
 
     protected function logAktivitas($pesan)
     {

@@ -392,7 +392,7 @@ class SekolahController extends Controller
             // simpan ke folder storage/app/public/foto_sekolah
             $file->storeAs('foto_sekolah', $filename, 'public');
 
-            // bikin URL dinamis sesuai IP/domain server
+            // URL dinamis sesuai host yang sedang diakses
             $url = $request->getSchemeAndHttpHost() . '/storage/foto_sekolah/' . $filename;
 
             return response()->json([
@@ -412,7 +412,6 @@ class SekolahController extends Controller
     public function infoshow($id = null)
     {
         if ($id) {
-            // Ambil data tunggal (kalau nanti InfoSekolah ada relasi kategori, bisa tambahkan with('kategori'))
             $data = InfoSekolah::find($id);
 
             if (!$data) {
@@ -432,7 +431,6 @@ class SekolahController extends Controller
 
             return response()->json($arr, 200);
         } else {
-            // Ambil semua data
             $data = InfoSekolah::all()->map(function ($item) {
                 return [
                     'id'         => $item->id,
@@ -450,25 +448,52 @@ class SekolahController extends Controller
         }
     }
 
+    /**
+     * Helper: mengganti semua <img src="..."> di deskripsi
+     * agar selalu pakai host/domain yang sedang digunakan
+     */
     private function replaceImageUrlsInHtml($html)
     {
+        if (!$html) return $html;
+
         return preg_replace_callback(
-            '/<img[^>]+src="([^">]+)"/i',
+            '/<img[^>]+src=["\']([^"\'>]+)["\']/i',
             function ($matches) {
                 $src = $matches[1];
+                $currentHost = request()->getSchemeAndHttpHost();
 
-                // kalau sudah absolute URL, biarkan
-                if (preg_match('/^https?:\/\//', $src)) {
+                // kalau data:image (base64), biarkan
+                if (preg_match('/^data:/i', $src)) {
                     return $matches[0];
                 }
 
-                // ubah relative path -> URL publik (storage)
-                $url = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($src, '/');
+                // kalau absolute URL tapi bukan host sekarang → ganti
+                if (preg_match('#^https?://[^/]+/(.+)$#i', $src, $m)) {
+                    $path = $m[1];
+                    $new  = $currentHost . '/' . ltrim($path, '/');
+                    return str_replace($src, $new, $matches[0]);
+                }
 
-                return str_replace($src, $url, $matches[0]);
+                // kalau relative path (misal: foto_sekolah/abc.jpg)
+                $new = $currentHost . '/storage/' . ltrim($src, '/');
+                return str_replace($src, $new, $matches[0]);
             },
             $html
         );
+    }
+
+    /**
+     * Helper: convert path simpanan jadi URL
+     */
+    private function buildFotoUrl($path)
+    {
+        return request()->getSchemeAndHttpHost() . '/storage/' . ltrim($path, '/');
+    }
+
+    private function getStoragePathFromFoto($foto)
+    {
+        // kalau di DB simpan "foto_sekolah/namafile.jpg"
+        return $foto;
     }
 
     protected function logAktivitas($pesan)
@@ -489,25 +514,5 @@ class SekolahController extends Controller
             'dibaca' => false,
             'url' => route('admin.ibadah.tempat.index') // route yang valid
         ]);
-    }
-
-    private function buildFotoUrl($path)
-    {
-        if (!$path) {
-            return null;
-        }
-
-        // kembalikan URL publik untuk file di storage
-        return asset('storage/' . ltrim($path, '/'));
-    }
-
-    private function getStoragePathFromFoto($foto)
-    {
-        if (!$foto) {
-            return null;
-        }
-
-        // misalnya foto sudah tersimpan "foto_sekolah/namafile.png"
-        return ltrim($foto, '/');
     }
 }
