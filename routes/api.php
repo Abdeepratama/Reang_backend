@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SekolahController;
 use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\Admin\PajakController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Api\RatingController;
 
 // 🔐 Grup untuk autentikasi
@@ -38,7 +39,6 @@ Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  eve
 
 // sekolah-yu
 Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);
-Route::post('/sekolah-aduan', [SekolahController::class, 'store']); // aduan sekolah
 Route::get('/info-sekolah/{id?}', [SekolahController::class, 'infoshow']); // info sekolah
 
 // slider
@@ -55,3 +55,6 @@ Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); /
 
 // pajak-yu
 Route::get('/info-pajak/{id?}', [PajakController::class, 'infoshow']); //info
+
+// Kerja-yu
+Route::get('/info-kerja/{id?}', [KerjaController::class, 'infoshow']); //info

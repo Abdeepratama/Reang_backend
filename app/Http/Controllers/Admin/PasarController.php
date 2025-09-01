@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Pasar;
-use App\Models\InfoPasar;
 use App\Models\Kategori;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
@@ -153,121 +152,6 @@ class PasarController extends Controller
     {
         $items = Pasar::all();
         return view('admin.pasar.tempat.index', compact('items'));
-    }
-    
-    public function info()
-    {
-        $infoItems = InfoPasar::with('kategori')->get();
-        return view('admin.pasar.info.index', compact('infoItems'));
-    }
-
-    public function createInfo()
-    {
-        $kategoriPasar = Kategori::where('fitur', 'pasar')
-            ->orderBy('nama')
-            ->get();
-
-        $lokasi = InfoPasar::all();
-
-        return view('admin.pasar.info.create', [
-            'kategoriPasar' => $kategoriPasar,
-            'lokasi' => $lokasi,
-        ]);
-    }
-
-    public function storeInfo(Request $request)
-    {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string|max:255',
-            'fitur' => 'required|string|max:255',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
-
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $fotoName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('foto_pasar', $fotoName, 'public');
-        }
-
-        InfoPasar::create([
-            'foto' => $path,
-            'nama' => $request->nama,
-            'alamat' => $request->alamat,
-            'fitur' => $request->fitur,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude
-        ]);
-
-        $this->logAktivitas("Info Pasar telah ditambahkan");
-        $this->logNotifikasi("Info Pasar telah ditambahkan");
-
-        return redirect()->route('admin.pasar.info.index')->with('success', 'Info pasar berhasil disimpan.');
-    }
-
-    public function infoEdit($id)
-    {
-        $info = InfoPasar::findOrFail($id);
-        $kategoriPasar = Kategori::where('fitur', 'pasar')->orderBy('nama')->get();
-        return view('admin.pasar.info.edit', compact('info', 'kategoriPasar'));
-    }
-
-    public function infoUpdate(Request $request, $id)
-    {
-        $item = InfoPasar::findOrFail($id);
-
-        $data = $request->validate([
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string|max:255',
-            'fitur' => 'required|string|max:255',
-            'foto' => 'nullable|image|max:2048',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
-
-        if ($request->hasFile('foto')) {
-            if ($item->foto) {
-                Storage::disk('public')->delete($item->foto);
-            }
-            $data['foto'] = $request->file('foto')->store('foto_pasar', 'public');
-        }
-
-        $item->update($data);
-
-        $this->logAktivitas("Info Pasar telah diupdate");
-        $this->logNotifikasi("Info Pasar telah diupdate");
-
-        return redirect()->route('admin.pasar.info.index')->with('success', 'Info pasar berhasil diperbarui.');
-    }
-
-    public function infoDestroy($id)
-    {
-        $item = InfoPasar::findOrFail($id);
-        if ($item->foto) Storage::disk('public')->delete($item->foto);
-        $item->delete();
-
-        $this->logAktivitas("Info Pasar telah dihapus");
-        $this->logNotifikasi("Info Pasar telah dihapus");
-
-        return back()->with('success', 'Info pasar berhasil dihapus.');
-    }
-
-    public function infomap()
-    {
-        $lokasi = InfoPasar::all()->map(function ($loc) {
-            return [
-                'nama' => $loc->nama,
-                'alamat' => $loc->alamat,
-                'latitude' => $loc->latitude,
-                'longitude' => $loc->longitude,
-                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
-                'fitur' => $loc->fitur,
-            ];
-        });
-
-        return view('admin.pasar.info.map', compact('lokasi'));
     }
 
     protected function logAktivitas($pesan)

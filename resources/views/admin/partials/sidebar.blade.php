@@ -100,12 +100,6 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.aduan.index') ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('admin.sekolah.aduan.index') }}">
-                                    Aduan sekolah
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.info.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.sekolah.info.index') }}">
                                     Berita sekolah
@@ -146,38 +140,29 @@
                                     Lokasi Tempat
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.info.index') ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('admin.pasar.info.index') }}">
-                                    Info Pasar
-                                </a>
-                            </li>
                         </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/pajak*') ? 'active bg-light' : '' }}"
-                            href="#submenu-pajak" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/pajak*') ? 'true' : 'false' }}">
-                            <span class="ml-1 item-text">Pajak-Yu</span>
-                        </a>
-
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/pajak*') ? 'show' : '' }}" id="submenu-pajak">
-                            <li class="nav-item">
-                                <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.info.index') ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('admin.pajak.info.index') }}">
-                                    Info Pajak
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.index') ? 'active bg-primary text-white' : '' }}"
-                            href="{{ route('admin.kerja.index') }}">
-                            <span class="ml-1 item-text">Kerja-Yu</span>
-                        </a>
                     </li>
                 </ul>
-            </li>
+
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/kerja*') || request()->is('admin/kerja*') || request()->is('admin/kerja*') ? 'show' : '' }}" id="ekonomi">
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->is('admin/kerja*') ? 'active bg-light' : '' }}"
+                            href="#submenu-kerja" data-toggle="collapse"
+                            aria-expanded="{{ request()->is('admin/kerja*') ? 'true' : 'false' }}">
+                            <span class="ml-1 item-text">Kerja-Yu</span>
+                        </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/kerja*') ? 'show' : '' }}" id="submenu-kerja">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.kerja.info.index') }}">
+                                    Info Pekerjaan
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
             <li class="nav-item dropdown {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'show' : '' }}">
                 <a href="#pariwisata"
                     data-toggle="collapse"
@@ -274,11 +259,6 @@
                 <li class="nav-item">
                     <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.pasar.index') }}">
                         <span class="ml-1 item-text">Pasar-Yu</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.kerja.index') }}">
-                        <span class="ml-1 item-text">Kerja-Yu</span>
                     </a>
                 </li>
             </ul>

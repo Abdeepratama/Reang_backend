@@ -14,6 +14,7 @@ class PajakController extends Controller
     public function infoindex()
     {
         $infoItems = InfoPajak::latest()->get();
+        
         return view('admin.pajak.info.index', compact('infoItems'));
     }
 
@@ -93,7 +94,7 @@ class PajakController extends Controller
         return back()->with('success', 'Info pajak berhasil dihapus.');
     }
 
-    public function upload(Request $request)
+    public function infoupload(Request $request)
 {
     if ($request->hasFile('upload')) {
         $file = $request->file('upload');
