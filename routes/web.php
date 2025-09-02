@@ -123,7 +123,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/kerja/info/{id}/edit', [KerjaController::class, 'infoedit'])->name('kerja.info.edit');
         Route::put('/kerja/info/{id}', [KerjaController::class, 'infoupdate'])->name('kerja.info.update');
         Route::delete('/kerja/info/{id}', [KerjaController::class, 'infodestroy'])->name('kerja.info.destroy');
-        Route::post('/kerja/info/upload-image', [KerjaController::class, 'infoupload'])->name('kerja.info.upload.image');
+        Route::post('/kerja/info/upload-image', [KerjaController::class, 'upload'])->name('kerja.info.upload.image');
 
         // adminduk
         Route::get('/adminduk', [AdmindukController::class, 'dashboard'])->name('adminduk.index');

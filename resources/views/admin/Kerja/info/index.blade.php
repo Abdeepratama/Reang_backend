@@ -19,13 +19,14 @@
                                 @endif
 
                                 <div class="table-responsive">
-                                  <table class="table datatables" id="infoKerjaTable">
+                                  <table class="table datatables" id="infoTable">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>No</th>
                                             <th>Foto</th>
                                             <th>Judul</th>
                                             <th>Alamat</th>
+                                            <th>Nomor telepon</th>
                                             <th>Gaji</th>
                                             <th>Waktu Kerja</th>
                                             <th>Jenis Kerja</th>
@@ -47,6 +48,7 @@
                                             </td>
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ $info->alamat }}</td>
+                                            <td>{{ $info->nomor_telepon ?? '-' }}</td>
                                             <td>{{ $info->gaji ?? '-' }}</td>
                                             <td>{{ $info->waktu_kerja ?? '-' }}</td>
                                             <td>{{ $info->jenis_kerja ?? '-' }}</td>

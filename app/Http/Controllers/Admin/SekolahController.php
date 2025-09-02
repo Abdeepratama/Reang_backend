@@ -140,7 +140,15 @@ class SekolahController extends Controller
         return view('admin.sekolah.tempat.map', compact('lokasi'));
     }
 
-    public function showTempat($id = null)
+    /**
+     * SHOW / LIST TEMPAT SEKOLAH (API)
+     *
+     * Mendukung:
+     * - GET /api/tempat-sekolah               -> semua data
+     * - GET /api/tempat-sekolah?fitur=sd     -> filter by fitur
+     * - GET /api/tempat-sekolah/{id}         -> single by ID
+     */
+    public function showTempat(Request $request, $id = null)
     {
         if ($id) {
             $data = Tempat_sekolah::with('kategori')->find($id);
@@ -165,7 +173,15 @@ class SekolahController extends Controller
 
             return response()->json($arr, 200);
         } else {
-            $data = Tempat_sekolah::with('kategori')->get()->map(function ($item) {
+            // Build query dan apply filter 'fitur' jika ada
+            $query = Tempat_sekolah::with('kategori');
+
+            if ($request->has('fitur') && !empty($request->query('fitur'))) {
+                $fitur = $request->query('fitur');
+                $query->where('fitur', $fitur);
+            }
+
+            $data = $query->get()->map(function ($item) {
                 return [
                     'id'         => $item->id,
                     'name'       => $item->name,
@@ -185,6 +201,89 @@ class SekolahController extends Controller
         }
     }
 
+    // ======================= ADUAN SEKOLAH =======================
+
+    /**
+     * LIST ADUAN SEKOLAH
+     */
+    public function aduanindex()
+    {
+        $items = Sekolah::whereNotNull('jenis_laporan')->get();
+        return view('admin.sekolah.aduan.index', compact('items'));
+    }
+
+    /**
+     * FORM TAMBAH ADUAN SEKOLAH
+     */
+    public function createAduan()
+    {
+        $kategoriAduan = Kategori::where('fitur', 'aduan-sekolah')->orderBy('nama')->get();
+        return view('admin.sekolah.aduan.create', compact('kategoriAduan'));
+    }
+
+    /**
+     * SIMPAN ADUAN SEKOLAH
+     */
+    public function storeAduan(Request $request)
+    {
+        $validated = $request->validate([
+            'jenis_laporan'  => 'required|string',
+            'bukti_laporan'  => 'nullable|image|max:2048',
+            'lokasi_laporan' => 'required|string',
+            'kategori_laporan' => 'required|string',
+            'deskripsi'      => 'required|string',
+            'pernyataan'     => 'required|boolean',
+        ]);
+
+        if ($request->hasFile('bukti_laporan')) {
+            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('aduan_sekolah', 'public');
+        }
+
+        Sekolah::create($validated);
+
+        return redirect()->route('admin.sekolah.aduan.index')
+            ->with('success', 'Aduan sekolah berhasil ditambahkan.');
+    }
+
+    /**
+     * FORM EDIT ADUAN SEKOLAH
+     */
+    public function editAduan($id)
+    {
+        $item = Sekolah::findOrFail($id);
+        $kategoriAduan = Kategori::where('fitur', 'aduan-sekolah')->get();
+        return view('admin.sekolah.aduan.edit', compact('item', 'kategoriAduan'));
+    }
+
+    /**
+     * UPDATE ADUAN SEKOLAH
+     */
+    public function updateAduan(Request $request, $id)
+    {
+        $aduan = Sekolah::findOrFail($id);
+
+        $validated = $request->validate([
+            'jenis_laporan'  => 'required|string',
+            'bukti_laporan'  => 'nullable|image|max:2048',
+            'lokasi_laporan' => 'required|string',
+            'kategori_laporan' => 'required|string',
+            'deskripsi'      => 'required|string',
+            'pernyataan'     => 'required|boolean',
+        ]);
+
+        if ($request->hasFile('bukti_laporan')) {
+            if ($aduan->bukti_laporan && Storage::disk('public')->exists($aduan->bukti_laporan)) {
+                Storage::disk('public')->delete($aduan->bukti_laporan);
+            }
+            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('aduan_sekolah', 'public');
+        }
+
+        $aduan->update($validated);
+
+        return redirect()->route('admin.sekolah.aduan.index')
+            ->with('success', 'Aduan sekolah berhasil diperbarui.');
+    }
+
     public function tempatDestroy($id)
     {
         $item = Sekolah::whereNull('jenis_laporan')->findOrFail($id);
@@ -197,6 +296,20 @@ class SekolahController extends Controller
 
         return redirect()->route('admin.sekolah.tempat.index')
             ->with('success', 'Tempat sekolah berhasil dihapus.');
+    }
+
+    public function aduanDestroy($id)
+    {
+        $item = Sekolah::whereNotNull('jenis_laporan')->findOrFail($id);
+
+        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+            Storage::disk('public')->delete($item->foto);
+        }
+
+        $item->delete();
+
+        return redirect()->route('admin.sekolah.aduan.index')
+            ->with('success', 'Aduan sekolah berhasil dihapus.');
     }
 
     // info sekolah

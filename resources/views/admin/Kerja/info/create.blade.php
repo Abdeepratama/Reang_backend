@@ -32,13 +32,22 @@
             <!-- Gaji -->
             <div class="mb-3">
                 <label for="gaji" class="form-label">Gaji</label>
-                <input type="text" name="gaji" id="gaji" class="form-control" value="{{ old('gaji') }}">
+                <input type="text" name="gaji" id="gaji" class="form-control"
+                    value="{{ old('gaji', $info->gaji_formatted ?? '') }}">
             </div>
-
             <!-- Nomor Telepon -->
             <div class="mb-3">
                 <label for="nomor_telepon" class="form-label">Nomor Telepon</label>
-                <input type="text" name="nomor_telepon" id="nomor_telepon" class="form-control" value="{{ old('nomor_telepon') }}">
+                <input type="text" name="nomor_telepon" id="nomor_telepon" class="form-control"
+                    value="{{ old('nomor_telepon', $info->nomor_telepon ?? '') }}">
+
+                @if(!empty($info->whatsapp_link))
+                <div class="mt-2">
+                    <a href="{{ $info->whatsapp_link }}" target="_blank" class="btn btn-success">
+                        Chat WA
+                    </a>
+                </div>
+                @endif
             </div>
 
             <!-- Waktu Kerja -->

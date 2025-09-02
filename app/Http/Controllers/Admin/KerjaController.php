@@ -49,6 +49,7 @@ class KerjaController extends Controller
         $this->logAktivitas("Info Kerja telah ditambahkan");
         $this->logNotifikasi("Info Kerja telah ditambahkan");
 
+
         return redirect()->route('admin.kerja.info.index')->with('success', 'Info kerja berhasil ditambahkan.');
     }
 
@@ -117,51 +118,56 @@ class KerjaController extends Controller
     }
 
     public function infoshow($id = null)
-    {
-        if ($id) {
-            $data = InfoKerja::with('kategori')->find($id);
+{
+    if ($id) {
+        $data = InfoKerja::with('kategori')->find($id);
 
-            if (!$data) {
-                return response()->json(['message' => 'Data tidak ditemukan'], 404);
-            }
-
-            $arr = [
-                'id'            => $data->id,
-                'judul'         => $data->judul,
-                'alamat'        => $data->alamat,
-                'gaji'          => $data->gaji,
-                'nomor_telepon' => $data->nomor_telepon,
-                'waktu_kerja'   => $data->waktu_kerja,
-                'jenis_kerja'   => $data->jenis_kerja,
-                'foto'          => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
-                'kategori'      => $data->kategori->nama ?? ($data->fitur ?? null),
-                'deskripsi'  => $this->replaceImageUrlsInHtml($data->deskripsi),
-                'created_at'    => $data->created_at,
-                'updated_at'    => $data->updated_at,
-            ];
-
-            return response()->json($arr, 200);
-        } else {
-            $data = InfoKerja::with('kategori')->get()->map(function ($item) {
-                return [
-                    'id'            => $item->id,
-                    'judul'         => $item->judul,
-                    'alamat'        => $item->alamat,
-                    'gaji'          => $item->gaji,
-                    'nomor_telepon' => $item->nomor_telepon,
-                    'waktu_kerja'   => $item->waktu_kerja,
-                    'jenis_kerja'   => $item->jenis_kerja,
-                    'foto'          => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
-                    'kategori'      => $item->kategori->nama ?? ($item->fitur ?? null),
-                    'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
-                    'created_at'    => $item->created_at,
-                    'updated_at'    => $item->updated_at,
-                ];
-            });
-
-            return response()->json($data, 200);
+        if (!$data) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
+
+        $arr = [
+            'id'              => $data->id,
+            'judul'           => $data->judul,
+            'alamat'          => $data->alamat,
+            'gaji'            => $data->gaji,
+            'gaji_formatted'  => $data->gaji_formatted,
+            'nomor_telepon'   => $data->nomor_telepon,
+            'whatsapp_link'   => $data->whatsapp_link,
+            'waktu_kerja'     => $data->waktu_kerja,
+            'jenis_kerja'     => $data->jenis_kerja,
+            'foto'            => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
+            'kategori'        => $data->kategori->nama ?? ($data->fitur ?? null),
+            'deskripsi'       => $this->replaceImageUrlsInHtml($data->deskripsi),
+            'created_at'      => $data->created_at,
+            'updated_at'      => $data->updated_at,
+        ];
+
+        return response()->json($arr, 200);
+    } else {
+        $data = InfoKerja::with('kategori')->get()->map(function ($item) {
+            return [
+                'id'              => $item->id,
+                'judul'           => $item->judul,
+                'alamat'          => $item->alamat,
+                'gaji'            => $item->gaji,
+                'gaji_formatted'  => $item->gaji_formatted,
+                'nomor_telepon'   => $item->nomor_telepon,
+                'whatsapp_link'   => $item->whatsapp_link,
+                'waktu_kerja'     => $item->waktu_kerja,
+                'jenis_kerja'     => $item->jenis_kerja,
+                'foto'            => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'kategori'        => $item->kategori->nama ?? ($item->fitur ?? null),
+                'deskripsi'       => $this->replaceImageUrlsInHtml($item->deskripsi),
+                'created_at'      => $item->created_at,
+                'updated_at'      => $item->updated_at,
+            ];
+        });
+
+        return response()->json($data, 200);
     }
+}
+
 
     public function upload(Request $request)
     {
