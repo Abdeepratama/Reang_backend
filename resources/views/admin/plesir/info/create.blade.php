@@ -37,9 +37,9 @@
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoriPlesir as $kategori)
-                            <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
-                                {{ $kategori->nama }}
-                            </option>
+                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -49,14 +49,9 @@
                     <input type="file" name="foto" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Rating</label>
-                    <input type="number" name="rating" class="form-control" min="0" max="5" step="0.1" required>
+                <div class="mb-3">
+                    <label for="deskripsi" class="form-label">Deskripsi</label>
+                    <textarea name="deskripsi" id="editor">{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>
@@ -98,7 +93,9 @@
     // Fungsi untuk update marker
     function updateMarker(lat, lng, alamat = '') {
         if (clickMarker) map.removeLayer(clickMarker);
-        clickMarker = L.marker([lat, lng], { icon: lokasiIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], {
+                icon: lokasiIcon
+            }).addTo(map)
             .bindPopup(`<b>Alamat:</b> ${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
         map.setView([lat, lng], 16);
@@ -117,7 +114,9 @@
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
             const data = await response.json();
             if (data.display_name) alamat = data.display_name;
-        } catch (err) { console.error(err); }
+        } catch (err) {
+            console.error(err);
+        }
 
         if (addressInput) addressInput.value = alamat;
         updateMarker(lat, lng, alamat);
@@ -134,4 +133,23 @@
     latInput.addEventListener('change', manualUpdate);
     lngInput.addEventListener('change', manualUpdate);
 </script>
+
+{{-- CKEditor --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+<script>
+    let editor;
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: "{{ route('admin.kerja.info.upload.image') }}?_token={{ csrf_token() }}"
+            }
+        })
+        .then(instance => {
+            editor = instance;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+
 @endsection

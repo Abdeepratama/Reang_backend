@@ -38,9 +38,9 @@
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoriPlesir as $kategori)
-                            <option value="{{ $kategori->nama }}" {{ (old('fitur', $info->fitur) == $kategori->nama) ? 'selected' : '' }}>
-                                {{ $kategori->nama }}
-                            </option>
+                        <option value="{{ $kategori->nama }}" {{ (old('fitur', $info->fitur) == $kategori->nama) ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -49,19 +49,14 @@
                     <label>Foto</label>
                     <input type="file" name="foto" class="form-control">
                     @if($info->foto)
-                        <small>Foto saat ini:</small><br>
-                        <img src="{{ $info->foto }}" alt="Foto" width="150" style="border-radius:8px; margin-top:5px;">
+                    <small>Foto saat ini:</small><br>
+                    <img src="{{ $info->foto }}" alt="Foto" width="150" style="border-radius:8px; margin-top:5px;">
                     @endif
                 </div>
 
-                <div class="form-group mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" rows="3" required>{{ old('deskripsi', $info->deskripsi) }}</textarea>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Rating</label>
-                    <input type="number" name="rating" class="form-control" min="0" max="5" step="0.1" value="{{ old('rating', $info->rating) }}" required>
+                <div class="mb-3">
+                    <label for="deskripsi" class="form-label">Deskripsi</label>
+                    <textarea name="deskripsi" id="editor" class="form-control" rows="5">{{ old('deskripsi', $info->deskripsi) }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Update Data</button>
@@ -79,8 +74,8 @@
 
 <script>
     // Data lokasi lama dari form (latitude dan longitude dari server)
-    const initialLat = parseFloat(@json(old('latitude', $info->latitude)));
-    const initialLng = parseFloat(@json(old('longitude', $info->longitude)));
+    const initialLat = parseFloat(@json(old('latitude', $info - > latitude)));
+    const initialLng = parseFloat(@json(old('longitude', $info - > longitude)));
 
     // Inisialisasi peta dengan posisi lama, atau default jika kosong
     const map = L.map('peta').setView([initialLat || -6.326511, initialLng || 108.3202685], 13);
@@ -109,7 +104,9 @@
 
     // Tampilkan marker di posisi awal
     if (!isNaN(initialLat) && !isNaN(initialLng)) {
-        clickMarker = L.marker([initialLat, initialLng], { icon: sehatIcon }).addTo(map)
+        clickMarker = L.marker([initialLat, initialLng], {
+                icon: sehatIcon
+            }).addTo(map)
             .bindPopup(`<b>Lokasi Saat Ini</b><br>Lat: ${initialLat.toFixed(6)}<br>Lng: ${initialLng.toFixed(6)}`)
             .openPopup();
     }
@@ -137,10 +134,10 @@
 
             if (data.address) {
                 namaTempat = data.address.hospital ||
-                            data.address.clinic ||
-                            data.address.pharmacy ||
-                            data.address.building ||
-                            data.address.amenity || '';
+                    data.address.clinic ||
+                    data.address.pharmacy ||
+                    data.address.building ||
+                    data.address.amenity || '';
             }
 
             if (!namaTempat && data.display_name) {
@@ -155,7 +152,7 @@
         // Set value alamat dan nama tempat ke input form
         const addressInput = document.getElementById('alamat');
         const nameInput = document.getElementById('judul');
-        if(addressInput) addressInput.value = alamat;
+        if (addressInput) addressInput.value = alamat;
         // Optional: jika ingin update judul otomatis sesuai nama tempat
         // if(nameInput && !nameInput.value) nameInput.value = namaTempat;
 
@@ -165,9 +162,25 @@
         }
 
         // Tambahkan marker baru (pakai angka lat,lng)
-        clickMarker = L.marker([lat, lng], { icon: sehatIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], {
+                icon: sehatIcon
+            }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat.toFixed(6)}<br><b>Lng:</b> ${lng.toFixed(6)}`)
             .openPopup();
     });
+</script>
+
+{{-- CKEditor --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+<script>
+let editor;
+ClassicEditor
+.create(document.querySelector('#editor'), {
+    ckfinder: {
+        uploadUrl: "{{ route('admin.kerja.info.upload.image') }}?_token={{ csrf_token() }}"
+    }
+})
+.then(instance => { editor = instance; })
+.catch(error => { console.error(error); });
 </script>
 @endsection

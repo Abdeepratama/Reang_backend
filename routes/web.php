@@ -136,7 +136,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('dumas.aduan.index');
 
         // izin-yu
-        Route::get('admin/izin', [IzinController::class, 'dashboard'])->name('izin.index');
+        // Info Perizinan
+        Route::get('/izin/info', [IzinController::class, 'infoindex'])->name('izin.info.index');
+        Route::get('/izin/info/create', [IzinController::class, 'infocreate'])->name('izin.info.create');
+        Route::post('/izin/info/store', [IzinController::class, 'infostore'])->name('izin.info.store');
+        Route::get('/izin/edit/{id}', [IzinController::class, 'infoedit'])->name('izin.info.edit');
+        Route::put('/izin/update/{id}', [IzinController::class, 'infoupdate'])->name('izin.info.update');
+        Route::delete('/izin/destroy/{id}', [IzinController::class, 'infodestroy'])->name('izin.info.destroy');
+        Route::post('/izin/upload-image', [IzinController::class, 'upload'])->name('izin.info.upload.image');
 
         // wifi
         Route::get('admin/wifi', [WifiController::class, 'dashboard'])->name('wifi.index');

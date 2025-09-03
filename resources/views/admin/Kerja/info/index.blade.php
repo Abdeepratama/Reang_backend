@@ -23,8 +23,9 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>No</th>
+                                            <th>Nama Perusahaan</th>
                                             <th>Foto</th>
-                                            <th>Judul</th>
+                                            <th>Posisi</th>
                                             <th>Alamat</th>
                                             <th>Nomor telepon</th>
                                             <th>Gaji</th>
@@ -39,6 +40,7 @@
                                         @forelse($infoItems as $info)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $info->name }}</td>
                                             <td>
                                                 @if($info->foto)
                                                     <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">

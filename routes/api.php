@@ -9,7 +9,10 @@ use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\Admin\PajakController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\KerjaController;
+use App\Http\Controllers\Admin\PlesirController;
+use App\Http\Controllers\Admin\IzinController;
 use App\Http\Controllers\Api\RatingController;
+use App\Models\Plesir;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -58,3 +61,10 @@ Route::get('/info-pajak/{id?}', [PajakController::class, 'infoshow']); //info
 
 // Kerja-yu
 Route::get('/info-kerja/{id?}', [KerjaController::class, 'infoshow']); //info
+
+// Plesir-yu
+Route::get('/tempat-plesir/{id?}', [PlesirController::class, 'showtempat']);
+Route::get('/info-plesir/{id?}', [PlesirController::class, 'infoshow']); //info
+
+// Izin-yu
+Route::get('/info-perizinan/{id?}', [IzinController::class, 'infoshow']); //info

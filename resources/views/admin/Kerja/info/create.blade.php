@@ -18,7 +18,7 @@
 
             <!-- Judul -->
             <div class="mb-3">
-                <label for="judul" class="form-label">Judul</label>
+                <label for="judul" class="form-label">Posisi</label>
                 <input type="text" name="judul" id="judul" class="form-control"
                     value="{{ old('judul') }}" required>
             </div>

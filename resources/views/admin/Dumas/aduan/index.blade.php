@@ -4,11 +4,6 @@
 
 @section('content')
 <div class="container">
-    <div class="mb-3 text-start">
-        <a href="{{ route('admin.dumas.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-        </a>
-    </div>
     
     <h2 class="mb-4">Daftar Pengaduan Masyarakat (DUMAS-YU)</h2>
 
@@ -20,9 +15,9 @@
         <thead class="table-dark">
             <tr>
                 <th>No</th>
-                <th>Jenis Laporan</th>
+                <th>Judul Laporan</th>
                 <th>Kategori</th>
-                <th>Lokasi</th>
+                <th>Alamat</th>
                 <th>Status</th>
                 <th>Bukti</th>
                 <th>Deskripsi</th>

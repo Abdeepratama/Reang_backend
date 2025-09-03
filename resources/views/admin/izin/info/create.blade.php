@@ -1,12 +1,12 @@
 @extends('admin.partials.app')
 
-@section('title', 'Tambah Info Sekolah')
+@section('title', 'Tambah Info Perizinan-Yu')
 
 @section('content')
 <div class="container mt-4">
-    <h2><i class="bi bi-hospital"></i> Tambah Info Sekolah</h2>
+    <h2><i class="bi bi-file-earmark-text"></i> Tambah Info Perizinan</h2>
 
-    <form id="infoForm" action="{{ route('admin.sekolah.info.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="infoForm" action="{{ route('admin.izin.info.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div style="max-width: 800px;">
@@ -14,6 +14,19 @@
             <div class="form-group mb-3">
                 <label>Judul</label>
                 <input type="text" name="judul" id="judul" class="form-control" required>
+            </div>
+
+            <!-- Kategori -->
+            <div class="form-group mb-3">
+                <label>Kategori</label>
+                <select name="fitur" class="form-control" required>
+                    <option value="">Pilih Kategori</option>
+                    @foreach($kategoriPerizinan as $kategori)
+                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <!-- Foto -->
@@ -40,32 +53,20 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
 let editor;
-
 ClassicEditor
 .create(document.querySelector('#editor'), {
     ckfinder: {
-        uploadUrl: "{{ route('admin.sekolah.info.upload.image') }}?_token={{ csrf_token() }}"
+        uploadUrl: "{{ route('admin.izin.info.upload.image') }}?_token={{ csrf_token() }}"
     }
 })
-.then(instance => {
-    editor = instance;
-})
-.catch(error => {
-    console.error(error);
-});
+.then(instance => { editor = instance; })
+.catch(error => { console.error(error); });
 
 document.getElementById('infoForm').addEventListener('submit', function(e) {
     if (editor && editor.getData().trim() === '') {
         e.preventDefault();
         alert('Deskripsi harus diisi');
         return false;
-    }
-
-    // Tambahkan atribut border, cellpadding, cellspacing di <table>
-    if (editor) {
-        let content = editor.getData();
-        content = content.replace(/<table(?![^>]*border)/g, '<table border="1" cellpadding="8" cellspacing="0"');
-        document.querySelector('#editor').value = content;
     }
 
     const fileInput = document.querySelector('input[name="foto"]');
