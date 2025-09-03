@@ -125,8 +125,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/kerja/info/{id}', [KerjaController::class, 'infodestroy'])->name('kerja.info.destroy');
         Route::post('/kerja/info/upload-image', [KerjaController::class, 'upload'])->name('kerja.info.upload.image');
 
-        // adminduk
-        Route::get('/adminduk', [AdmindukController::class, 'dashboard'])->name('adminduk.index');
+        // Info Adminduk
+        Route::get('/adminduk/index', [AdmindukController::class, 'infoindex'])->name('adminduk.info.index');
+        Route::get('/adminduk/create', [AdmindukController::class, 'infocreate'])->name('adminduk.info.create');
+        Route::post('/adminduk/store', [AdmindukController::class, 'infostore'])->name('adminduk.info.store');
+        Route::get('/adminduk/info/{id}/edit', [AdmindukController::class, 'infoedit'])->name('adminduk.info.edit');
+        Route::put('/adminduk/info/{id}', [AdmindukController::class, 'infoupdate'])->name('adminduk.info.update');
+        Route::delete('/adminduk/info/{id}', [AdmindukController::class, 'infodestroy'])->name('adminduk.info.destroy');
+        Route::post('/adminduk/info/upload-image', [AdmindukController::class, 'infoupload'])->name('adminduk.info.upload.image');
 
         // renbang
         Route::get('/renbang', [RenbangController::class, 'dashboard'])->name('renbang.index');
@@ -185,7 +191,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/plesir', PlesirController::class);
         Route::resource('/dumas', DumasController::class);
         Route::resource('/info', InfoController::class);
-        Route::resource('/adminduk', AdmindukController::class);
         Route::resource('/renbang', RenbangController::class);
         Route::resource('/izin', IzinController::class);
         Route::resource('/wifi', wifiController::class);

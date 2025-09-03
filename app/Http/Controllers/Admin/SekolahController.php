@@ -315,7 +315,7 @@ class SekolahController extends Controller
     // info sekolah
     public function infoindex()
     {
-        $infoItems = InfoSekolah::latest()->get();
+        $infoItems = InfoSekolah::oldest()->get();
         return view('admin.sekolah.info.index', compact('infoItems'));
     }
 
@@ -447,7 +447,7 @@ class SekolahController extends Controller
 
             return response()->json($arr, 200);
         } else {
-            $data = InfoSekolah::all()->map(function ($item) {
+            $data = InfoSekolah::latest()->get()->map(function ($item) {
                 return [
                     'id'         => $item->id,
                     'judul'      => $item->judul,

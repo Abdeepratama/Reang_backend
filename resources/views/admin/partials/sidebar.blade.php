@@ -247,9 +247,20 @@
             </a>
             <ul class="collapse list-unstyled pl-4 w-100 {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.kerja.*') ? 'show' : '' }}" id="lainnya">
                 <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.adminduk.index') }}">
+                    <a class="nav-link pl-3 {{ request()->is('admin/adminduk*') ? 'active bg-light' : '' }}"
+                        href="#submenu-adminduk" data-toggle="collapse"
+                        aria-expanded="{{ request()->is('admin/adminduk*') ? 'true' : 'false' }}">
                         <span class="ml-1 item-text">Adminduk-Yu</span>
                     </a>
+
+                    <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/adminduk*') ? 'show' : '' }}" id="submenu-adminduk">
+                        <li class="nav-item">
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.info.index') ? 'active bg-primary text-white' : '' }}"
+                                href="{{ route('admin.adminduk.info.index') }}">
+                                Info Adminduk
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.renbang.index') }}">
@@ -257,21 +268,21 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/izin*') ? 'active bg-light' : '' }}"
-                            href="#submenu-izin" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/izin*') ? 'true' : 'false' }}">
-                            <span class="ml-1 item-text">Izin-Yu</span>
-                        </a>
+                    <a class="nav-link pl-3 {{ request()->is('admin/izin*') ? 'active bg-light' : '' }}"
+                        href="#submenu-izin" data-toggle="collapse"
+                        aria-expanded="{{ request()->is('admin/izin*') ? 'true' : 'false' }}">
+                        <span class="ml-1 item-text">Izin-Yu</span>
+                    </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/izin*') ? 'show' : '' }}" id="submenu-izin">
-                            <li class="nav-item">
-                                <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.info.index') ? 'active bg-primary text-white' : '' }}"
-                                    href="{{ route('admin.izin.info.index') }}">
-                                    Info Perizinan
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/izin*') ? 'show' : '' }}" id="submenu-izin">
+                        <li class="nav-item">
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.info.index') ? 'active bg-primary text-white' : '' }}"
+                                href="{{ route('admin.izin.info.index') }}">
+                                Info Perizinan
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link pl-3 {{ request()->routeIs('admin.wifi.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.wifi.index') }}">
                         <span class="ml-1 item-text">Wifi-Yu</span>

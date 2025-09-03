@@ -11,8 +11,8 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Admin\PlesirController;
 use App\Http\Controllers\Admin\IzinController;
+use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
-use App\Models\Plesir;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -28,12 +28,12 @@ Route::prefix('auth')->group(function () {
 });
 
 // Dumas-yu
-Route::prefix('/dumas')->group(function () {
-    Route::get('/', [DumasController::class, 'index']);     // List semua
-    Route::get('/{id}', [DumasController::class, 'show']);  // Detail
-    Route::post('/', [DumasController::class, 'store']);    // Kirim pengaduan
-    Route::put('/{id}', [DumasController::class, 'update']); // Ubah status/tanggapan
-    Route::delete('/{id}', [DumasController::class, 'destroy']); // Hapus
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/dumas', [DumasController::class, 'index']);
+    Route::get('/dumas/{id}', [DumasController::class, 'show']);
+    Route::post('/dumas', [DumasController::class, 'store']);
+    Route::put('/dumas/{id}', [DumasController::class, 'update']);
+    Route::delete('/dumas/{id}', [DumasController::class, 'destroy']);
 });
 
 // Ibadah-yu
@@ -68,3 +68,6 @@ Route::get('/info-plesir/{id?}', [PlesirController::class, 'infoshow']); //info
 
 // Izin-yu
 Route::get('/info-perizinan/{id?}', [IzinController::class, 'infoshow']); //info
+
+// Adminduk
+Route::get('/info-adminduk/{id?}', [AdmindukController::class, 'infoshow']); //info
