@@ -17,8 +17,8 @@
 
 
   <div class="container mt-5">
-    <div class="row gy-4 justify-content-between">
-      <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-in">
+    <div class="row gy-5 justify-content-between">
+      <div class="col-lg-8 d-flex flex-column justify-content-center" data-aos="fade-in">
         <h1>Semua Tentang</h1>
         <h1>Indramayu</h1>
         <h1><span>Ada di Saku Anda</span></h1>
@@ -31,16 +31,16 @@
       <div class="col-lg-4 order-lg-last">
         <!-- <img src="assets/img/hero-img.png" class="img-fluid animated" alt=""> -->
         <div class="d-flex img-fluid animated">
-  <a href="#about" class="btn-get-started me-3 d-inline-flex align-items-center gap-2">
-  <i class="bi bi-question-circle"></i>
-  <span>Wadul Reang</span>
-</a>
-  <a href="https://www.youtube.com/embed/1YkkDHue270"
-     class="glightbox btn-get-started d-flex align-items-center">
-    <img src="landing/img/playstore.png" alt="Play Store" class="playstore-icon">
-    <span>Unduh Reang Apps</span>
-  </a>
-</div>
+          <a href="#about" class="btn-get-started me-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-question-circle"></i>
+            <span>Wadul Reang</span>
+          </a>
+          <a href="https://www.youtube.com/embed/1YkkDHue270"
+            class="glightbox btn-get-started d-flex align-items-center">
+            <img src="landing/img/playstore.png" alt="Play Store" class="playstore-icon">
+            <span>Unduh Reang Apps</span>
+          </a>
+        </div>
       </div>
 
     </div>
@@ -148,7 +148,7 @@
 
   <div class="container">
     <div class="row align-items-center justify-content-between">
-      
+
       <!-- Left Content -->
       <div class="col-lg-6 text-white" data-aos="fade-right">
         <h2 class="fw-bold mb-3">

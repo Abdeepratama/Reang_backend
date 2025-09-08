@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('lokasi');
             $table->string('alamat');
-            $table->string('kategori');
+            $table->string('fitur');
             $table->string('foto')->nullable(); // disimpan sebagai path
             $table->timestamps();
         });

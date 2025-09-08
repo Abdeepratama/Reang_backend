@@ -12,7 +12,8 @@
 --------------------------------------------------------------*/
 /* Fonts */
 .hero-bg.youtube-bg {
-  position: fixed; /* atau absolute tergantung kebutuhanmu */
+  position: fixed;
+  /* atau absolute tergantung kebutuhanmu */
   top: 0;
   left: 0;
   width: 100vw;
@@ -25,36 +26,49 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 300vh; /* 100vh * (16/9) untuk rasio YouTube */
+  width: 300vh;
+  /* 100vh * (16/9) untuk rasio YouTube */
   height: 100vh;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
 :root {
-  --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --heading-font: "Raleway",  sans-serif;
-  --nav-font: "Poppins",  sans-serif;
+  --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Raleway", sans-serif;
+  --nav-font: "Poppins", sans-serif;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
-:root { 
-  --background-color: #ffffff; /* Background color for the entire website, including individual sections */
-  --default-color: #444444; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #040677; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #F08519; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
-  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+:root {
+  --background-color: #ffffff;
+  /* Background color for the entire website, including individual sections */
+  --default-color: #444444;
+  /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #040677;
+  /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #F08519;
+  /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --surface-color: #ffffff;
+  /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+  --contrast-color: #ffffff;
+  /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #ffffff;  /* The default color of the main navmenu links */
-  --nav-hover-color: #F08519; /* Applied to main navmenu links when they are hovered over or active */
-  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
-  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #444444; /* Used for navigation links of the dropdown items in the navigation menu. */
-  --nav-dropdown-hover-color: #F08519; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+  --nav-color: #ffffff;
+  /* The default color of the main navmenu links */
+  --nav-hover-color: #F08519;
+  /* Applied to main navmenu links when they are hovered over or active */
+  --nav-mobile-background-color: #ffffff;
+  /* Used as the background color for mobile navigation menu */
+  --nav-dropdown-background-color: #ffffff;
+  /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+  --nav-dropdown-color: #444444;
+  /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-hover-color: #F08519;
+  /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
@@ -206,7 +220,11 @@ h6 {
 @media (min-width: 1000px) {
   .navmenu {
     padding: 0;
+    margin-left: 570px;
+    width: auto;      /* biar tidak full width */
+    display: inline-block; /* biar bisa digeser */
   }
+}
 
   .navmenu ul {
     margin: 0;
@@ -222,7 +240,7 @@ h6 {
 
   .navmenu>ul>li {
     white-space: nowrap;
-    padding: 20px 10px  ;
+    padding: 20px 10px;
   }
 
   .navmenu>ul>li:last-child {
@@ -332,7 +350,6 @@ h6 {
     left: -100%;
     visibility: visible;
   }
-}
 
 /* Mobile Navigation */
 @media (max-width: 1199px) {
@@ -877,10 +894,12 @@ section,
 }
 
 .btn-get-started {
-  background-color: rgba(255, 255, 255, 0.2); /* transparan ringan */
+  background-color: rgba(255, 255, 255, 0.2);
+  /* transparan ringan */
   padding: 10px 16px;
   border-radius: 12px;
-  color: var(--default-color); /* pakai variabel warna default kamu */
+  color: var(--default-color);
+  /* pakai variabel warna default kamu */
   font-weight: 600;
   font-size: 20px;
   transition: 0.3s ease;
@@ -888,8 +907,10 @@ section,
 
 .btn-get-started i.bi-question-circle {
   font-size: 1.5rem;
-  margin-right: 6px; /* agar ada jarak antara ikon dan teks */
-  vertical-align: middle; /* bantu sejajarkan */
+  margin-right: 6px;
+  /* agar ada jarak antara ikon dan teks */
+  vertical-align: middle;
+  /* bantu sejajarkan */
 }
 
 /* Gaya ikon Play Store di dalam tombol */
@@ -1123,10 +1144,20 @@ section,
   }
 }
 
+/* untuk kata semua tentang indramayu */
+.col-lg-8[data-aos="fade-in"] {
+  margin-top: -10px; /* makin besar angka negatifnya, makin naik */
+}
+
+/* unduh dan wadul landing utama */
+.img-fluid.animated {
+  margin-top: -60px; /* geser ke atas */
+}
+
 /* ====== Hero role selector + card seperti screenshot ====== */
 .hero-roles-wrapper {
   padding: 80px 0 40px;
-  background: linear-gradient(135deg,#4f8aff 0%,#417bfa 100%);
+  background: linear-gradient(135deg, #4f8aff 0%, #417bfa 100%);
   position: relative;
   overflow: hidden;
   color: white;
@@ -1136,12 +1167,14 @@ section,
   text-align: center;
   margin-bottom: 1rem;
 }
+
 .hero-roles-wrapper .title-group h1 {
   font-size: 2.5rem;
   margin: 0;
   font-weight: 700;
   line-height: 1.1;
 }
+
 .hero-roles-wrapper .title-group p {
   margin: 6px 0 0;
   font-size: 1rem;
@@ -1166,7 +1199,7 @@ section,
   position: relative;
   text-decoration: none;
   color: white;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   transition: background .2s, color .2s;
   display: inline-flex;
   align-items: center;
@@ -1177,11 +1210,11 @@ section,
 .role-tabs .tab.active {
   background: white;
   color: var(--heading-color);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .role-tabs .tab:not(.active):hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Hero card */
@@ -1189,7 +1222,7 @@ section,
   position: relative;
   overflow: hidden;
   border-radius: 20px;
-  background: linear-gradient(140deg, rgba(31,87,209,1) 0%, #2669ff 85%);
+  background: linear-gradient(140deg, rgba(31, 87, 209, 1) 0%, #2669ff 85%);
   color: white;
   padding: 2rem 2.5rem;
   display: flex;
@@ -1207,7 +1240,7 @@ section,
   top: 50%;
   width: 360px;
   height: 360px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 50%;
   transform: translateY(-50%);
   filter: blur(4px);
@@ -1228,7 +1261,7 @@ section,
   aspect-ratio: 4/5;
   object-fit: cover;
   border-radius: 12px;
-  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.35));
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35));
 }
 
 .hero-card-custom .hero-right {
@@ -1272,7 +1305,7 @@ section,
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1287,7 +1320,7 @@ section,
   color: white;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 12px 30px rgba(15,32,77,0.4);
+  box-shadow: 0 12px 30px rgba(15, 32, 77, 0.4);
   text-decoration: none;
   display: inline-block;
   transition: transform .15s;
@@ -1310,12 +1343,15 @@ section,
     padding: 1.5rem 1.25rem;
     min-height: auto;
   }
+
   .hero-card-custom .hero-left {
     margin-bottom: 1rem;
   }
+
   .hero-card-custom .cutout-img {
     width: 220px;
   }
+
   .hero-card-custom .hero-right h2 {
     font-size: 1.6rem;
   }
@@ -1330,7 +1366,8 @@ section,
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh; /* Biar tinggi penuh layar */
+  min-height: 100vh;
+  /* Biar tinggi penuh layar */
   color: rgb(12, 4, 4);
   padding: 100px 0;
 }
@@ -2002,178 +2039,197 @@ section,
 }
 
 :root {
-    --bg: #fff;
-    --fg: #222;
-    --radius: 12px;
-    --transition: .2s ease;
-    --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
+  --bg: #fff;
+  --fg: #222;
+  --radius: 12px;
+  --transition: .2s ease;
+  --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-  [data-theme="dark"] {
-    --bg: #1f1f1f;
-    --fg: #f5f5f5;
-  }
+[data-theme="dark"] {
+  --bg: #1f1f1f;
+  --fg: #f5f5f5;
+}
 
-  [data-contrast="high"] {
-    --bg: #000;
-    --fg: #fff;
-  }
+[data-contrast="high"] {
+  --bg: #000;
+  --fg: #fff;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: var(--font-base);
-    line-height: 1.5;
-    transition: background var(--transition), color var(--transition);
-  }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-base);
+  line-height: 1.5;
+  transition: background var(--transition), color var(--transition);
+}
 
-  a {
-    color: #2563eb;
-    text-decoration: none;
-  }
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
 
-  .underline-links a {
-    text-decoration: underline;
-  }
+.underline-links a {
+  text-decoration: underline;
+}
 
-  .readable-font {
-    font-family: "Open Sans", Arial, sans-serif;
-  }
+.readable-font {
+  font-family: "Open Sans", Arial, sans-serif;
+}
 
-  .spacing-normal {
-    letter-spacing: normal;
-    word-spacing: normal;
-  }
+.spacing-normal {
+  letter-spacing: normal;
+  word-spacing: normal;
+}
 
-  .spacing-wide {
-    letter-spacing: 0.05em;
-    word-spacing: 0.2em;
-  }
+.spacing-wide {
+  letter-spacing: 0.05em;
+  word-spacing: 0.2em;
+}
 
-  .grayscale {
-    filter: grayscale(100%);
-  }
+.grayscale {
+  filter: grayscale(100%);
+}
 
-  .a11y-panel {
-    position: fixed;
-    top: 70px;
-    right: 10px;
-    background: var(--bg);
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    z-index: 1000;
-    min-width: 260px;
-    font-family: var(--font-base);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 14px;
-  }
+/* Tombol Aksesibilitas */
+.a11y-toggle {
+  position: fixed;
+  top: 15vw;
+  left: 0px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-size: 35px;
+  cursor: pointer;
+  transition: left 0.3s ease;
+  z-index: 3000;
+}
 
-  .a11y-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
+.a11y-toggle.active {
+  left: 265px;
+}
 
-  .a11y-close {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 4px 6px;
-    line-height: 1;
-  }
+/* Panel disabilitas */
+.a11y-panel {
+  position: fixed;
+  top: 0;
+  left: -280px; /* disembunyikan */
+  width: 260px;
+  height: 80%;
+  background: #ffffff; /* ubah dari putih ke hitam */
+  color: #070707;     /* teks putih agar terbaca */
+  border-left: 1px solid #444; /* garis border lebih gelap */
+  box-shadow: -4px 0 12px rgba(0,0,0,0.5); /* bayangan lebih kontras */
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2000;
+  transition: left 0.3s ease;
+  font-family: Arial, sans-serif;
+}
 
-  .a11y-close:focus {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
+/* Tetap untuk panel aktif */
+.a11y-panel.active {
+  left: 0; /* tampil */
+}
 
-  .lang-toggle {
-    display: flex;
-    gap: 4px;
-    border: 1px solid #888;
-    border-radius: 999px;
-    overflow: hidden;
-  }
+/* Header */
+.a11y-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.a11y-header strong {
+  font-size: 16px;
+  font-weight: bold;
+}
+.a11y-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
 
-  .lang-toggle button {
-    flex: 1;
-    padding: 6px 10px;
-    border: none;
-    background: #f0f0f0;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    transition: background .2s;
-  }
-  .lang-toggle button.active {
-    background: #ddd;
-  }
+/* Language Switch */
+.lang-switch {
+  display: flex;
+  gap: 6px;
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.lang-switch button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.lang-switch button.active {
+  background: #000;
+  color: #fff;
+}
 
-  .section {
-    border-top: 1px solid #e1e1e1;
-    padding-top: 6px;
-  }
+/* Menu */
+.a11y-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.a11y-menu .btn {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 1px;
+  padding: 4px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.a11y-menu .btn:hover {
+  background: #f3f3f3;
+}
 
-  .btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #f5f5f5;
-    border: 1px solid #444;
-    border-radius: 999px;
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: background .2s;
-  }
+/* Footer */
+.a11y-footer {
+  margin-top: auto;
+}
+.a11y-footer .reset-btn {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.a11y-footer .reset-btn:hover {
+  background: #333;
+}
 
-  .btn.full {
-    border-radius: 8px;
-  }
-  .btn:hover {
-    background: #e2e2e2;
-  }
-  .btn:focus {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
+/* sembunyikan tombol asli translate */
+#google_translate_element {
+  display: none; /* sembunyikan dropdown asli */
+}
+.goog-logo-link,
+.goog-te-gadget {
+  display: none !important; /* hilangkan "Powered by Google" */
+}
 
-  .control-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .voice-controls {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .small {
-    font-size: 12px;
-  }
-
-  .icon {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    flex-shrink: 0;
-    text-align: center;
-  }
-
-  .separator {
-    height: 1px;
-    background: #ddd;
-    margin: 6px 0;
-  }
 
 /* Takon Reang (FAQ Section) */
 
@@ -2288,15 +2344,19 @@ section,
 
 /* Welcome Section */
 .welcome-section {
-  background-color: #0A2156; /* biru tua */
-  min-height: 100vh;        /* tinggi layar penuh */
-  padding: 60px 0;          /* spasi atas bawah */
+  background-color: #0A2156;
+  /* biru tua */
+  min-height: 100vh;
+  /* tinggi layar penuh */
+  padding: 60px 0;
+  /* spasi atas bawah */
 }
 
 .welcome-section h2 {
   font-size: 2rem;
   line-height: 1.3;
-  color: #fff !important;  /* paksa putih */
+  color: #fff !important;
+  /* paksa putih */
 }
 
 .welcome-section p {
@@ -2310,9 +2370,233 @@ section,
 
 .welcome-section .btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .welcome-section .mockup-img {
   max-height: 450px;
+}
+
+/* tombol bahasa di depan */
+.lang-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-btn {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.lang-menu {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  min-width: 150px;
+  z-index: 999;
+}
+
+.lang-option {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.lang-option:hover {
+  background: #f0f0f0;
+}
+
+/* Hilangkan frame/banner translate bawaan Google */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner,
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Reset posisi body (Google biasanya kasih margin-top otomatis) */
+body {
+  top: 0px !important;
+  margin-top: 0px !important;
+}
+
+/* Sembunyikan gadget bawaan (dropdown Translate) */
+.goog-te-gadget {
+  display: none !important;
+}
+
+/* Sembunyikan popup kecil ikon G */
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+/* Biar tombol Options di pojok kanan juga hilang */
+.goog-te-banner {
+  display: none !important;
+}
+
+/* Kontras Tinggi */
+body[data-contrast="high"] {
+  filter: contrast(200%);
+}
+
+/* ==============================
+   MODE TERANG (DEFAULT)
+   ============================== */
+html {
+  --text-scale: 1;
+  font-size: calc(16px * var(--text-scale));
+}
+
+body {
+  font-size: 1rem;
+  background: #fff;
+  color: #000;
+}
+
+/* Aksesibilitas */
+body.readable-font {
+  font-family: Arial, Verdana, sans-serif !important;
+  line-height: 1.6 !important;
+}
+
+body.underline-links a {
+  text-decoration: underline !important;
+}
+
+body.spacing-wide {
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+}
+
+/* ==============================
+   MODE GELAP
+   ============================== */
+body[data-theme="dark"] {
+  background-color: #121212 !important;
+  color: #f5f5f5 !important;
+}
+
+/* Semua teks ikut gelap */
+body[data-theme="dark"] h1,
+body[data-theme="dark"] h2,
+body[data-theme="dark"] h3,
+body[data-theme="dark"] h4,
+body[data-theme="dark"] h5,
+body[data-theme="dark"] h6,
+body[data-theme="dark"] p,
+body[data-theme="dark"] span,
+body[data-theme="dark"] li,
+body[data-theme="dark"] a {
+  color: #f5f5f5 !important;
+}
+
+/* Link warna khusus */
+body[data-theme="dark"] a {
+  color: #f5f8fa !important;
+}
+
+/* Section background */
+body[data-theme="dark"] section {
+  background-color: #1e1e1e !important;
+  color: #f5f5f5 !important;
+}
+
+/* Navbar & Footer */
+body[data-theme="dark"] .navbar,
+body[data-theme="dark"] header,
+body[data-theme="dark"] footer {
+  background-color: #1a1a1a !important;
+  color: #f5f5f5 !important;
+}
+
+/* Card & box */
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .box,
+body[data-theme="dark"] .content {
+  background-color: #1e1e1e !important;
+  color: #f5f5f5 !important;
+}
+
+/* Bootstrap overrides */
+body[data-theme="dark"] .bg-light {
+  background-color: #1e1e1e !important;
+}
+
+body[data-theme="dark"] .text-dark {
+  color: #f5f5f5 !important;
+}
+
+body[data-theme="dark"] .btn-primary {
+  background-color: #eff1f3 !important;
+  border-color: #f4f5f7 !important;
+}
+
+body[data-theme="dark"] .btn-light {
+  background-color: #2c2c2c !important;
+  color: #f5f5f5 !important;
+}
+
+/* ==============================
+   HERO SECTION
+   ============================== */
+body[data-theme="dark"] #hero-section {
+  background: #000 !important; /* full hitam */
+  color: #80bfff !important;
+}
+
+body[data-theme="dark"] #hero-section h1,
+body[data-theme="dark"] #hero-section h2,
+body[data-theme="dark"] #hero-section h6,
+body[data-theme="dark"] #hero-section p,
+body[data-theme="dark"] #hero-section .small,
+body[data-theme="dark"] #hero-section i,
+body[data-theme="dark"] #hero-section div {
+  color: #80bfff !important;
+}
+
+/* ==============================
+   FITUR SECTION
+   ============================== */
+body[data-theme="dark"] #fitur-section {
+  background-color: #121212 !important;
+   background-image: none !important; /* hapus gradient/gambar bawaan */
+  color: #80bfff !important;
+}
+
+body[data-theme="dark"] #fitur-section h1,
+body[data-theme="dark"] #fitur-section h2,
+body[data-theme="dark"] #fitur-section p,
+body[data-theme="dark"] #fitur-section a,
+body[data-theme="dark"] #fitur-section button,
+body[data-theme="dark"] #fitur-section .small-desc {
+  color: #80bfff !important;
+}
+
+/* Kartu custom */
+body[data-theme="dark"] #fitur-section .hero-card-custom {
+  background-color: rgba(40, 40, 40, 0.9) !important;
+  border: 1px solid #333 !important;
+  color: #80bfff !important;
+}
+
+/* Feature card */
+body[data-theme="dark"] .feature-card {
+  background-color: rgba(40, 40, 40, 0.9) !important;
+  color: #80bfff !important;
+}
+
+body[data-theme="dark"] .feature-card i {
+  color: #80bfff !important; /* biar icon kontras */
+}
+
+body[data-theme="dark"] .feature-card .small {
+  color: #80bfff !important;
 }

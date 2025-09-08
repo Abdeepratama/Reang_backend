@@ -70,7 +70,7 @@
             <div class="card-body d-flex flex-column justify-content-center">
                 <div class="row g-3">
                     <div class="col-6">
-                        <a href="{{ route('admin.ibadah.index') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.ibadah.info.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="fas fa-mosque fs-3 text-primary"></i>
                                 <p class="mb-0 mt-2 fw-semibold text-primary">Ibadah-Yu</p>
@@ -94,7 +94,7 @@
                         </a>
                     </div>
                     <div class="col-6">
-                        <a href="{{ route('admin.adminduk.index') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.adminduk.info.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="bi bi-card-list fs-3"></i>
                                 <p class="mb-0 mt-2 fw-semibold text-primary">Adminduk-Yu</p>

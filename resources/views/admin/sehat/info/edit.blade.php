@@ -78,6 +78,12 @@ document.getElementById('infoForm').addEventListener('submit', function(e) {
         alert('Deskripsi harus diisi');
         return false;
     }
+
+    if (editor) {
+        let content = editor.getData();
+        content = content.replace(/<table(?![^>]*border)/g, '<table border="1" cellpadding="8" cellspacing="0"');
+        document.querySelector('#editor').value = content;
+    }
 });
 </script>
 @endsection

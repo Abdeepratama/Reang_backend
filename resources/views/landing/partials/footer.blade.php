@@ -51,88 +51,40 @@
         </form>
       </div>
 
-      <div class="a11y-panel" role="dialog" aria-label="Panel Aksesibilitas" aria-modal="true" id="a11yPanel">
+      <div id="a11y-panel" class="a11y-panel">
+        <!-- Header -->
         <div class="a11y-header">
-          <div>
-            <strong id="panel-title">Sarana</strong>
-          </div>
-          <button class="a11y-close" aria-label="Tutup panel" id="closeBtn">&times;</button>
+          <strong>Sarana</strong>
+          <button id="close-a11y" class="a11y-close">✕</button>
         </div>
 
-        <!-- 🔽 Pindahkan contenttoolbar_disabilitas ke sini -->
-        <div class="contenttoolbar_disabilitas" id="groupcekmenu">
-          <div class="titletools" id="taccessbility">Sarana</div>
-
-          <div class="btn-container">
-            <div class="mycheckbox switch btn-color-mode-switch" id="tmulticheckboxlang">
-              <input type="checkbox" id="checklang" value="1">
-              <label id="tmycheckbox" for="checklang" data-on="Inggris" data-off="Indonesia" class="btn-color-mode-switch-inner"></label>
-            </div>
-          </div>
-
-          <div class="bodytools">
-            <!-- Semua subtitletools dari kode kamu -->
-            <div class="subtitletools" id="webspeach">
-              <div class="flexrowdata">
-                <span class="disabilitas-icon"> ... ikon SVG ... </span>
-                &nbsp;&nbsp;<div id="twebspeach" class="aksestexttools">Moda Suara</div>
-              </div>
-            </div>
-            <div class="voice-controls">
-              <button class="btn" id="startVoice" aria-label="Mulai membaca">▶️ Baca</button>
-              <button class="btn" id="pauseVoice" aria-label="Jeda" disabled>⏸️ Jeda</button>
-              <button class="btn" id="stopVoice" aria-label="Hentikan" disabled>⏹️ Hentikan</button>
-            </div>
-
-            <div class="separator"></div>
-
-            <!-- Teks & Tema -->
-            <div class="section">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="icon" aria-hidden="true">🔍</span>
-                <strong class="small">Teks & Tema</strong>
-              </div>
-
-              <div class="control-row">
-                <div style="display:flex; gap:6px;">
-                  <button class="btn" data-action="increase-text">Perbesar Teks</button>
-                  <button class="btn" data-action="decrease-text">Perkecil Teks</button>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="btn" data-toggle="grayscale">Skala Abu - Abu</button>
-                  <button class="btn" data-toggle="high-contrast">Kontras Tinggi</button>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="btn" data-toggle="dark-mode">Latar Gelap</button>
-                  <button class="btn" data-toggle="light-mode">Latar Terang</button>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="btn" data-toggle="spacing-wide">Rata Tulisan</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="separator"></div>
-
-            <!-- Reset -->
-            <div class="section">
-              <button class="btn full" id="resetBtn">Atur Ulang</button>
-            </div>
-          </div>
-
+        <!-- Bahasa -->
+        <div class="lang-switch">
+          <button class="lang-btn active" data-lang="id">Indonesia</button>
+          <button class="lang-btn" data-lang="en">Inggris</button>
         </div>
-      </div>
 
-      <div class="container copyright text-center mt-4">
-        <p>© <span>Copyright</span> <strong class="px-1 sitename">Bootslander</strong> <span>All Rights Reserved</span></p>
-        <div class="credits">
-          <!-- All the links in the footer should remain intact. -->
-          <!-- You can delete the links only if you've purchased the pro version. -->
-          <!-- Licensing information: https://bootstrapmade.com/license/ -->
-          <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed By <a href="https://themewagon.com">ThemeWagon</a>
+        <!-- Google Translate -->
+        <div id="google_translate_element" style="display:none"></div>
+
+        <!-- Menu -->
+        <ul class="a11y-menu">
+          <li><button class="btn" data-key="Moda Suara">🗣️ Moda Suara</button></li>
+          <li><button class="btn" data-key="Perbesar Teks" data-action="increase-text">🔍 Perbesar Teks</button></li>
+          <li><button class="btn" data-key="Perkecil Teks" data-action="decrease-text">🔎 Perkecil Teks</button></li>
+          <li><button class="btn" data-key="Skala Abu - Abu" data-toggle="grayscale">📊 Skala Abu - Abu</button></li>
+          <li><button class="btn" data-key="Kontras Tinggi" data-toggle="high-contrast">👁️ Kontras Tinggi</button></li>
+          <li><button class="btn" data-key="Latar Gelap" data-toggle="dark-mode">🌙 Latar Gelap</button></li>
+          <li><button class="btn" data-key="Latar Terang" data-toggle="light-mode">☀️ Latar Terang</button></li>
+          <li><button class="btn" data-key="Tulisan Dapat Dibaca" data-toggle="readable-font">📖 Tulisan Dapat Dibaca</button></li>
+          <li><button class="btn" data-key="Garis Bawah Tautan" data-toggle="underline-links">🔗 Garis Bawah Tautan</button></li>
+          <li><button class="btn" data-key="Rata Tulisan" data-toggle="spacing-wide">📑 Rata Tulisan</button></li>
+        </ul>
+
+        <!-- Footer -->
+        <div class="a11y-footer">
+          <button class="btn reset-btn" data-key="Atur Ulang" id="resetBtn">Atur Ulang</button>
         </div>
-      </div>
 
 </footer>
 
@@ -149,6 +101,8 @@
 <script src="{{ asset('landing/vendor/glightbox/js/glightbox.min.js')}} "></script>
 <script src="{{ asset('landing/vendor/purecounter/purecounter_vanilla.js')}} "></script>
 <script src="{{ asset('landing/vendor/swiper/swiper-bundle.min.js')}} "></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 
 <!-- Main JS File -->
 <script src="{{ asset('landing/js/main.js')}} "></script>
@@ -159,381 +113,277 @@
 </div> -->
 
 <script>
-  // STATE
-  let currentLang = 'id';
-  const synth = window.speechSynthesis;
-  let utterance = null;
-  let isPaused = false;
-  let lastFocused = null;
+const openBtn = document.getElementById("open-a11y");
+const closeBtn = document.getElementById("close-a11y");
+const panel = document.getElementById("a11y-panel");
 
-  // ELEMENTS
-  const langButtons = document.querySelectorAll('[data-lang]');
-  const panelTitle = document.getElementById('panel-title');
-  const voiceLabel = document.getElementById('voice-label');
-  const rateInput = document.getElementById('voice-rate');
-  const rateVal = document.getElementById('rateVal');
-  const openBtn = document.getElementById('open-a11y');
-  const panel = document.getElementById('a11yPanel');
-  const closeBtn = document.getElementById('closeBtn');
-  const startBtn = document.getElementById('startVoice');
-  const pauseBtn = document.getElementById('pauseVoice');
-  const stopBtn = document.getElementById('stopVoice');
-  const resetBtn = document.getElementById('resetBtn');
-  const autoSpeakCheckbox = document.getElementById('autoSpeakSelection');
-
-  // voice list & loader
-  let voices = [];
-
-  function loadVoices() {
-    voices = synth.getVoices();
-  }
-  synth.onvoiceschanged = loadVoices;
-  loadVoices();
-
-  function getPreferredVoice() {
-    if (currentLang === 'en') {
-      return voices.find(v => /en[-_]?/i.test(v.lang)) || null;
-    } else {
-      return voices.find(v => /id[-_]?/i.test(v.lang)) || null;
-    }
-  }
-
-  // translation dictionary
-  function t(key) {
-    const dict = {
-      id: {
-        'Sarana': 'Sarana',
-        'Moda Suara': 'Moda Suara',
-        'Perbesar Teks': 'Perbesar Teks',
-        'Perkecil Teks': 'Perkecil Teks',
-        'Skala Abu - Abu': 'Skala Abu - Abu',
-        'Kontras Tinggi': 'Kontras Tinggi',
-        'Latar Gelap': 'Latar Gelap',
-        'Latar Terang': 'Latar Terang',
-        'Tulisan Dapat Dibaca': 'Tulisan Dapat Dibaca',
-        'Garis Bawah Tautan': 'Garis Bawah Tautan',
-        'Rata Tulisan': 'Rata Tulisan',
-        'Atur Ulang': 'Atur Ulang',
-        'Baca': 'Baca',
-        'Jeda': 'Jeda',
-        'Hentikan': 'Hentikan',
-      },
-      en: {
-        'Sarana': 'Tools',
-        'Moda Suara': 'Voice Mode',
-        'Perbesar Teks': 'Increase Text',
-        'Perkecil Teks': 'Decrease Text',
-        'Skala Abu - Abu': 'Grayscale',
-        'Kontras Tinggi': 'High Contrast',
-        'Latar Gelap': 'Dark Background',
-        'Latar Terang': 'Light Background',
-        'Tulisan Dapat Dibaca': 'Readable Font',
-        'Garis Bawah Tautan': 'Underline Links',
-        'Rata Tulisan': 'Text Spacing',
-        'Atur Ulang': 'Reset',
-        'Baca': 'Read',
-        'Jeda': 'Pause',
-        'Hentikan': 'Stop',
-      }
-    };
-    return dict[currentLang]?.[key] || key;
-  }
-
-  function updateLabels() {
-    if (panelTitle) panelTitle.textContent = t('Sarana');
-    if (voiceLabel) voiceLabel.textContent = t('Moda Suara');
-    if (startBtn) startBtn.textContent = '▶️ ' + t('Baca');
-    if (pauseBtn) pauseBtn.textContent = '⏸️ ' + t('Jeda');
-    if (stopBtn) stopBtn.textContent = '⏹️ ' + t('Hentikan');
-    document.querySelectorAll('[data-action="increase-text"]').forEach(b => b.textContent = t('Perbesar Teks'));
-    document.querySelectorAll('[data-action="decrease-text"]').forEach(b => b.textContent = t('Perkecil Teks'));
-    document.querySelectorAll('[data-toggle]').forEach(b => {
-      const key = b.getAttribute('data-toggle');
-      let label = '';
-      switch (key) {
-        case 'grayscale':
-          label = t('Skala Abu - Abu');
-          break;
-        case 'high-contrast':
-          label = t('Kontras Tinggi');
-          break;
-        case 'dark-mode':
-          label = t('Latar Gelap');
-          break;
-        case 'light-mode':
-          label = t('Latar Terang');
-          break;
-        case 'readable-font':
-          label = t('Tulisan Dapat Dibaca');
-          break;
-        case 'underline-links':
-          label = t('Garis Bawah Tautan');
-          break;
-        case 'spacing-wide':
-          label = t('Rata Tulisan');
-          break;
-        default:
-          label = key;
-      }
-      b.textContent = label;
-    });
-    if (resetBtn) resetBtn.textContent = t('Atur Ulang');
-  }
-
-  // language toggle
-  langButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      langButtons.forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      btn.classList.add('active');
-      btn.setAttribute('aria-pressed', 'true');
-      currentLang = btn.getAttribute('data-lang') || 'id';
-      updateLabels();
-    });
-  });
-
-  // text scaling
-  let textScale = 1;
-  const incText = document.querySelector('[data-action="increase-text"]');
-  const decText = document.querySelector('[data-action="decrease-text"]');
-  if (incText) incText.addEventListener('click', () => {
-    textScale = Math.min(2, textScale + 0.1);
-    document.body.style.fontSize = textScale + 'em';
-  });
-  if (decText) decText.addEventListener('click', () => {
-    textScale = Math.max(0.5, textScale - 0.1);
-    document.body.style.fontSize = textScale + 'em';
-  });
-
-  // toggles
-  document.querySelectorAll('[data-toggle]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const toggle = btn.getAttribute('data-toggle');
-      switch (toggle) {
-        case 'grayscale':
-          document.body.classList.toggle('grayscale');
-          break;
-        case 'high-contrast':
-          if (document.body.getAttribute('data-contrast') === 'high') {
-            document.body.removeAttribute('data-contrast');
-          } else {
-            document.body.setAttribute('data-contrast', 'high');
-          }
-          break;
-        case 'dark-mode':
-          document.body.setAttribute('data-theme', 'dark');
-          break;
-        case 'light-mode':
-          document.body.removeAttribute('data-theme');
-          document.body.removeAttribute('data-contrast');
-          break;
-        case 'readable-font':
-          document.body.classList.toggle('readable-font');
-          break;
-        case 'underline-links':
-          document.body.classList.toggle('underline-links');
-          break;
-        case 'spacing-wide':
-          document.body.classList.toggle('spacing-wide');
-          break;
-      }
-    });
-  });
-
-  // reset
-  if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      textScale = 1;
-      document.body.style.fontSize = '';
-      document.body.classList.remove('grayscale', 'readable-font', 'underline-links', 'spacing-wide');
-      document.body.removeAttribute('data-theme');
-      document.body.removeAttribute('data-contrast');
-    });
-  }
-
-  // helper ambil teks utama
-  function getTextForReading() {
-    const main = document.querySelector('main');
-    return main ? main.innerText : document.body.innerText;
-  }
-
-  // unified speak function
-  function speakText(text) {
-    if (!synth || !text || !text.trim()) return;
-    synth.cancel();
-    utterance = new SpeechSynthesisUtterance(text.trim());
-    const rate = rateInput ? parseFloat(rateInput.value) : 1;
-    utterance.rate = isNaN(rate) ? 1 : rate;
-    utterance.lang = currentLang === 'en' ? 'en-US' : 'id-ID';
-    const preferred = getPreferredVoice();
-    if (preferred) utterance.voice = preferred;
-    utterance.onend = () => {
-      if (startBtn) startBtn.disabled = false;
-      if (pauseBtn) pauseBtn.disabled = true;
-      if (stopBtn) stopBtn.disabled = true;
-      isPaused = false;
-      if (pauseBtn) pauseBtn.textContent = '⏸️ ' + t('Jeda');
-    };
-    utterance.onerror = (e) => {
-      console.error('Speech error', e);
-    };
-    synth.speak(utterance);
-    if (startBtn) startBtn.disabled = true;
-    if (pauseBtn) pauseBtn.disabled = false;
-    if (stopBtn) stopBtn.disabled = false;
-    isPaused = false;
-  }
-
-  function speak() {
-    const sel = window.getSelection().toString().trim();
-    if (sel) {
-        speakText(sel);
-    } else {
-        speakText(getTextForReading());
-    }
-}
-
-  // voice controls
-  if (startBtn) {
-    startBtn.addEventListener('click', speak);
-  }
-  if (pauseBtn) {
-    pauseBtn.addEventListener('click', () => {
-      if (!synth) return;
-      if (isPaused) {
-        synth.resume();
-        isPaused = false;
-        pauseBtn.textContent = '⏸️ ' + t('Jeda');
-      } else {
-        synth.pause();
-        isPaused = true;
-        pauseBtn.textContent = '▶️ ' + t('Baca');
-      }
-    });
-  }
-  if (stopBtn) {
-    stopBtn.addEventListener('click', () => {
-      if (!synth) return;
-      synth.cancel();
-      if (startBtn) startBtn.disabled = false;
-      if (pauseBtn) pauseBtn.disabled = true;
-      if (stopBtn) stopBtn.disabled = true;
-      isPaused = false;
-      if (pauseBtn) pauseBtn.textContent = '⏸️ ' + t('Jeda');
-    });
-  }
-  if (rateInput) {
-    rateInput.addEventListener('input', () => {
-      if (rateVal) rateVal.textContent = parseFloat(rateInput.value).toFixed(1);
-    });
-  }
-
-  // auto-speak selection
-  let lastSelection = '';
-  let selectionTimer = null;
-
-  function handleSelectionChange() {
-    if (!autoSpeakCheckbox || !autoSpeakCheckbox.checked) return;
-    const sel = window.getSelection();
-    if (!sel) return;
-    const text = sel.toString().trim();
-    if (!text) {
-      lastSelection = '';
-      return;
-    }
-    if (text === lastSelection) return;
-    // ignore inside form fields
-    const anchorNode = sel.anchorNode;
-    if (anchorNode) {
-      const parent = anchorNode.parentElement;
-      if (parent && parent.closest('input, textarea')) return;
-    }
-    lastSelection = text;
-    speakText(text);
-  }
-
-  document.addEventListener("mouseup", function() {
-    const selectedText = window.getSelection().toString().trim();
-    if (selectedText && autoSpeakCheckbox && autoSpeakCheckbox.checked) {
-        speakText(selectedText); // pakai fungsi global
-    }
+// ================== PANEL TOGGLE ==================
+if(openBtn) openBtn.addEventListener("click", ()=>{
+  panel.classList.toggle("active");
+  openBtn.classList.toggle("active");
+});
+if(closeBtn) closeBtn.addEventListener("click", ()=>{
+  panel.classList.remove("active");
+  openBtn.classList.remove("active");
 });
 
-  // panel open/close & focus trap
-  function focusableIn(el) {
-    return el ?
-      Array.from(el.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])'))
-      .filter(e => !e.hasAttribute('disabled')) : [];
-  }
+// ================== STATE ==================
+const synth = window.speechSynthesis;
+let utterance = null;
+let isPaused = false;
+let isSpeaking = false;
+let hoverReadingEnabled = true;
+let lastFocused = null;
+let lastWordSpoken = null;
+let currentLang = localStorage.getItem("selectedLang") || "id";
+let stopAllReading = false; // hentikan semua mode suara
+let throttleTimeout = null;
 
-  function trapFocus(e) {
-    if (e.key !== 'Tab' || !panel) return;
-    const focusables = focusableIn(panel);
-    if (focusables.length === 0) return;
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      }
-    } else {
-      if (document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  }
+// ================== ELEMENTS ==================
+const panelTitle = document.getElementById('panel-title');
+const voiceLabel = document.getElementById('voice-label');
+const rateInput = document.getElementById('voice-rate');
+const rateVal = document.getElementById('rateVal');
+const startBtn = document.getElementById('startVoice');
+const pauseBtn = document.getElementById('pauseVoice');
+const stopBtn = document.getElementById('stopVoice');
+const resetBtn = document.getElementById('resetBtn');
+const autoSpeakCheckbox = document.getElementById('autoSpeakSelection');
+const voiceBtnMain = document.querySelector('[data-key="Moda Suara"]');
 
-  function handleKeydown(e) {
-    if (e.key === 'Escape') closePanel();
-  }
+// ================== VOICE LIST ==================
+let voices = [];
+function loadVoices(){ voices = synth.getVoices(); }
+synth.onvoiceschanged = loadVoices;
+loadVoices();
+function getPreferredVoice(){
+  if(currentLang==='en') return voices.find(v=>/en[-_]?/i.test(v.lang))||null;
+  return voices.find(v=>/id[-_]?/i.test(v.lang))||null;
+}
 
-  function openPanel() {
-    lastFocused = document.activeElement;
-    if (!panel) return;
-    panel.style.display = 'flex';
-    panel.setAttribute('aria-hidden', 'false');
-    if (openBtn) openBtn.setAttribute('aria-expanded', 'true');
-    const firstFocusable = focusableIn(panel)[0];
-    if (firstFocusable) firstFocusable.focus();
-    document.addEventListener('keydown', handleKeydown);
-    document.addEventListener('keydown', trapFocus);
-  }
+// ================== TRANSLATION ==================
+function t(key){
+  const dict = {
+    id:{'Moda Suara':'Moda Suara','Perbesar Teks':'Perbesar Teks','Perkecil Teks':'Perkecil Teks',
+        'Skala Abu - Abu':'Skala Abu - Abu','Kontras Tinggi':'Kontras Tinggi','Latar Gelap':'Latar Gelap',
+        'Latar Terang':'Latar Terang','Tulisan Dapat Dibaca':'Tulisan Dapat Dibaca',
+        'Garis Bawah Tautan':'Garis Bawah Tautan','Rata Tulisan':'Rata Tulisan','Atur Ulang':'Atur Ulang',
+        'Sarana':'Sarana','Baca':'Baca','Jeda':'Jeda','Hentikan':'Hentikan'},
+    en:{'Moda Suara':'Voice Mode','Perbesar Teks':'Increase Text','Perkecil Teks':'Decrease Text',
+        'Skala Abu - Abu':'Grayscale','Kontras Tinggi':'High Contrast','Latar Gelap':'Dark Mode',
+        'Latar Terang':'Light Mode','Tulisan Dapat Dibaca':'Readable Font',
+        'Garis Bawah Tautan':'Underline Links','Rata Tulisan':'Text Spacing','Atur Ulang':'Reset',
+        'Sarana':'Accessibility','Baca':'Read','Jeda':'Pause','Hentikan':'Stop'}
+  };
+  return dict[currentLang]?.[key]||key;
+}
 
-  function closePanel() {
-    if (!panel) return;
-    panel.style.display = 'none';
-    panel.setAttribute('aria-hidden', 'true');
-    if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
-    if (lastFocused) lastFocused.focus();
-    document.removeEventListener('keydown', handleKeydown);
-    document.removeEventListener('keydown', trapFocus);
-  }
+// ================== UPDATE LABELS ==================
+function updateLabels(){
+  if(panelTitle) panelTitle.textContent=t('Sarana');
+  if(voiceLabel) voiceLabel.textContent=t('Moda Suara');
+  if(startBtn) startBtn.textContent='▶️ '+t('Baca');
+  if(pauseBtn) pauseBtn.textContent='⏸️ '+t('Jeda');
+  if(stopBtn) stopBtn.textContent='⏹️ '+t('Hentikan');
+  if(resetBtn) resetBtn.textContent=t('Atur Ulang');
+  document.querySelectorAll("[data-key]").forEach(el=>{
+    const key=el.getAttribute("data-key");
+    const emoji=(el.textContent.match(/^[^ ]+ /)||"")[0];
+    el.textContent=emoji+t(key);
+  });
+  localStorage.setItem("selectedLang",currentLang);
+}
 
-  if (openBtn) {
-    openBtn.addEventListener('click', () => {
-      const isOpen = panel?.getAttribute('aria-hidden') === 'false';
-      if (isOpen) closePanel();
-      else openPanel();
-    });
-  }
-  if (closeBtn) closeBtn.addEventListener('click', closePanel);
+// ================== TEXT SCALING ==================
+let textScale=1;
+const incText=document.querySelector('[data-action="increase-text"]');
+const decText=document.querySelector('[data-action="decrease-text"]');
+if(incText) incText.addEventListener('click',()=>{ textScale=Math.min(2,textScale+0.1); document.documentElement.style.setProperty('--text-scale',textScale); });
+if(decText) decText.addEventListener('click',()=>{ textScale=Math.max(0.5,textScale-0.1); document.documentElement.style.setProperty('--text-scale',textScale); });
 
-  document.addEventListener('click', (e) => {
-    if (panel && !panel.contains(e.target) && openBtn && !openBtn.contains(e.target)) {
-      if (panel.getAttribute('aria-hidden') === 'false') closePanel();
+// ================== TOGGLES ==================
+document.querySelectorAll('[data-toggle]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const toggle=btn.getAttribute('data-toggle');
+    switch(toggle){
+      case 'grayscale': document.body.classList.toggle('grayscale'); break;
+      case 'high-contrast': 
+        if(document.body.getAttribute('data-contrast')==='high') document.body.removeAttribute('data-contrast'); 
+        else document.body.setAttribute('data-contrast','high'); 
+        break;
+      case 'dark-mode': document.body.setAttribute('data-theme','dark'); break;
+      case 'light-mode': document.body.removeAttribute('data-theme'); document.body.removeAttribute('data-contrast'); break;
+      case 'readable-font': document.body.classList.toggle('readable-font'); break;
+      case 'underline-links': document.body.classList.toggle('underline-links'); break;
+      case 'spacing-wide': document.body.classList.toggle('spacing-wide'); break;
     }
   });
+});
 
-  // init
-  if (panel) {
-    panel.style.display = 'none';
-    panel.setAttribute('aria-hidden', 'true');
+// ================== RESET ==================
+if(resetBtn){
+  resetBtn.addEventListener('click',()=>{
+    textScale=1;
+    document.body.style.fontSize='';
+    document.body.classList.remove('grayscale','readable-font','underline-links','spacing-wide');
+    document.body.removeAttribute('data-theme');
+    document.body.removeAttribute('data-contrast');
+  });
+}
+
+// ================== GET TEXT ==================
+function getTextForReading(){
+  const main=document.querySelector('main');
+  return main ? main.innerText : document.body.innerText;
+}
+
+// ================== SPEAK TEXT ==================
+function speakText(text){
+  if(!synth || !text || !text.trim() || stopAllReading) return;
+  synth.cancel();
+  utterance = new SpeechSynthesisUtterance(text.trim());
+  utterance.rate = rateInput ? parseFloat(rateInput.value) : 1;
+  utterance.lang = currentLang==='en' ? 'en-US' : 'id-ID';
+  const preferred = getPreferredVoice();
+  if(preferred) utterance.voice = preferred;
+  utterance.onend = () => {
+    isSpeaking = false;
+    hoverReadingEnabled = true;
+    lastWordSpoken = null;
+    stopAllReading = false;
+    if(voiceBtnMain) voiceBtnMain.textContent='🗣️ '+t('Baca');
+  };
+  synth.speak(utterance);
+  isSpeaking = true;
+}
+
+// ================== BUTTONS CONTROL ==================
+if(startBtn) startBtn.addEventListener('click',()=>{
+  hoverReadingEnabled=true;
+  stopAllReading=false;
+  speakText(getTextForReading());
+});
+
+if(pauseBtn) pauseBtn.addEventListener('click',()=>{
+  if(!synth) return;
+  if(isPaused){ synth.resume(); isPaused=false; pauseBtn.textContent='⏸️ '+t('Jeda'); }
+  else{ synth.pause(); isPaused=true; pauseBtn.textContent='▶️ '+t('Baca'); }
+});
+
+if(stopBtn) stopBtn.addEventListener('click',()=>{
+  if(!synth) return;
+  stopAllReading = true;
+  synth.cancel();
+  isPaused = false;
+  isSpeaking = false;
+  hoverReadingEnabled = false;
+  lastWordSpoken = null;
+  if(voiceBtnMain) voiceBtnMain.textContent='🗣️ '+t('Baca');
+});
+
+// ================== AUTO SPEAK SELECTION ==================
+document.addEventListener('mouseup',()=>{
+  if(stopAllReading) return;
+  const sel = window.getSelection().toString().trim();
+  if(sel && autoSpeakCheckbox && autoSpeakCheckbox.checked){
+    synth.cancel();
+    hoverReadingEnabled = false; 
+    lastWordSpoken = null;
+    speakText(sel);
+  } else {
+    hoverReadingEnabled = true;
   }
-  updateLabels();
+});
+
+// ================== MODA SUARA TOGGLE ==================
+if(voiceBtnMain){
+  voiceBtnMain.addEventListener('click',()=>{
+    if(isSpeaking){
+      stopAllReading = true;
+      synth.cancel();
+      isSpeaking=false;
+      hoverReadingEnabled=false;
+      lastWordSpoken=null;
+      voiceBtnMain.textContent='🗣️ '+t('Baca');
+    } else {
+      hoverReadingEnabled=true;
+      stopAllReading=false;
+      speakText(getTextForReading());
+      voiceBtnMain.textContent='⏹️ '+t('Hentikan');
+    }
+  });
+}
+
+// ================== HOVER KATA DI BAWAH KURSOR ==================
+document.addEventListener('mousemove',(e)=>{
+  if(!hoverReadingEnabled || stopAllReading) return;
+  if(throttleTimeout) return;
+  throttleTimeout = setTimeout(()=>{
+    throttleTimeout = null;
+    const selection = window.getSelection().toString().trim();
+    if(selection) return;
+    const word = getWordUnderCursor(e);
+    if(word && word !== lastWordSpoken){
+      lastWordSpoken = word;
+      speakText(word);
+    }
+  },300);
+});
+
+function getWordUnderCursor(e){
+  let range;
+  if(document.caretRangeFromPoint) range=document.caretRangeFromPoint(e.clientX,e.clientY);
+  else if(document.caretPositionFromPoint) range=document.caretPositionFromPoint(e.clientX,e.clientY).offsetNode;
+  else return null;
+  if(!range) return null;
+  const node = range.startContainer || range.offsetNode;
+  if(!node || node.nodeType!==3) return null;
+  const text = node.textContent;
+  const offset = range.startOffset || range.offset;
+  if(!text) return null;
+  const left = text.slice(0,offset).search(/\S+$/);
+  const rightMatch = text.slice(offset).match(/^\S+/);
+  const right = rightMatch ? rightMatch[0].length : 0;
+  return text.slice(left, offset+right);
+}
+
+// ================== PANEL CONTROL ==================
+function focusableIn(el){ return el ? Array.from(el.querySelectorAll('button,[href],input,[tabindex]:not([tabindex="-1"])')).filter(e=>!e.disabled) : []; }
+function trapFocus(e){ 
+  if(e.key!=='Tab'||!panel) return; 
+  const f=focusableIn(panel); 
+  if(!f.length) return; 
+  const first=f[0], last=f[f.length-1]; 
+  if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } } 
+  else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+}
+function handleKeydown(e){ if(e.key==='Escape') closePanel(); }
+function openPanel(){ 
+  lastFocused=document.activeElement; 
+  if(!panel) return; 
+  panel.style.display='flex'; 
+  panel.setAttribute('aria-hidden','false'); 
+  if(openBtn) openBtn.setAttribute('aria-expanded','true'); 
+  const firstFocusable=focusableIn(panel)[0]; 
+  if(firstFocusable) firstFocusable.focus(); 
+  document.addEventListener('keydown',handleKeydown); 
+  document.addEventListener('keydown',trapFocus); 
+}
+function closePanel(){ 
+  if(!panel) return; 
+  panel.style.display='none'; 
+  panel.setAttribute('aria-hidden','true'); 
+  if(openBtn) openBtn.setAttribute('aria-expanded','false'); 
+  if(lastFocused) lastFocused.focus(); 
+  document.removeEventListener('keydown',handleKeydown); 
+  document.removeEventListener('keydown',trapFocus); 
+}
+if(openBtn) openBtn.addEventListener('click',()=>{ panel.getAttribute('aria-hidden')==='false'?closePanel():openPanel(); });
+if(closeBtn) closeBtn.addEventListener('click',closePanel);
+document.addEventListener('click',(e)=>{ if(panel&&!panel.contains(e.target)&&openBtn&&!openBtn.contains(e.target)) closePanel(); });
+if(panel){ panel.style.display='none'; panel.setAttribute('aria-hidden','true'); }
+
+updateLabels();
 </script>
 
 <script>
@@ -711,6 +561,58 @@
     });
   });
 </script>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'id',
+        includedLanguages: 'en,id',
+        autoDisplay: false
+      },
+      'google_translate_element'
+    );
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const body = document.body;
+    let textScale = 1;
+
+    // === BAHASA ===
+    const buttons = document.querySelectorAll(".lang-btn");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        // ubah status tombol
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // ambil bahasa
+        const lang = btn.getAttribute("data-lang");
+        const select = document.querySelector(".goog-te-combo");
+        if (select) {
+          select.value = lang;
+          select.dispatchEvent(new Event("change"));
+        }
+
+        // simpan ke localStorage biar konsisten
+        localStorage.setItem("selectedLang", lang);
+      });
+    });
+  });
+
+  // Paksa hilangin banner setiap kali Google translate refresh
+  function hideGoogleTranslateElements() {
+    const frame = document.querySelector(".goog-te-banner-frame");
+    if (frame) frame.style.display = "none";
+    document.body.style.top = "0px";
+  }
+
+  document.addEventListener("DOMNodeInserted", function(event) {
+    if (event.target.className === "goog-te-banner-frame skiptranslate") {
+      hideGoogleTranslateElements();
+    }
+  });
+</script>
+
 
 <script>
   function searchFAQ() {

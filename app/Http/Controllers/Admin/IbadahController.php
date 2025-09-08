@@ -65,15 +65,124 @@ class IbadahController extends Controller
             ->with('success', 'Tempat ibadah berhasil ditambahkan!');
     }
 
-    public function tempat()
+    /**
+     * Tempat: menampilkan daftar tempat ibadah
+     * Mendukung filter lewat query string 'fitur' atau alias 'jenis'
+     */
+    public function tempat(Request $request)
     {
-        $items = Ibadah::all();
-        return view('admin.ibadah.tempat.index', compact('items'));
+        $fitur = $request->query('fitur'); // bisa berupa id atau teks
+        $itemsQuery = Ibadah::query();
+
+        if ($fitur !== null && $fitur !== '') {
+            if (is_numeric($fitur)) {
+                // jika disimpan sebagai id kategori
+                $itemsQuery->where('fitur', $fitur)
+                    ->orWhereHas('kategori', function ($q) use ($fitur) {
+                        $q->where('id', $fitur);
+                    });
+                $selectedFitur = Kategori::find($fitur);
+            } else {
+                $text = strtolower($fitur);
+                $itemsQuery->where(function ($q) use ($text) {
+                    // cocokkan baik pada kolom fitur (string) atau nama kategori
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
+                      ->orWhereHas('kategori', function ($q2) use ($text) {
+                          $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
+                      });
+                });
+
+                $selectedFitur = Kategori::whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%'])->first();
+            }
+        } else {
+            $selectedFitur = null;
+        }
+
+        // juga support alias 'jenis'
+        $jenis = $request->query('jenis');
+        if ($jenis !== null && $jenis !== '') {
+            if (is_numeric($jenis)) {
+                $itemsQuery->where('fitur', $jenis)
+                    ->orWhereHas('kategori', function ($q) use ($jenis) {
+                        $q->where('id', $jenis);
+                    });
+            } else {
+                $text = strtolower($jenis);
+                $itemsQuery->where(function ($q) use ($text) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
+                      ->orWhereHas('kategori', function ($q2) use ($text) {
+                          $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
+                      });
+                });
+                // jika belum ada selectedFitur, set dari jenis
+                if (!$selectedFitur) {
+                    $selectedFitur = Kategori::whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%'])->first();
+                }
+            }
+        }
+
+        $items = $itemsQuery->get();
+
+        // kirim juga daftar kategori (untuk dropdown filter di view jika perlu)
+        $kategoriIbadah = Kategori::where('fitur', 'ibadah')->orderBy('nama')->get();
+
+        return view('admin.ibadah.tempat.index', compact('items', 'kategoriIbadah', 'selectedFitur'));
     }
 
-    public function map()
+    /**
+     * Map view: juga mendukung filter fitur lewat query string 'fitur' atau 'jenis'
+     */
+    public function map(Request $request)
     {
-        $lokasi = Ibadah::all()->map(function ($loc) {
+        $fitur = $request->query('fitur'); // optional filter
+        $lokasiQuery = Ibadah::query();
+
+        if ($fitur !== null && $fitur !== '') {
+            if (is_numeric($fitur)) {
+                $lokasiQuery->where('fitur', $fitur)
+                    ->orWhereHas('kategori', function ($q) use ($fitur) {
+                        $q->where('id', $fitur);
+                    });
+            } else {
+                $text = strtolower($fitur);
+                $matchingKategoriIds = Kategori::whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%'])
+                    ->pluck('id');
+
+                if ($matchingKategoriIds->isEmpty()) {
+                    $lokasi = collect();
+                    return view('admin.ibadah.tempat.map', compact('lokasi'));
+                }
+
+                $lokasiQuery->where(function ($q) use ($text, $matchingKategoriIds) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
+                      ->orWhereIn('fitur', $matchingKategoriIds)
+                      ->orWhereHas('kategori', function ($q2) use ($matchingKategoriIds) {
+                          $q2->whereIn('id', $matchingKategoriIds);
+                      });
+                });
+            }
+        }
+
+        // support alias 'jenis'
+        $jenis = $request->query('jenis');
+        if ($jenis !== null && $jenis !== '') {
+            if (is_numeric($jenis)) {
+                $lokasiQuery->where('fitur', $jenis)
+                    ->orWhereHas('kategori', function ($q) use ($jenis) {
+                        $q->where('id', $jenis);
+                    });
+            } else {
+                $text = strtolower($jenis);
+                $lokasiQuery->where(function ($q) use ($text) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
+                      ->orWhereHas('kategori', function ($q2) use ($text) {
+                          $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
+                      });
+                });
+            }
+        }
+
+        $lokasi = $lokasiQuery->get()->map(function ($loc) {
             return [
                 'name' => $loc->name,
                 'address' => $loc->address,
@@ -104,7 +213,6 @@ class IbadahController extends Controller
         return redirect()->back()->with('success', 'Lokasi berhasil disimpan.');
     }
 
-
     public function create()
     {
         $kategoriIbadah = Kategori::where('fitur', 'ibadah')->orderBy('nama')->get();
@@ -131,7 +239,6 @@ class IbadahController extends Controller
 
         return view('admin.ibadah.tempat.edit', compact('item', 'kategoriIbadah', 'lokasi'));
     }
-
 
     public function update(Request $request, $id)
     {
@@ -166,7 +273,11 @@ class IbadahController extends Controller
             ->with('success', 'Lokasi berhasil diperbarui!');
     }
 
-    public function showtempat($id = null)
+    /**
+     * API: tampilkan tempat ibadah (bisa single jika $id diberikan)
+     * Sekarang mendukung filtering via query 'fitur' atau 'jenis' (case-insensitive)
+     */
+    public function showtempat(Request $request, $id = null)
     {
         if ($id) {
             $data = Ibadah::with('kategori')->find($id);
@@ -191,7 +302,29 @@ class IbadahController extends Controller
 
             return response()->json($arr, 200);
         } else {
-            $data = Ibadah::with('kategori')->get()->map(function ($item) {
+            $query = Ibadah::with('kategori');
+
+            // ambil param fitur atau jenis (alias)
+            $filter = $request->query('fitur', $request->query('jenis', null));
+
+            if ($filter !== null && $filter !== '') {
+                if (is_numeric($filter)) {
+                    $query->where('fitur', $filter)
+                          ->orWhereHas('kategori', function ($q) use ($filter) {
+                              $q->where('id', $filter);
+                          });
+                } else {
+                    $text = strtolower($filter);
+                    $query->where(function ($q) use ($text) {
+                        $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
+                          ->orWhereHas('kategori', function ($q2) use ($text) {
+                              $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
+                          });
+                    });
+                }
+            }
+
+            $data = $query->get()->map(function ($item) {
                 return [
                     'id'         => $item->id,
                     'name'       => $item->name,
@@ -466,7 +599,7 @@ class IbadahController extends Controller
     {
         if (!$content) return $content;
 
-        return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
+        return preg_replace_callback('/(<img\b[^>]\bsrc\s=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
             $prefix = $m[1];
             $src = $m[2];
             $suffix = $m[3];
