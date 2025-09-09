@@ -21,7 +21,7 @@ class KerjaController extends Controller
 
     public function infocreate()
     {
-        $kategoriKerja = Kategori::where('fitur', 'Kerja')->orderBy('nama')->get();
+        $kategoriKerja = Kategori::where('fitur', 'info kerja')->orderBy('nama')->get();
         return view('admin.kerja.info.create', ['kategoriKerja' => $kategoriKerja]);
     }
 
@@ -56,7 +56,7 @@ class KerjaController extends Controller
     public function infoedit($id)
     {
         $info = InfoKerja::findOrFail($id);
-        $kategoriKerja = Kategori::where('fitur', 'Kerja')->get();
+        $kategoriKerja = Kategori::where('fitur', 'info kerja')->get();
 
         return view('admin.kerja.info.edit', [
             'info' => $info,

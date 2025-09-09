@@ -36,7 +36,7 @@ class SehatController extends Controller
 
     public function create()
     {
-        $kategoriSehat = Kategori::where('fitur', 'Sehat')->orderBy('nama')->get();
+        $kategoriSehat = Kategori::where('fitur', 'lokasi kesehatan')->orderBy('nama')->get();
         $lokasi = Sehat::all(); // untuk peta
 
         return view('admin.sehat.tempat.create', compact('kategoriSehat', 'lokasi'));
@@ -71,7 +71,7 @@ class SehatController extends Controller
     public function edit($id)
     {
         $item = Sehat::findOrFail($id);
-        $kategoriSehat = Kategori::where('fitur', 'Sehat')->get();
+        $kategoriSehat = Kategori::where('fitur', 'lokasi kesehatan')->get();
 
         return view('admin.sehat.tempat.edit', [
             'item' => $item,
@@ -235,7 +235,7 @@ class SehatController extends Controller
 
     public function infocreate()
     {
-        $kategoriKesehatan = Kategori::where('fitur', 'Kesehatan')
+        $kategoriKesehatan = Kategori::where('fitur', 'info Kesehatan')
             ->orderBy('nama')
             ->get();
 
@@ -271,7 +271,7 @@ class SehatController extends Controller
     public function infoedit($id)
     {
         $info = InfoKesehatan::findOrFail($id);
-        $kategoriKesehatan = Kategori::where('fitur', 'Kesehatan')->get();
+        $kategoriKesehatan = Kategori::where('fitur', 'info Kesehatan')->get();
 
         return view('admin.sehat.info.edit', [
             'info' => $info,

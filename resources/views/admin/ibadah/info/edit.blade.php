@@ -59,7 +59,7 @@
                     <label>Kategori</label>
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
-                        @foreach($kategoriIbadah as $kategori)
+                        @foreach($kategoriInfoIbadah as $kategori)
                             <option value="{{ $kategori->nama }}" 
                                 {{ old('fitur', $info->fitur) == $kategori->nama ? 'selected' : '' }}>
                                 {{ $kategori->nama }}

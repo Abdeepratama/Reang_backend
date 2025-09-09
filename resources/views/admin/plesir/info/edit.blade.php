@@ -74,8 +74,8 @@
 
 <script>
     // Data lokasi lama dari form (latitude dan longitude dari server)
-    const initialLat = parseFloat(@json(old('latitude', $info - > latitude)));
-    const initialLng = parseFloat(@json(old('longitude', $info - > longitude)));
+    const initialLat = parseFloat(@json(old('latitude', $info->latitude)));
+    const initialLng = parseFloat(@json(old('longitude', $info->longitude)));
 
     // Inisialisasi peta dengan posisi lama, atau default jika kosong
     const map = L.map('peta').setView([initialLat || -6.326511, initialLng || 108.3202685], 13);

@@ -36,7 +36,7 @@ class PlesirController extends Controller
 
     public function create()
     {
-        $kategoriPlesir = Kategori::where('fitur', 'plesir')->orderBy('nama')->get();
+        $kategoriPlesir = Kategori::where('fitur', 'lokasi plesir')->orderBy('nama')->get();
         $lokasi = Plesir::all(); // untuk peta
 
         return view('admin.plesir.tempat.create', compact('kategoriPlesir', 'lokasi'));
@@ -70,7 +70,7 @@ class PlesirController extends Controller
     public function edit($id)
     {
         $item = Plesir::findOrFail($id);
-        $kategoriPlesir = Kategori::where('fitur', 'plesir')->get(); // ambil khusus kategori untuk fitur 'plesir'
+        $kategoriPlesir = Kategori::where('fitur', 'lokasi plesir')->get(); // ambil khusus kategori untuk fitur 'plesir'
 
         return view('admin.Plesir.tempat.edit', [
             'item' => $item,
@@ -208,7 +208,7 @@ class PlesirController extends Controller
 
     public function createInfo()
     {
-        $kategoriPlesir = Kategori::where('fitur', 'plesir')
+        $kategoriPlesir = Kategori::where('fitur', 'info plesir')
             ->orderBy('nama')
             ->get();
 
@@ -258,7 +258,7 @@ class PlesirController extends Controller
     public function infoEdit($id)
     {
         $info = InfoPlesir::findOrFail($id);
-        $kategoriPlesir = Kategori::where('fitur', 'plesir')->orderBy('nama')->get();
+        $kategoriPlesir = Kategori::where('fitur', 'info plesir')->orderBy('nama')->get();
         return view('admin.plesir.info.edit', compact('info', 'kategoriPlesir'));
     }
 

@@ -154,7 +154,7 @@
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.pasar.tempat.index') }}">
-                                    Lokasi Tempat
+                                    Lokasi Pasar
                                 </a>
                             </li>
                         </ul>
@@ -200,7 +200,7 @@
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.plesir.tempat.index') }}">
-                                    Lokasi Tempat
+                                    Lokasi Plesir
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -224,7 +224,7 @@
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.ibadah.tempat.index') }}">
-                                    Lokasi Tempat
+                                    Lokasi tempat ibadah
                                 </a>
                             </li>
                             <li class="nav-item">

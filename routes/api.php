@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DumasController;
 use App\Http\Controllers\Admin\SekolahController;
 use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\Admin\PajakController;
+use App\Http\Controllers\Admin\PasarController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Admin\PlesirController;
@@ -71,3 +72,6 @@ Route::get('/info-perizinan/{id?}', [IzinController::class, 'infoshow']); //info
 
 // Adminduk
 Route::get('/info-adminduk/{id?}', [AdmindukController::class, 'infoshow']); //info
+
+// pasar-yu
+Route::get('/tempat-pasar/{id?}', [PasarController::class, 'show']);

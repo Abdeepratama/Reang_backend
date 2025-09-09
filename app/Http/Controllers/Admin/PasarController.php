@@ -33,7 +33,7 @@ class PasarController extends Controller
 
     public function create()
     {
-        $kategoriPasar = Kategori::where('fitur', 'Pasar')->orderBy('nama')->get();
+        $kategoriPasar = Kategori::where('fitur', 'lokasi pasar')->orderBy('nama')->get();
         $lokasi = Pasar::all(); // untuk peta
 
         return view('admin.pasar.tempat.create', compact('kategoriPasar', 'lokasi'));
@@ -67,7 +67,7 @@ class PasarController extends Controller
     public function edit($id)
     {
         $item = Pasar::findOrFail($id);
-        $kategoriPasar = Kategori::where('fitur', 'Pasar')->get(); // ambil khusus kategori untuk fitur 'Pasar'
+        $kategoriPasar = Kategori::where('fitur', 'lokasi pasar')->get(); // ambil khusus kategori untuk fitur 'Pasar'
 
         return view('admin.pasar.tempat.edit', [
             'item' => $item,
@@ -154,6 +154,53 @@ class PasarController extends Controller
         return view('admin.pasar.tempat.index', compact('items'));
     }
 
+    public function show($id = null)
+    {
+        if ($id) {
+            $data = Pasar::with('kategori')->find($id);
+
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $arr = [
+                'id'         => $data->id,
+                'nama'       => $data->name,
+                'alamat'     => $data->address,
+                'latitude'   => $data->latitude,
+                'longitude'  => $data->longitude,
+                'foto'       => $data->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                    : null,
+                'kategori'   => $data->kategori->nama ?? ($data->fitur ?? null),
+                'fitur'      => $data->fitur,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
+            ];
+
+            return response()->json($arr, 200);
+        } else {
+            $data = Pasar::with('kategori')->get()->map(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'nama'       => $item->name,
+                    'alamat'     => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                    'fitur'      => $item->fitur,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($data, 200);
+        }
+    }
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
@@ -172,5 +219,74 @@ class PasarController extends Controller
             'dibaca' => false,
             'url' => route('admin.ibadah.tempat.index') // route yang valid
         ]);
+    }
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
+
+            $path = $file->storeAs('foto_pasar', $filename, 'public');
+            $url = request()->getSchemeAndHttpHost() . '/storage/' . $path;
+
+            return response()->json([
+                'uploaded' => true,
+                'url'      => $url
+            ]);
+        }
+
+        return response()->json([
+            'uploaded' => false,
+            'error'    => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
+    }
+
+    private function replaceImageUrlsInHtml($html)
+    {
+        if (!$html) return $html;
+
+        return preg_replace_callback(
+            '/<img[^>]+src=["\']([^"\'>]+)["\']/i',
+            function ($matches) {
+                $src = $matches[1];
+                $currentHost = request()->getSchemeAndHttpHost();
+
+                // base64 image → biarkan
+                if (preg_match('/^data:/i', $src)) {
+                    return $matches[0];
+                }
+
+                // absolute URL tapi beda host → ganti
+                if (preg_match('#^https?://[^/]+/(.+)$#i', $src, $m)) {
+                    $path = $m[1];
+                    $new  = $currentHost . '/' . ltrim($path, '/');
+                    return str_replace($src, $new, $matches[0]);
+                }
+
+                // relative path (misal: foto_pasar/abc.jpg)
+                $new = $currentHost . '/storage/' . ltrim($src, '/');
+                return str_replace($src, $new, $matches[0]);
+            },
+            $html
+        );
+    }
+
+    private function buildFotoUrl($path)
+    {
+        if (!$path) {
+            return null;
+        }
+        return asset('storage/' . ltrim($path, '/'));
+    }
+
+    private function getStoragePathFromFoto($foto)
+    {
+        if (!$foto) {
+            return null;
+        }
+        return ltrim($foto, '/');
     }
 }

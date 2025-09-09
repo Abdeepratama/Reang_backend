@@ -9,7 +9,7 @@
     <form action="{{ route('admin.kategori.store') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <label for="fitur" class="form-label">Fitur</label>
+            <label for="fitur" class="form-label">Kategori</label>
             <input type="text" class="form-control" id="fitur" name="fitur" required placeholder="Contoh: ibadah, sehat, pasar, plesir">
         </div>
 

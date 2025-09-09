@@ -215,7 +215,7 @@ class IbadahController extends Controller
 
     public function create()
     {
-        $kategoriIbadah = Kategori::where('fitur', 'ibadah')->orderBy('nama')->get();
+        $kategoriIbadah = Kategori::where('fitur', 'lokasi ibadah')->orderBy('nama')->get();
         $lokasi = Ibadah::all(); // Ambil semua lokasi
 
         return view('admin.ibadah.tempat.create', compact('kategoriIbadah', 'lokasi'));
@@ -234,7 +234,7 @@ class IbadahController extends Controller
     public function edit($id)
     {
         $item = Ibadah::findOrFail($id);
-        $kategoriIbadah = Kategori::where('fitur', 'ibadah')->orderBy('nama')->get();
+        $kategoriIbadah = Kategori::where('fitur', 'lokasi ibadah')->orderBy('nama')->get();
         $lokasi = Ibadah::all(); // <-- tambahkan ini
 
         return view('admin.ibadah.tempat.edit', compact('item', 'kategoriIbadah', 'lokasi'));
@@ -352,7 +352,7 @@ class IbadahController extends Controller
 
     public function createInfo()
     {
-        $kategoriIbadah = Kategori::where('fitur', 'ibadah')->get();
+        $kategoriInfoIbadah = Kategori::where('fitur', 'info ibadah')->get();
 
         $lokasi = InfoKeagamaan::all()->map(function ($loc) {
             return [
@@ -365,7 +365,7 @@ class IbadahController extends Controller
             ];
         });
 
-        return view('admin.ibadah.info.create', compact('kategoriIbadah', 'lokasi'));
+        return view('admin.ibadah.info.create', compact('kategoriInfoIbadah', 'lokasi'));
     }
 
     public function storeInfo(Request $request)
@@ -413,8 +413,8 @@ class IbadahController extends Controller
     public function infoEdit($id)
     {
         $info = InfoKeagamaan::findOrFail($id);
-        $kategoriIbadah = Kategori::all();
-        return view('admin.ibadah.info.edit', compact('info', 'kategoriIbadah'));
+        $kategoriInfoIbadah = Kategori::where('fitur', 'info ibadah')->get();
+        return view('admin.ibadah.info.edit', compact('info', 'kategoriInfoIbadah'));
     }
 
     public function infoUpdate(Request $request, $id)
