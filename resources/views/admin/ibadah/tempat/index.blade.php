@@ -8,7 +8,7 @@
 
     <a href="{{ route('admin.ibadah.tempat.map') }}">Lihat Peta</a>
 
-    <a href="{{ route('admin.ibadah.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Ibadah</a>
+    <a href="{{ route('admin.ibadah.tempat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Ibadah</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -23,7 +23,7 @@
                 <th>Alamat</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th>Fitur</th>
+                <th>Kategori</th>
                 <th>Foto</th>
                 <th>Aksi</th>
             </tr>
@@ -45,7 +45,11 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('admin.ibadah.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <a href="{{ route('admin.ibadah.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <a href="{{ route('admin.ibadah.tempat.show', $item->id) }}" 
+   class="btn btn-info btn-sm">
+    <i class="bi bi-eye"></i> Detail
+</a>
                         <form action="{{ route('admin.ibadah.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')

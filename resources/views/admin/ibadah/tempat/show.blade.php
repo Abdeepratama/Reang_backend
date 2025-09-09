@@ -1,28 +1,38 @@
 @extends('admin.partials.app')
 
-@section('title', 'IBADAH-YU')
+@section('title', 'Detail Tempat Ibadah')
 
 @section('content')
 <div class="container mt-4">
-    <h2>Detail Tempat Ibadah</h2>
+    <h2><i class="bi bi-building"></i> Detail Tempat Ibadah</h2>
 
-    <div class="card">
+    <div class="card mt-3" style="max-width: 800px;">
         <div class="card-body">
-            <p><strong>Nama:</strong> {{ $item->name }}</p>
-            <p><strong>Alamat:</strong> {{ $item->address }}</p>
-            <p><strong>Latitude:</strong> {{ $item->latitude }}</p>
-            <p><strong>Longitude:</strong> {{ $item->longitude }}</p>
-        </div>
-    </div>
+            <h4>{{ $data->name }}</h4>
+            <p><strong>Alamat:</strong> {{ $data->address }}</p>
+            <p><strong>Latitude:</strong> {{ $data->latitude }}</p>
+            <p><strong>Longitude:</strong> {{ $data->longitude }}</p>
+            <p><strong>Kategori:</strong> {{ $data->kategori->nama ?? $data->fitur }}</p>
 
-    <div class="mt-4">
-        <a href="{{ route('admin.ibadah.index') }}" class="btn btn-secondary">Kembali</a>
-        <a href="{{ route('admin.ibadah.edit', $item->id) }}" class="btn btn-primary">Edit</a>
-        <form action="{{ route('admin.ibadah.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data ini?')">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger">Hapus</button>
-        </form>
+            @if($data->foto)
+                <div class="mb-3">
+                    <img src="{{ asset('storage/'.$data->foto) }}" 
+                         alt="{{ $data->name }}" 
+                         class="img-fluid rounded shadow">
+                </div>
+            @else
+                <p><em>Tidak ada foto</em></p>
+            @endif
+
+            <div class="mt-4">
+                <a href="{{ route('admin.ibadah.tempat.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+                <a href="{{ route('admin.ibadah.tempat.edit', $data->id) }}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

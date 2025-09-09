@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" href="{{ asset('landing/img/logo reang.png') }}">
 
     <style>
     .hover-shadow:hover {
@@ -45,7 +46,7 @@
 
         <!-- Ibadah-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.ibadah.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.ibadah.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="fas fa-mosque text-primary icon-size"></i>
@@ -57,7 +58,7 @@
 
 <!-- Sehat-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.sehat.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.sehat.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-heart-pulse text-success icon-size"></i>
@@ -69,7 +70,7 @@
 
         <!-- Pasar-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.pasar.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.pasar.tempat.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-cart text-warning icon-size"></i>
@@ -81,7 +82,7 @@
 
 <!-- Plesir-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.plesir.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.plesir.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-geo-alt text-info icon-size"></i>
@@ -93,7 +94,7 @@
 
 <!-- Sekolah-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.sekolah.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.sekolah.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-book text-danger icon-size"></i>
@@ -105,7 +106,7 @@
 
 <!-- DUMAS-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.dumas.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.dumas.aduan.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-exclamation-circle fs-1"></i>
@@ -117,7 +118,7 @@
 
 <!-- Adminduk-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.adminduk.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.adminduk.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-card-list text-success icon-size"></i>
@@ -141,7 +142,7 @@
 
 <!-- Izin-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.izin.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.izin.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-shield-check text-info icon-size"></i>
@@ -153,7 +154,7 @@
 
 <!-- Kerja-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.kerja.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.kerja.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-briefcase text-secondary icon-size"></i>
@@ -165,7 +166,7 @@
 
 <!-- Pajak-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.pajak.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.pajak.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-receipt text-dark icon-size"></i>

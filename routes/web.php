@@ -54,10 +54,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         //--------------------------------------------ibadah-yu----------------------------------------------------------
         // tempat ibadah
-        Route::get('/ibadah/tempat', [IbadahController::class, 'tempat'])->name('ibadah.tempat.index');
-        Route::post('/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('admin.ibadah.tempat.simpanLokasi');
+        Route::get('/ibadah/tempat', [IbadahController::class, 'index'])->name('ibadah.tempat.index');
+        Route::post('/ibadah/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('ibadah.tempat.simpanLokasi');
         Route::get('/ibadah/tempat/map', [IbadahController::class, 'map'])->name('ibadah.tempat.map');
         Route::get('/ibadah/tempat/create', [IbadahController::class, 'createTempat'])->name('ibadah.tempat.create');
+        Route::post('/ibadah/tempat', [IbadahController::class, 'storeTempat'])->name('ibadah.tempat.store');
+        Route::get('/ibadah/tempat/{id}/edit', [IbadahController::class, 'editTempat'])->name('ibadah.tempat.edit');
+        Route::put('/ibadah/tempat/{id}', [IbadahController::class, 'updateTempat'])->name('ibadah.tempat.update');
+        Route::get('/ibadah/tempat/{id}/show', [IbadahController::class, 'showTempatWeb'])->name('ibadah.tempat.show');
+        Route::delete('/ibadah/tempat/{id}', [IbadahController::class, 'destroyTempat'])->name('ibadah.tempat.destroy');
         // info ibadah
         Route::get('/ibadah/info', [IbadahController::class, 'infoIndex'])->name('ibadah.info.index');
         Route::get('/ibadah/info/map', [IbadahController::class, 'infomap'])->name('ibadah.info.map');
@@ -185,7 +190,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
         // Resource routes
-        Route::resource('ibadah', IbadahController::class);
+        Route::resource('/ibadah', IbadahController::class);
         Route::resource('/sehat', SehatController::class);
         Route::resource('/pasar', PasarController::class);
         Route::resource('/plesir', PlesirController::class);

@@ -24,6 +24,7 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>No</th>
+                                            <th>Foto</th>
                                             <th>Judul</th>
                                             <th>Deskripsi</th>
                                             <th>Aksi</th>
@@ -33,6 +34,7 @@
                                         @forelse($infoItems as $info)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
+                                            <td><img src="{{ asset('storage/' . $info->foto) }}" width="100" alt="Foto"></td>
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ Str::limit(strip_tags($info->deskripsi), 50) }}</td>
                                             <td>

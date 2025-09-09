@@ -78,7 +78,7 @@
                         </a>
                     </div>
                     <div class="col-6">
-                        <a href="{{ route('admin.sehat.index') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.sehat.info.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="bi bi-heart-pulse fs-3"></i>
                                 <p class="mb-0 mt-2 fw-semibold text-primary">Sehat-Yu</p>
@@ -86,7 +86,7 @@
                         </a>
                     </div>
                     <div class="col-6">
-                        <a href="{{ route('admin.pasar.index') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.pasar.tempat.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="bi bi-cart fs-3"></i>
                                 <p class="mb-0 mt-2 fw-semibold text-primary">Pasar-Yu</p>
@@ -103,7 +103,7 @@
                     </div>
 
                     <div class="col-6">
-                        <a href="{{ route('admin.plesir.index') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.plesir.info.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="bi bi-geo-alt-fill fs-3"></i>
                                 <p class="mb-0 mt-2 fw-semibold text-primary">Plesir-Yu</p>
@@ -112,7 +112,7 @@
                     </div>
 
                     <div class="col-6">
-                        <a href="{{ route('admin.dumas.index') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.dumas.aduan.index') }}" class="text-decoration-none">
                             <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
                                 <i class="bi bi-exclamation-circle fs-3"></i>
                                 <p class="mb-0 mt-2 fw-semibold text-primary">Dumas-Yu</p>

@@ -96,7 +96,7 @@
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.sekolah.tempat.index') }}">
-                                    Lokasi Tempat
+                                    Lokasi sekolah
                                 </a>
                             </li>
                             <li class="nav-item">

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class InfoAdminduk extends Model
 {
@@ -16,5 +17,15 @@ class InfoAdminduk extends Model
     protected $fillable = [
         'judul',
         'deskripsi',
+        'foto',
     ];
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->foto && Storage::disk('public')->exists($this->foto)) {
+            return Storage::url($this->foto);
+        }
+
+        return asset('images/default-adminduk.jpg');
+    }
 }

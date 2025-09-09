@@ -7,6 +7,7 @@ use App\Models\InfoAdminduk;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdmindukController extends Controller
 {
@@ -32,7 +33,15 @@ class AdmindukController extends Controller
         $validated = $request->validate([
             'judul'      => 'required|string|max:255',
             'deskripsi'  => 'required|string',
+            'foto'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $fotoName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('foto_adminduk', $fotoName, 'public');
+            $validated['foto'] = $path;
+        }
 
         InfoAdminduk::create($validated);
 
@@ -62,7 +71,15 @@ class AdmindukController extends Controller
         $validated = $request->validate([
             'judul'      => 'required|string|max:255',
             'deskripsi'  => 'required|string',
+            'foto'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('foto')) {
+            if ($item->foto) {
+                Storage::disk('public')->delete($item->foto);
+            }
+            $validated['foto'] = $request->file('foto')->store('foto_adminduk', 'public');
+        }
 
         $item->update($validated);
 
@@ -79,6 +96,7 @@ class AdmindukController extends Controller
     public function infodestroy($id)
     {
         $item = InfoAdminduk::findOrFail($id);
+        if ($item->foto) Storage::disk('public')->delete($item->foto);
         $item->delete();
 
         $this->logAktivitas("Info Adminduk telah dihapus");
@@ -86,34 +104,6 @@ class AdmindukController extends Controller
 
         return redirect()->route('admin.adminduk.info.index')
             ->with('success', 'Info Adminduk berhasil dihapus.');
-    }
-
-    public function infoupload(Request $request)
-    {
-        if ($request->hasFile('upload')) {
-            $file = $request->file('upload');
-
-            // bikin nama file unik + hilangkan spasi
-            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
-
-            // simpan ke folder storage/app/public/foto_adminduk
-            $file->storeAs('foto_adminduk', $filename, 'public');
-
-            // URL dinamis sesuai host yang sedang diakses
-            $url = $request->getSchemeAndHttpHost() . '/storage/foto_adminduk/' . $filename;
-
-            return response()->json([
-                'uploaded' => true,
-                'url'      => $url
-            ]);
-        }
-
-        return response()->json([
-            'uploaded' => false,
-            'error'    => [
-                'message' => 'No file uploaded'
-            ]
-        ], 400);
     }
 
     /**
@@ -132,6 +122,7 @@ class AdmindukController extends Controller
                 'id'         => $data->id,
                 'judul'      => $data->judul,
                 'deskripsi'  => $this->replaceImageUrlsInHtml($data->deskripsi),
+                'foto'       => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
                 'created_at' => $data->created_at,
                 'updated_at' => $data->updated_at,
             ];
@@ -143,6 +134,7 @@ class AdmindukController extends Controller
                     'id'         => $item->id,
                     'judul'      => $item->judul,
                     'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                    'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
                 ];
@@ -150,6 +142,32 @@ class AdmindukController extends Controller
 
             return response()->json($data, 200);
         }
+    }
+
+    /**
+     * UPLOAD UNTUK CKEDITOR
+     */
+    public function infoupload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
+
+            $path = $file->storeAs('foto_adminduk', $filename, 'public');
+            $url = $request->getSchemeAndHttpHost() . '/storage/' . $path;
+
+            return response()->json([
+                'uploaded' => true,
+                'url'      => $url
+            ]);
+        }
+
+        return response()->json([
+            'uploaded' => false,
+            'error'    => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
     }
 
     /**
@@ -210,5 +228,24 @@ class AdmindukController extends Controller
             'dibaca'     => false,
             'url'        => route('admin.adminduk.info.index') // route yang valid
         ]);
+    }
+
+    private function buildFotoUrl($path)
+    {
+        if (!$path) {
+            return null;
+        }
+        return asset('storage/' . ltrim($path, '/'));
+    }
+
+    /**
+     * Helper: ambil path relatif dari foto (tanpa slash awal)
+     */
+    private function getStoragePathFromFoto($foto)
+    {
+        if (!$foto) {
+            return null;
+        }
+        return ltrim($foto, '/');
     }
 }

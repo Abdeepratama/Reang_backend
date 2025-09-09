@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <h2><i class="bi bi-file-earmark-text"></i> Tambah Info Adminduk</h2>
 
-    <form id="infoForm" action="{{ route('admin.adminduk.info.store') }}" method="POST">
+    <form id="infoForm" action="{{ route('admin.adminduk.info.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div style="max-width: 800px;">
@@ -15,6 +15,11 @@
                 <label>Judul</label>
                 <input type="text" name="judul" id="judul" class="form-control" required>
             </div>
+
+            <div class="form-group mb-3">
+                    <label>Foto</label>
+                    <input type="file" name="foto" class="form-control" required>
+                </div>
 
             <!-- Deskripsi -->
             <div class="form-group mb-3">

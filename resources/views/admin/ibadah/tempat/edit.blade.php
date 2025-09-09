@@ -6,7 +6,7 @@
 <div class="container-fluid px-4">
     <h4 class="mt-4 mb-4">Edit Lokasi</h4>
 
-    <form action="{{ route('admin.ibadah.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.ibadah.tempat.update', $item->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 

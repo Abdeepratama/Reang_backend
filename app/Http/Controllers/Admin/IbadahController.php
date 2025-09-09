@@ -37,21 +37,35 @@ class IbadahController extends Controller
     public function index()
     {
         $items = Ibadah::all();
-        return view('admin.ibadah.index', compact('items'));
+        return view('admin.ibadah.tempat.index', compact('items'));
     }
 
-    public function store(Request $request)
+    public function createTempat(Request $request)
+    {
+        $kategoriIbadah = Kategori::where('fitur', 'lokasi ibadah')->orderBy('nama')->get();
+        $lokasi = Ibadah::all();
+
+        return view('admin.ibadah.tempat.create', [
+            'kategoriIbadah' => $kategoriIbadah,
+            'lokasi' => $lokasi,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'address' => $request->address,
+        ]);
+    }
+
+    public function storeTempat(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string',
-            'latitude' => 'required|numeric',
+            'name'      => 'required|string|max:255',
+            'address'   => 'required|string',
+            'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
-            'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+            'fitur'     => 'required|string',
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
-        if (isset($validated['foto'])) {
+        if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('ibadah_foto', 'public');
             $validated['foto'] = $path;
         }
@@ -61,201 +75,34 @@ class IbadahController extends Controller
         $this->logAktivitas("Tempat ibadah telah ditambahkan");
         $this->logNotifikasi("Tempat Ibadah telah ditambahkan.");
 
-        return redirect()->route('admin.ibadah.tempat.index',)
+        return redirect()->route('admin.ibadah.tempat.index')
             ->with('success', 'Tempat ibadah berhasil ditambahkan!');
     }
 
-    /**
-     * Tempat: menampilkan daftar tempat ibadah
-     * Mendukung filter lewat query string 'fitur' atau alias 'jenis'
-     */
-    public function tempat(Request $request)
-    {
-        $fitur = $request->query('fitur'); // bisa berupa id atau teks
-        $itemsQuery = Ibadah::query();
-
-        if ($fitur !== null && $fitur !== '') {
-            if (is_numeric($fitur)) {
-                // jika disimpan sebagai id kategori
-                $itemsQuery->where('fitur', $fitur)
-                    ->orWhereHas('kategori', function ($q) use ($fitur) {
-                        $q->where('id', $fitur);
-                    });
-                $selectedFitur = Kategori::find($fitur);
-            } else {
-                $text = strtolower($fitur);
-                $itemsQuery->where(function ($q) use ($text) {
-                    // cocokkan baik pada kolom fitur (string) atau nama kategori
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
-                      ->orWhereHas('kategori', function ($q2) use ($text) {
-                          $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
-                      });
-                });
-
-                $selectedFitur = Kategori::whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%'])->first();
-            }
-        } else {
-            $selectedFitur = null;
-        }
-
-        // juga support alias 'jenis'
-        $jenis = $request->query('jenis');
-        if ($jenis !== null && $jenis !== '') {
-            if (is_numeric($jenis)) {
-                $itemsQuery->where('fitur', $jenis)
-                    ->orWhereHas('kategori', function ($q) use ($jenis) {
-                        $q->where('id', $jenis);
-                    });
-            } else {
-                $text = strtolower($jenis);
-                $itemsQuery->where(function ($q) use ($text) {
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
-                      ->orWhereHas('kategori', function ($q2) use ($text) {
-                          $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
-                      });
-                });
-                // jika belum ada selectedFitur, set dari jenis
-                if (!$selectedFitur) {
-                    $selectedFitur = Kategori::whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%'])->first();
-                }
-            }
-        }
-
-        $items = $itemsQuery->get();
-
-        // kirim juga daftar kategori (untuk dropdown filter di view jika perlu)
-        $kategoriIbadah = Kategori::where('fitur', 'ibadah')->orderBy('nama')->get();
-
-        return view('admin.ibadah.tempat.index', compact('items', 'kategoriIbadah', 'selectedFitur'));
-    }
-
-    /**
-     * Map view: juga mendukung filter fitur lewat query string 'fitur' atau 'jenis'
-     */
-    public function map(Request $request)
-    {
-        $fitur = $request->query('fitur'); // optional filter
-        $lokasiQuery = Ibadah::query();
-
-        if ($fitur !== null && $fitur !== '') {
-            if (is_numeric($fitur)) {
-                $lokasiQuery->where('fitur', $fitur)
-                    ->orWhereHas('kategori', function ($q) use ($fitur) {
-                        $q->where('id', $fitur);
-                    });
-            } else {
-                $text = strtolower($fitur);
-                $matchingKategoriIds = Kategori::whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%'])
-                    ->pluck('id');
-
-                if ($matchingKategoriIds->isEmpty()) {
-                    $lokasi = collect();
-                    return view('admin.ibadah.tempat.map', compact('lokasi'));
-                }
-
-                $lokasiQuery->where(function ($q) use ($text, $matchingKategoriIds) {
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
-                      ->orWhereIn('fitur', $matchingKategoriIds)
-                      ->orWhereHas('kategori', function ($q2) use ($matchingKategoriIds) {
-                          $q2->whereIn('id', $matchingKategoriIds);
-                      });
-                });
-            }
-        }
-
-        // support alias 'jenis'
-        $jenis = $request->query('jenis');
-        if ($jenis !== null && $jenis !== '') {
-            if (is_numeric($jenis)) {
-                $lokasiQuery->where('fitur', $jenis)
-                    ->orWhereHas('kategori', function ($q) use ($jenis) {
-                        $q->where('id', $jenis);
-                    });
-            } else {
-                $text = strtolower($jenis);
-                $lokasiQuery->where(function ($q) use ($text) {
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
-                      ->orWhereHas('kategori', function ($q2) use ($text) {
-                          $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
-                      });
-                });
-            }
-        }
-
-        $lokasi = $lokasiQuery->get()->map(function ($loc) {
-            return [
-                'name' => $loc->name,
-                'address' => $loc->address,
-                'latitude' => $loc->latitude,
-                'longitude' => $loc->longitude,
-                'fitur'     => $loc->fitur,
-                'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
-            ];
-        });
-
-        return view('admin.ibadah.tempat.map', compact('lokasi'));
-    }
-
-    public function simpanLokasi(Request $request)
-    {
-        $request->validate([
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
-
-        // Simpan ke database, misalnya ke model Ibadah
-        $ibadah = new Ibadah();
-        $ibadah->name = 'Nama Tempat'; // isi sesuai inputan form
-        $ibadah->latitude = $request->latitude;
-        $ibadah->longitude = $request->longitude;
-        $ibadah->save();
-
-        return redirect()->back()->with('success', 'Lokasi berhasil disimpan.');
-    }
-
-    public function create()
-    {
-        $kategoriIbadah = Kategori::where('fitur', 'lokasi ibadah')->orderBy('nama')->get();
-        $lokasi = Ibadah::all(); // Ambil semua lokasi
-
-        return view('admin.ibadah.tempat.create', compact('kategoriIbadah', 'lokasi'));
-    }
-
-    public function createTempat(Request $request)
-    {
-        // Ambil data dari query string
-        $latitude = $request->latitude;
-        $longitude = $request->longitude;
-        $address = $request->address;
-
-        return view('admin.ibadah.tempat.create', compact('latitude', 'longitude', 'address'));
-    }
-
-    public function edit($id)
+    public function editTempat($id)
     {
         $item = Ibadah::findOrFail($id);
         $kategoriIbadah = Kategori::where('fitur', 'lokasi ibadah')->orderBy('nama')->get();
-        $lokasi = Ibadah::all(); // <-- tambahkan ini
+        $lokasi = Ibadah::all();
 
         return view('admin.ibadah.tempat.edit', compact('item', 'kategoriIbadah', 'lokasi'));
     }
 
-    public function update(Request $request, $id)
+    public function updateTempat(Request $request, $id)
     {
         $ibadah = Ibadah::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string',
-            'latitude' => 'required|numeric',
+            'name'      => 'required|string|max:255',
+            'address'   => 'required|string',
+            'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
-            'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'fitur'     => 'required|string',
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         $ibadah->update($validated);
 
-        // Jika ada file foto baru
         if ($request->hasFile('foto')) {
             if ($ibadah->foto && Storage::disk('public')->exists($ibadah->foto)) {
                 Storage::disk('public')->delete($ibadah->foto);
@@ -265,7 +112,6 @@ class IbadahController extends Controller
             $ibadah->save();
         }
 
-        // 🔔 Tambahkan log aktivitas dan notifikasi
         $this->logAktivitas("Tempat ibadah diperbarui");
         $this->logNotifikasi("Tempat Ibadah diperbarui");
 
@@ -273,76 +119,82 @@ class IbadahController extends Controller
             ->with('success', 'Lokasi berhasil diperbarui!');
     }
 
-    /**
-     * API: tampilkan tempat ibadah (bisa single jika $id diberikan)
-     * Sekarang mendukung filtering via query 'fitur' atau 'jenis' (case-insensitive)
-     */
-    public function showtempat(Request $request, $id = null)
+    public function destroyTempat($id)
+    {
+        $ibadah = Ibadah::findOrFail($id);
+
+        if ($ibadah->foto) {
+            Storage::disk('public')->delete($ibadah->foto);
+        }
+
+        $ibadah->delete();
+
+        return redirect()->route('admin.ibadah.tempat.index')
+            ->with('success', 'Data ibadah berhasil dihapus');
+    }
+
+    /* ========================
+   API TEMPAT
+   ======================== */
+
+    public function showTempat(Request $request, $id = null)
     {
         if ($id) {
             $data = Ibadah::with('kategori')->find($id);
-
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
 
-            $arr = [
+            return response()->json([
                 'id'         => $data->id,
                 'name'       => $data->name,
                 'address'    => $data->address,
                 'latitude'   => $data->latitude,
                 'longitude'  => $data->longitude,
                 'fitur'      => $data->kategori->nama ?? $data->fitur,
-                'foto'       => $data->foto
-                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
-                    : null,
+                'foto'       => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
                 'created_at' => $data->created_at,
                 'updated_at' => $data->updated_at,
-            ];
-
-            return response()->json($arr, 200);
-        } else {
-            $query = Ibadah::with('kategori');
-
-            // ambil param fitur atau jenis (alias)
-            $filter = $request->query('fitur', $request->query('jenis', null));
-
-            if ($filter !== null && $filter !== '') {
-                if (is_numeric($filter)) {
-                    $query->where('fitur', $filter)
-                          ->orWhereHas('kategori', function ($q) use ($filter) {
-                              $q->where('id', $filter);
-                          });
-                } else {
-                    $text = strtolower($filter);
-                    $query->where(function ($q) use ($text) {
-                        $q->whereRaw('LOWER(fitur) LIKE ?', ['%' . $text . '%'])
-                          ->orWhereHas('kategori', function ($q2) use ($text) {
-                              $q2->whereRaw('LOWER(nama) LIKE ?', ['%' . $text . '%']);
-                          });
-                    });
-                }
-            }
-
-            $data = $query->get()->map(function ($item) {
-                return [
-                    'id'         => $item->id,
-                    'name'       => $item->name,
-                    'address'    => $item->address,
-                    'latitude'   => $item->latitude,
-                    'longitude'  => $item->longitude,
-                    'fitur'      => $item->kategori->nama ?? $item->fitur,
-                    'foto'       => $item->foto
-                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
-                        : null,
-                    'created_at' => $item->created_at,
-                    'updated_at' => $item->updated_at,
-                ];
-            });
-
-            return response()->json($data, 200);
+            ], 200);
         }
+
+        $filter = $request->query('fitur', $request->query('jenis', null));
+        $query = Ibadah::with('kategori');
+
+        if ($filter !== null && $filter !== '') {
+            if (is_numeric($filter)) {
+                $query->where('fitur', $filter)
+                    ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+            } else {
+                $text = strtolower($filter);
+                $query->where(function ($q) use ($text) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
+                        ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                });
+            }
+        }
+
+        $data = $query->get()->map(fn($item) => [
+            'id'         => $item->id,
+            'name'       => $item->name,
+            'address'    => $item->address,
+            'latitude'   => $item->latitude,
+            'longitude'  => $item->longitude,
+            'fitur'      => $item->kategori->nama ?? $item->fitur,
+            'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+            'created_at' => $item->created_at,
+            'updated_at' => $item->updated_at,
+        ]);
+
+        return response()->json($data, 200);
     }
+
+    public function showTempatWeb($id)
+    {
+        $data = Ibadah::with('kategori')->findOrFail($id);
+        return view('admin.ibadah.tempat.show', compact('data'));
+    }
+
 
     public function infoIndex()
     {

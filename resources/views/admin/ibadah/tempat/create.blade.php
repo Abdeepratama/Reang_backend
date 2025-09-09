@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.ibadah.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.ibadah.tempat.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -137,7 +137,6 @@
 
         if (!isManual) {
             document.getElementById('address').value = alamat;
-            document.getElementById('name').value = namaTempat;
         }
 
         clickMarker.bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`).openPopup();

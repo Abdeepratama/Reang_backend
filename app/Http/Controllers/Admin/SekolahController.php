@@ -30,7 +30,7 @@ class SekolahController extends Controller
      */
     public function createTempat()
     {
-        $kategoriSekolah = Kategori::where('fitur', 'sekolah')->orderBy('nama')->get();
+        $kategoriSekolah = Kategori::where('fitur', 'lokasi sekolah')->orderBy('nama')->get();
         $lokasi = Tempat_sekolah::all(); // untuk peta
 
         return view('admin.sekolah.tempat.create', compact('kategoriSekolah', 'lokasi'));
@@ -69,7 +69,7 @@ class SekolahController extends Controller
     public function editTempat($id)
     {
         $item = Tempat_sekolah::findOrFail($id);
-        $kategoriSekolah = Kategori::where('fitur', 'sekolah')->get();
+        $kategoriSekolah = Kategori::where('fitur', 'lokasi sekolah')->get();
         return view('admin.sekolah.tempat.edit', compact('item', 'kategoriSekolah'));
     }
 

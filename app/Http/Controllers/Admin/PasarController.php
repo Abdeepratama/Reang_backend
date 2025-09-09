@@ -60,14 +60,14 @@ class PasarController extends Controller
         $this->logAktivitas("Lokasi Pasar telah ditambahkan");
         $this->logNotifikasi("Lokasi Pasar telah ditambahkan");
 
-        return redirect()->route('admin.pasar.tempat.index',)
+        return redirect()->route('admin.pasar.tempat.index')
             ->with('success', 'Tempat pasar berhasil ditambahkan!');
     }
 
     public function edit($id)
     {
         $item = Pasar::findOrFail($id);
-        $kategoriPasar = Kategori::where('fitur', 'lokasi pasar')->get(); // ambil khusus kategori untuk fitur 'Pasar'
+        $kategoriPasar = Kategori::where('fitur', 'lokasi pasar')->get();
 
         return view('admin.pasar.tempat.edit', [
             'item' => $item,
@@ -89,16 +89,13 @@ class PasarController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
-        // Update field dasar
         $Pasar->name = $validated['name'];
         $Pasar->address = $validated['address'];
         $Pasar->latitude = $validated['latitude'];
         $Pasar->longitude = $validated['longitude'];
         $Pasar->fitur = $validated['fitur'];
 
-        // Jika ada file foto baru, ganti
         if ($request->hasFile('foto')) {
-            // hapus foto lama kalau ada
             if ($Pasar->foto && Storage::disk('public')->exists($Pasar->foto)) {
                 Storage::disk('public')->delete($Pasar->foto);
             }
@@ -138,9 +135,8 @@ class PasarController extends Controller
             'longitude' => 'required|numeric',
         ]);
 
-        // Simpan ke database, misalnya ke model Pasar
         $pasar = new Pasar();
-        $pasar->name = 'Nama Tempat'; // isi sesuai inputan form
+        $pasar->name = 'Nama Tempat';
         $pasar->latitude = $request->latitude;
         $pasar->longitude = $request->longitude;
         $pasar->save();
@@ -154,10 +150,10 @@ class PasarController extends Controller
         return view('admin.pasar.tempat.index', compact('items'));
     }
 
-    public function show($id = null)
+    public function show(Request $request, $id = null)
     {
         if ($id) {
-            $data = Pasar::with('kategori')->find($id);
+            $data = Pasar::find($id);
 
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
@@ -172,7 +168,7 @@ class PasarController extends Controller
                 'foto'       => $data->foto
                     ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
                     : null,
-                'kategori'   => $data->kategori->nama ?? ($data->fitur ?? null),
+                'kategori'   => $data->fitur,
                 'fitur'      => $data->fitur,
                 'created_at' => $data->created_at,
                 'updated_at' => $data->updated_at,
@@ -180,7 +176,15 @@ class PasarController extends Controller
 
             return response()->json($arr, 200);
         } else {
-            $data = Pasar::with('kategori')->get()->map(function ($item) {
+            $kategori = $request->query('kategori');
+
+            $query = Pasar::query();
+
+            if ($kategori) {
+                $query->where('fitur', $kategori);
+            }
+
+            $data = $query->get()->map(function ($item) {
                 return [
                     'id'         => $item->id,
                     'nama'       => $item->name,
@@ -190,7 +194,7 @@ class PasarController extends Controller
                     'foto'       => $item->foto
                         ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
                         : null,
-                    'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                    'kategori'   => $item->fitur,
                     'fitur'      => $item->fitur,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
@@ -217,7 +221,7 @@ class PasarController extends Controller
         NotifikasiAktivitas::create([
             'keterangan' => $pesan,
             'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index') // route yang valid
+            'url' => route('admin.ibadah.tempat.index')
         ]);
     }
 
@@ -254,19 +258,16 @@ class PasarController extends Controller
                 $src = $matches[1];
                 $currentHost = request()->getSchemeAndHttpHost();
 
-                // base64 image → biarkan
                 if (preg_match('/^data:/i', $src)) {
                     return $matches[0];
                 }
 
-                // absolute URL tapi beda host → ganti
                 if (preg_match('#^https?://[^/]+/(.+)$#i', $src, $m)) {
                     $path = $m[1];
                     $new  = $currentHost . '/' . ltrim($path, '/');
                     return str_replace($src, $new, $matches[0]);
                 }
 
-                // relative path (misal: foto_pasar/abc.jpg)
                 $new = $currentHost . '/storage/' . ltrim($src, '/');
                 return str_replace($src, $new, $matches[0]);
             },
