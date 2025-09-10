@@ -26,10 +26,10 @@ class InfoController extends Controller
         ];
     }
 
-    public function dashboard()
+    public function index()
 {
     $items = Info::latest()->take(10)->get(); // Ambil 10 info terbaru
-    return view('info.index', compact('items'));
+    return view('admin.info.index', compact('items'));
 }
 
 }

@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <h2><i class="bi bi-pencil-square"></i> Edit Info Adminduk</h2>
 
-    <form id="infoForm" action="{{ route('admin.adminduk.info.update', $item->id) }}" method="POST">
+    <form id="infoForm" action="{{ route('admin.adminduk.info.update', $item->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 

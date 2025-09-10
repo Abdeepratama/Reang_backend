@@ -32,7 +32,7 @@
                 <td>{{ $item->kategori_laporan }}</td>
                 <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                 <td>
-                    <form action="{{ route('admin.dumas.update', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.dumas.aduan.update', $item->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="d-flex">
@@ -55,7 +55,7 @@
                 </td>
                 <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 80) }}</td>
                 <td>
-                    <form action="{{ route('admin.dumas.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus?')">
+                    <form action="{{ route('admin.dumas.aduan.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus?')">
                         @csrf @method('DELETE')
                         <button class="btn btn-sm btn-danger">Hapus</button>
                     </form>

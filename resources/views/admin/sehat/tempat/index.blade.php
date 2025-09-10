@@ -8,7 +8,7 @@
 
     <a href="{{ route('admin.sehat.tempat.map') }}">Lihat Peta</a>
 
-    <a href="{{ route('admin.sehat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Sehat</a>
+    <a href="{{ route('admin.sehat.tempat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Sehat</a>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
@@ -38,15 +38,16 @@
                 <td>{{ $item->fitur }}</td>
                 <td>
                     @if($item->foto)
-                    <img src="{{ $item->foto }}" alt="Foto {{ $item->name }}" width="80" height="80"
+                    <img src="{{ $item->foto ? asset('storage/'.$item->foto) : '/images/placeholder.png' }}"
+                        alt="Foto {{ $item->name }}" width="80" height="80"
                         onerror="this.onerror=null; this.src='/images/placeholder.png';">
                     @else
                     <span class="text-muted">Tidak ada foto</span>
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('admin.sehat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
-                    <form action="{{ route('admin.sehat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                    <a href="{{ route('admin.sehat.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                    <form action="{{ route('admin.sehat.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>

@@ -32,7 +32,8 @@
                     <td>{{ $olahraga->address }}</td>
                     <td>
                         @if($olahraga->foto)
-                        <img src="{{ $olahraga->foto }}" alt="{{ $olahraga->name }}" width="80" height="80"
+                        <img src="{{ $olahraga->foto ? asset('storage/'.$olahraga->foto) : '/images/placeholder.png' }}"
+                            alt="Foto {{ $olahraga->name }}" width="80" height="80"
                             onerror="this.onerror=null; this.src='/images/placeholder.png';">
                         @else
                         <span class="text-muted">Tidak ada foto</span>

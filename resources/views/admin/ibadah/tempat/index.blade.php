@@ -50,7 +50,7 @@
    class="btn btn-info btn-sm">
     <i class="bi bi-eye"></i> Detail
 </a>
-                        <form action="{{ route('admin.ibadah.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                        <form action="{{ route('admin.ibadah.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>

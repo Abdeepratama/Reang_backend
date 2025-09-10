@@ -8,7 +8,7 @@
 
     <a href="{{ route('admin.pasar.tempat.map') }}">Lihat Peta</a>
 
-    <a href="{{ route('admin.pasar.create') }}" class="btn btn-primary mb-3">+ Tambah Pasar</a>
+    <a href="{{ route('admin.pasar.tempat.create') }}" class="btn btn-primary mb-3">+ Tambah Pasar</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -44,8 +44,8 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('admin.pasar.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
-                        <form action="{{ route('admin.pasar.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                        <a href="{{ route('admin.pasar.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <form action="{{ route('admin.pasar.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>

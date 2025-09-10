@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.sehat.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.sehat.tempat.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -123,7 +123,6 @@
         }
 
         document.getElementById('address').value = alamat;
-        document.getElementById('name').value = namaTempat;
 
         if (clickMarker) map.removeLayer(clickMarker);
 

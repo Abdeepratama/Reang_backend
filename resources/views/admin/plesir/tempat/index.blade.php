@@ -8,7 +8,7 @@
 
     <a href="{{ route('admin.plesir.tempat.map') }}">🗺️ Lihat Peta</a>
 
-    <a href="{{ route('admin.plesir.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Plesir</a>
+    <a href="{{ route('admin.plesir.tempat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Plesir</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -44,8 +44,8 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('admin.plesir.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
-                        <form action="{{ route('admin.plesir.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                        <a href="{{ route('admin.plesir.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <form action="{{ route('admin.plesir.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn btn-danger btn-sm" title="Hapus">Hapus</button>

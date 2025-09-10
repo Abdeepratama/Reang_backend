@@ -9,25 +9,38 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     public function showLoginForm()
-    {
-        return view('admin.login');
+{
+    $code = strtoupper(substr(md5(mt_rand()), 0, 5));
+    session(['captcha_code' => $code]);
+
+    return view('admin.login');
+}
+
+public function login(Request $request)
+{
+    // Validasi input
+    $request->validate([
+        'name' => 'required',
+        'password' => 'required',
+        'captcha' => 'required',
+    ]);
+
+    // Cek captcha manual
+    if ($request->captcha !== session('captcha_code')) {
+        return back()->withErrors(['captcha' => 'Captcha tidak sesuai'])->withInput();
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+    // Ambil hanya nama & password
+    $credentials = $request->only('name', 'password');
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->intended('/admin/dashboard');
-        }
-
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+    if (Auth::guard('admin')->attempt($credentials)) {
+        return redirect()->intended('/admin/dashboard');
     }
+
+    return back()->withErrors([
+        'name' => 'nama atau password salah.',
+    ])->withInput();
+}
 
     public function logout(Request $request)
     {
