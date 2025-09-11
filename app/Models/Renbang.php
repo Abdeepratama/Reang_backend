@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Renbang extends Model
 {
@@ -13,8 +14,23 @@ class Renbang extends Model
 
     protected $fillable = [
         'judul',
-        'isi',
+        'deskripsi',
         'gambar',
-        'kategori',
+        'fitur',
+        'alamat',
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->foto && Storage::disk('public')->exists($this->foto)) {
+            return Storage::url($this->foto);
+        }
+
+        return asset('images/default-plesir.jpg');
+    }
 }

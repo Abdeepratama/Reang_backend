@@ -3,38 +3,89 @@
 @section('title', 'Tambah Deskripsi Renbang')
 
 @section('content')
-<div class="container">
-    <h1>Tambah Deskripsi Renbang</h1>
+<div class="container mt-4">
+    <h2><i class="bi bi-building"></i> Tambah Deskripsi Renbang</h2>
 
-    <form action="{{ route('admin.renbang.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="renbangForm" action="{{ route('admin.renbang.deskripsi.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div class="mb-3">
-            <label>Judul</label>
-            <input type="text" name="judul" class="form-control" required>
-        </div>
+        <div style="max-width: 800px;">
+            <!-- Judul -->
+            <div class="form-group mb-3">
+                <label>Judul</label>
+                <input type="text" name="judul" class="form-control" value="{{ old('judul') }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label>Isi</label>
-            <textarea name="isi" class="form-control" rows="5" required></textarea>
-        </div>
+            <!-- Kategori (fitur) -->
+            <div class="form-group mb-3">
+                <label>Kategori</label>
+                <select name="fitur" class="form-control" required>
+                    <option value="">Pilih Kategori</option>
+                    @foreach($kategoriRenbangs as $kategori)
+                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label>Kategori</label>
-            <select name="kategori" class="form-control">
-                <option value="Infrastruktur">Infrastruktur</option>
-                <option value="Pendidikan">Pendidikan</option>
-                <option value="Kesehatan">Kesehatan</option>
-                <option value="Ekonomi">Ekonomi</option>
-            </select>
-        </div>
+            <!-- Foto -->
+            <div class="form-group mb-3">
+                <label>Foto</label>
+                <input type="file" name="gambar" class="form-control">
+            </div>
 
-        <div class="mb-3">
-            <label>Gambar</label>
-            <input type="file" name="gambar" class="form-control">
-        </div>
+            <!-- Alamat -->
+            <div class="form-group mb-3">
+                <label>Alamat</label>
+                <input type="text" name="alamat" class="form-control" value="{{ old('alamat') }}" required>
+            </div>
 
-        <button class="btn btn-success">Simpan</button>
+            <!-- Deskripsi -->
+            <div class="form-group mb-3">
+                <label>Deskripsi</label>
+                <textarea name="deskripsi" id="editor" class="form-control" rows="5">{{ old('deskripsi') }}</textarea>
+            </div>
+
+            <!-- Tombol -->
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save"></i> Simpan Data
+            </button>
+        </div>
     </form>
 </div>
+
+{{-- CKEditor --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+<script>
+let editor;
+
+ClassicEditor
+    .create(document.querySelector('#editor'), {
+        ckfinder: {
+            uploadUrl: "{{ route('admin.renbang.deskripsi.upload.image') }}?_token={{ csrf_token() }}"
+        }
+    })
+    .then(instance => { editor = instance; })
+    .catch(error => { console.error(error); });
+
+document.getElementById('renbangForm').addEventListener('submit', function(e) {
+    if (editor && editor.getData().trim() === '') {
+        e.preventDefault();
+        alert('Deskripsi harus diisi');
+        return false;
+    }
+
+    const fileInput = document.querySelector('input[name="gambar"]');
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            e.preventDefault();
+            alert('Hanya file JPEG, PNG, JPG, dan WEBP yang diizinkan');
+            return false;
+        }
+    }
+});
+</script>
 @endsection

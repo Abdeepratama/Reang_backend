@@ -160,6 +160,7 @@ Route::post('/renbang/deskripsi/store', [RenbangController::class, 'deskripsiSto
 Route::get('/renbang/deskripsi/{id}/edit', [RenbangController::class, 'deskripsiEdit'])->name('admin.renbang.deskripsi.edit');
 Route::put('/renbang/deskripsi/{id}', [RenbangController::class, 'deskripsiUpdate'])->name('admin.renbang.deskripsi.update');
 Route::delete('/renbang/deskripsi/{id}', [RenbangController::class, 'deskripsiDestroy'])->name('admin.renbang.deskripsi.destroy');
+Route::post('/renbang/upload-image', [IzinController::class, 'deskripsiUpload'])->name('admin.renbang.deskripsi.upload.image');
 
 // dumas
 Route::get('dumas/aduan', [DumasController::class, 'aduanIndex'])->name('admin.dumas.aduan.index');
@@ -211,6 +212,12 @@ Route::post('/sekolah/info/upload-image', [SekolahController::class, 'infoupload
 
 // setting
 Route::get('/setting', [SettingController::class, 'index'])->name('admin.setting.index');
+
+// kategori
+Route::get('kategori', [KategoriController::class, 'index'])->name('admin.kategori.index');
+Route::get('kategori/create', [KategoriController::class, 'create'])->name('admin.kategori.create');
+Route::post('kategori', [KategoriController::class, 'store'])->name('admin.kategori.store');
+Route::delete('kategori/{kategori}', [KategoriController::class, 'destroy'])->name('admin.kategori.destroy');
 
 // Resource routes
 Route::resource('/sehat', SehatController::class);

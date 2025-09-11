@@ -12,6 +12,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Admin\PlesirController;
 use App\Http\Controllers\Admin\IzinController;
+use App\Http\Controllers\Admin\RenbangController;
 use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
 
@@ -75,3 +76,6 @@ Route::get('/info-adminduk/{id?}', [AdmindukController::class, 'infoshow']); //i
 
 // pasar-yu
 Route::get('/tempat-pasar/{id?}', [PasarController::class, 'show']);
+
+//renbang-yu
+Route::get('/deskripsi-renbang/{id?}', [RenbangController::class, 'deskripsishow']);

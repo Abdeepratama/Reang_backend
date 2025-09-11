@@ -3,56 +3,86 @@
 @section('title', 'Deskripsi Renbang')
 
 @section('content')
-<div class="container">
-    <div class="mb-3 text-start">
-        <a href="{{ route('admin.renbang.deskripsi.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-        </a>
-    </div>
-    <h1>Data Deskripsi Renbang</h1>
-    <a href="{{ route('admin.renbang.deskripsi.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
+<div class="container mt-4">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h2 class="mb-2 page-title">Deskripsi Renbang</h2>
+                <div class="row my-4">
+                    <div class="col-md-12">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <a href="{{ route('admin.renbang.deskripsi.create') }}" class="btn btn-primary mb-3">+ Tambah Deskripsi</a>
 
-    @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+                                @if(session('success'))
+                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                @endif
 
-    <table class="table datatables" id="infoTable">
-        <thead class="table-dark">
-            <tr>
-                <th>No</th>
-                <th>Judul</th>
-                <th>Kategori</th>
-                <th>Deskripsi</th>
-                <th>Gambar</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($items as $item)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $item->judul }}</td>
-                <td>{{ $item->kategori }}</td>
-                <td>{{ Str::limit(strip_tags($item->isi), 100) }}</td> {{-- tampilkan ringkasan isi --}}
-                <td>
-                    @if ($item->gambar)
-                    <img src="{{ asset('storage/' . $item->gambar) }}" width="100">
-                    @else
-                    Tidak ada gambar
-                    @endif
-                </td>
-                <td>
-                    <a href="{{ route('admin.renbang.deskripsi.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <table class="table datatables" id="renbangTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Foto</th>
+                                            <th>Judul</th>
+                                            <th>Kategori</th>
+                                            <th>Alamat</th>
+                                            <th>Deskripsi</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($renbangItems as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                @if($item->gambar)
+                                                    <img src="{{ Storage::url($item->gambar) }}" width="100" alt="Foto" style="border-radius:8px;">
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $item->judul }}</td>
+                                            <td>{{ $item->fitur }}</td>
+                                            <td>{{ $item->alamat }}</td>
+                                            <td>{{ Str::limit(strip_tags($item->deskripsi), 50) }}</td>
+                                            <td>
+                                                <a href="{{ route('admin.renbang.deskripsi.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                <form action="{{ route('admin.renbang.deskripsi.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" class="btn btn-danger btn-sm">Hapus</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center">Belum ada deskripsi renbang.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
 
-                    <form action="{{ route('admin.renbang.deskripsi.destroy', $item->id) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                            </div>
+                        </div>
+                    </div> <!-- col-md-12 -->
+                </div> <!-- row -->
+            </div> <!-- col-12 -->
+        </div> <!-- row -->
+    </div> 
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        $('#renbangTable').DataTable({
+            autoWidth: true,
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ],
+            "order": [[0, "asc"]]
+        });
+    });
+</script>
 @endsection
