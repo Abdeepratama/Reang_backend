@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.pasar.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.pasar.tempat.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">

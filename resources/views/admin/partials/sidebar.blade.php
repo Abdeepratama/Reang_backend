@@ -23,48 +23,78 @@
             <span>Informasi & Pelaporan Publik</span>
         </p>
         <ul class="navbar-nav flex-fill w-100 mb-2">
-            <li class="nav-item dropdown {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'show' : '' }}">
+            <li class="nav-item dropdown 
+    {{ request()->routeIs('admin.dumas.*') || request()->routeIs('admin.info.*') ? 'show' : '' }}">
+
                 <a href="#aduan"
                     data-toggle="collapse"
-                    aria-expanded="{{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'true' : 'false' }}"
-                    class="dropdown-toggle nav-link {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? '' : 'collapsed' }}">
+                    aria-expanded="{{ request()->routeIs('admin.dumas.*') || request()->routeIs('admin.info.*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link 
+        {{ request()->routeIs('admin.dumas.*') || request()->routeIs('admin.info.*') ? '' : 'collapsed' }}">
+
                     <i class="fe fe-twitch fe-16"></i>
                     <span class="ml-3 item-text">Aduan &amp; Kedaruratan</span>
                 </a>
 
-                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/dumas*') || request()->is('admin/info*') ? 'show' : '' }}" id="aduan">
+                <ul class="collapse list-unstyled pl-4 w-100 
+        {{ request()->routeIs('admin.dumas.*') || request()->routeIs('admin.info.*') ? 'show' : '' }}" id="aduan">
+
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.dumas.aduan.index') ? 'active bg-primary text-white' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.dumas.*') ? 'active bg-primary text-white' : '' }}"
                             href="{{ route('admin.dumas.aduan.index') }}">
                             <span class="ml-1 item-text">Dumas-Yu</span>
                         </a>
                     </li>
+
+                    @if (
+                    Auth::guard('admin')->check() &&
+                    (
+                    Auth::guard('admin')->user()->role === 'superadmin' ||
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'kesehatan' && Auth::guard('admin')->user()->dinas != 'pendidikan' && Auth::guard('admin')->user()->dinas != 'perpajakan')))
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.info.index') ? 'active bg-primary text-white' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.info.*') ? 'active bg-primary text-white' : '' }}"
                             href="{{ route('admin.info.index') }}">
                             <span class="ml-1 item-text">Info-Yu</span>
                         </a>
                     </li>
+                    @endif
+
                 </ul>
             </li>
-            <li class="nav-item dropdown {{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? 'show' : '' }}">
+
+
+            @if (Auth::guard('admin')->check() &&
+            (Auth::guard('admin')->user()->role === 'superadmin' ||
+            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan')))
+            <li class="nav-item dropdown 
+    {{ request()->routeIs('admin.sehat.*') || request()->routeIs('admin.sekolah.*') ? 'show' : '' }}">
+
                 <a href="#kesehatan"
                     data-toggle="collapse"
-                    aria-expanded="{{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? 'true' : 'false' }}"
-                    class="dropdown-toggle nav-link {{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? '' : 'collapsed' }}">
+                    aria-expanded="{{ request()->routeIs('admin.sehat.*') || request()->routeIs('admin.sekolah.*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link 
+        {{ request()->routeIs('admin.sehat.*') || request()->routeIs('admin.sekolah.*') ? '' : 'collapsed' }}">
+
                     <i class="fe fe-briefcase fe-16"></i>
-                    <span class="ml-3 item-text">Kesehatan & Pendidikan</span><span class="sr-only">(current)</span>
+                    <span class="ml-3 item-text">Kesehatan & Pendidikan</span>
                 </a>
 
-                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/sehat*') || request()->is('admin/sekolah*') ? 'show' : '' }}" id="kesehatan">
+                <ul class="collapse list-unstyled pl-4 w-100 
+        {{ request()->routeIs('admin.sehat.*') || request()->routeIs('admin.sekolah.*') ? 'show' : '' }}"
+                    id="kesehatan">
+
+                    {{-- Submenu Sehat-Yu --}}
+                    @if (Auth::guard('admin')->check() &&
+                    (Auth::guard('admin')->user()->role === 'superadmin' ||
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'pendidikan' && Auth::guard('admin')->user()->dinas != 'perpajakan')))
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/sehat*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.*') ? 'active bg-light' : '' }}"
                             href="#submenu-sehat" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/sehat*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.sehat.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Sehat-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/sehat*') ? 'show' : '' }}" id="submenu-sehat">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.sehat.*') ? 'show' : '' }}" id="submenu-sehat">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.sehat.tempat.index') }}">
@@ -80,23 +110,29 @@
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.olahraga.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.sehat.olahraga.index') }}">
-                                    Lokasi olahraga
+                                    Lokasi Olahraga
                                 </a>
                             </li>
                         </ul>
                     </li>
+                    @endif
+
+                    {{-- Submenu Sekolah-Yu --}}
+                    @if (Auth::guard('admin')->check() &&
+                    (Auth::guard('admin')->user()->role === 'superadmin' ||
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'kesehatan' && Auth::guard('admin')->user()->dinas != 'perpajakan')))
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/sekolah*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.*') ? 'active bg-light' : '' }}"
                             href="#submenu-sekolah" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/sekolah*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.sekolah.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Sekolah-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/sekolah*') ? 'show' : '' }}" id="submenu-sekolah">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.sekolah.*') ? 'show' : '' }}" id="submenu-sekolah">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.sekolah.tempat.index') }}">
-                                    Lokasi sekolah
+                                    Lokasi Sekolah
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -107,33 +143,44 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
                 </ul>
             </li>
 
         </ul>
+        @endif
 
+        @if (Auth::guard('admin')->check() &&
+        (Auth::guard('admin')->user()->role === 'superadmin' ||
+        (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'kesehatan' && Auth::guard('admin')->user()->dinas != 'pendidikan')))
         <p class="text-muted nav-heading mt-4 mb-1">
             <span>Layanan Publik & Ekonomi</span>
         </p>
+
         <ul class="navbar-nav flex-fill w-100 mb-2">
-            <li class="nav-item dropdown {{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? 'show' : '' }}">
+            <li class="nav-item dropdown {{ request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? 'show' : '' }}">
+
                 <a href="#ekonomi"
                     data-toggle="collapse"
-                    aria-expanded="{{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? 'true' : 'false' }}"
-                    class="dropdown-toggle nav-link {{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? '' : 'collapsed' }}">
+                    aria-expanded="{{ request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? '' : 'collapsed' }}">
+
                     <i class="fe fe-dollar-sign fe-16"></i>
                     <span class="ml-3 item-text">Sosial & Ekonomi</span>
                 </a>
 
-                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/pajak*') || request()->is('admin/pasar*') || request()->is('admin/kerja*') ? 'show' : '' }}" id="ekonomi">
+                <ul class="collapse list-unstyled pl-4 w-100  {{ request()->routeIs('admin.pajak.*') || request()->routeIs('admin.pasar.*') || request()->routeIs('admin.kerja.*') ? 'show' : '' }}"
+                    id="ekonomi">
+
+                    {{-- Pajak-Yu --}}
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/pajak*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.*') ? 'active bg-light' : '' }}"
                             href="#submenu-pajak" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/pajak*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.pajak.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Pajak-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/pajak*') ? 'show' : '' }}" id="submenu-pajak">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.pajak.*') ? 'show' : '' }}" id="submenu-pajak">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.info.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.pajak.info.index') }}">
@@ -143,14 +190,18 @@
                         </ul>
                     </li>
 
+                    {{-- Pasar-Yu --}}
+                    @if (Auth::guard('admin')->check() &&
+                    (Auth::guard('admin')->user()->role === 'superadmin' ||
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/pasar*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.*') ? 'active bg-light' : '' }}"
                             href="#submenu-pasar" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/pasar*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.pasar.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Pasar-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/pasar*') ? 'show' : '' }}" id="submenu-pasar">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.pasar.*') ? 'show' : '' }}" id="submenu-pasar">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.pasar.tempat.index') }}">
@@ -159,15 +210,20 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
 
+                    {{-- Kerja-Yu --}}
+                    @if (Auth::guard('admin')->check() &&
+                    (Auth::guard('admin')->user()->role === 'superadmin' ||
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/kerja*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.*') ? 'active bg-light' : '' }}"
                             href="#submenu-kerja" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/kerja*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.kerja.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Kerja-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/kerja*') ? 'show' : '' }}" id="submenu-kerja">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.kerja.*') ? 'show' : '' }}" id="submenu-kerja">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.info.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.kerja.info.index') }}">
@@ -176,27 +232,34 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
                 </ul>
+            </li>
 
-            <li class="nav-item dropdown {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'show' : '' }}">
+            @if (Auth::guard('admin')->check() &&
+            (Auth::guard('admin')->user()->role === 'superadmin' ||
+            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
+            <li class="nav-item dropdown {{ request()->routeIs('admin.plesir.*') || request()->routeIs('admin.ibadah.*') ? 'show' : '' }}">
+
                 <a href="#pariwisata"
                     data-toggle="collapse"
-                    aria-expanded="{{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'true' : 'false' }}"
-                    class="dropdown-toggle nav-link {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? '' : 'collapsed' }}">
+                    aria-expanded="{{ request()->routeIs('admin.plesir.*') || request()->routeIs('admin.ibadah.*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->routeIs('admin.plesir.*') || request()->routeIs('admin.ibadah.*') ? '' : 'collapsed' }}">
                     <i class="fe fe-layout fe-16"></i>
                     <span class="ml-3 item-text">Pariwisata & Keagamaan</span>
                 </a>
 
-                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->is('admin/ibadah*') || request()->is('admin/plesir*') ? 'show' : '' }}" id="pariwisata">
-                    <!-- Menu Plesir-Yu -->
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->routeIs('admin.plesir.*') || request()->routeIs('admin.ibadah.*') ? 'show' : '' }}" id="pariwisata">
+
+                    {{-- Plesir-Yu --}}
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/plesir*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.*') ? 'active bg-light' : '' }}"
                             href="#submenu-plesir" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/plesir*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.plesir.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Plesir-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/plesir*') ? 'show' : '' }}" id="submenu-plesir">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.plesir.*') ? 'show' : '' }}" id="submenu-plesir">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.plesir.tempat.index') }}">
@@ -212,19 +275,19 @@
                         </ul>
                     </li>
 
-                    <!-- Menu Ibadah-Yu (Submenu sebagai list biasa) -->
+                    {{-- Ibadah-Yu --}}
                     <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->is('admin/ibadah*') ? 'active bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.*') ? 'active bg-light' : '' }}"
                             href="#submenu-ibadah" data-toggle="collapse"
-                            aria-expanded="{{ request()->is('admin/ibadah*') ? 'true' : 'false' }}">
+                            aria-expanded="{{ request()->routeIs('admin.ibadah.*') ? 'true' : 'false' }}">
                             <span class="ml-1 item-text">Ibadah-Yu</span>
                         </a>
 
-                        <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/ibadah*') ? 'show' : '' }}" id="submenu-ibadah">
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.ibadah.*') ? 'show' : '' }}" id="submenu-ibadah">
                             <li class="nav-item">
                                 <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.tempat.index') ? 'active bg-primary text-white' : '' }}"
                                     href="{{ route('admin.ibadah.tempat.index') }}">
-                                    Lokasi tempat ibadah
+                                    Lokasi Tempat Ibadah
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -235,74 +298,90 @@
                             </li>
                         </ul>
                     </li>
+
                 </ul>
             </li>
+            @endif
 
+            @if (Auth::guard('admin')->check() &&
+            (Auth::guard('admin')->user()->role === 'superadmin' ||
+            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
+            <li class="nav-item dropdown {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') ? 'show' : '' }}">
+                <a href="#lainnya"
+                    data-toggle="collapse"
+                    aria-expanded="{{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') ? 'true' : 'false' }}"
+                    class="dropdown-toggle nav-link {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') ? '' : 'collapsed' }}">
+                    <i class="fe fe-layers fe-16"></i>
+                    <span class="ml-3 item-text">Layanan Publik Lainnya</span>
+                </a>
+
+                <ul class="collapse list-unstyled pl-4 w-100 {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') ? 'show' : '' }}" id="lainnya">
+
+                    {{-- Adminduk-Yu --}}
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.*') ? 'active bg-light' : '' }}"
+                            href="#submenu-adminduk" data-toggle="collapse"
+                            aria-expanded="{{ request()->routeIs('admin.adminduk.*') ? 'true' : 'false' }}">
+                            <span class="ml-1 item-text">Adminduk-Yu</span>
+                        </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.adminduk.*') ? 'show' : '' }}" id="submenu-adminduk">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.adminduk.info.index') }}">
+                                    Info Adminduk
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Renbang-Yu --}}
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.*') ? 'active bg-light' : '' }}"
+                            href="#submenu-renbang" data-toggle="collapse"
+                            aria-expanded="{{ request()->routeIs('admin.renbang.*') ? 'true' : 'false' }}">
+                            <span class="ml-1 item-text">Renbang-Yu</span>
+                        </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.renbang.*') ? 'show' : '' }}" id="submenu-renbang">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.deskripsi.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.renbang.deskripsi.index') }}">
+                                    Info Renbang
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Izin-Yu --}}
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.*') ? 'active bg-light' : '' }}"
+                            href="#submenu-izin" data-toggle="collapse"
+                            aria-expanded="{{ request()->routeIs('admin.izin.*') ? 'true' : 'false' }}">
+                            <span class="ml-1 item-text">Izin-Yu</span>
+                        </a>
+
+                        <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.izin.*') ? 'show' : '' }}" id="submenu-izin">
+                            <li class="nav-item">
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.info.index') ? 'active bg-primary text-white' : '' }}"
+                                    href="{{ route('admin.izin.info.index') }}">
+                                    Info Perizinan
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Wifi-Yu (langsung link) --}}
+                    <li class="nav-item">
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.wifi.*') ? 'active bg-primary text-white' : '' }}"
+                            href="{{ route('admin.wifi.index') }}">
+                            <span class="ml-1 item-text">Wifi-Yu</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            @endif
         </ul>
-        </li>
-        <li class="nav-item dropdown {{ request()->routeIs('admin.adminduk*') || request()->routeIs('admin.renbang*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.kerja.*') ? 'active' : '' }}">
-            <a href="#lainnya" data-toggle="collapse" aria-expanded="{{ request()->routeIs('admin.adminduk*') || request()->routeIs('admin.renbang*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.kerja.*') ? 'true' : 'false' }}" class="dropdown-toggle nav-link">
-                <i class="fe fe-layers fe-16"></i>
-                <span class="ml-3 item-text">Layanan Publik Lainnya</span><span class="sr-only">(current)</span>
-            </a>
-            <ul class="collapse list-unstyled pl-4 w-100 {{ request()->routeIs('admin.adminduk*') || request()->routeIs('admin.renbang*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') || request()->routeIs('admin.kerja.*') ? 'show' : '' }}" id="lainnya">
-                <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->is('admin/adminduk*') ? 'active bg-light' : '' }}"
-                        href="#submenu-adminduk" data-toggle="collapse"
-                        aria-expanded="{{ request()->is('admin/adminduk*') ? 'true' : 'false' }}">
-                        <span class="ml-1 item-text">Adminduk-Yu</span>
-                    </a>
-
-                    <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/adminduk*') ? 'show' : '' }}" id="submenu-adminduk">
-                        <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.info.index') ? 'active bg-primary text-white' : '' }}"
-                                href="{{ route('admin.adminduk.info.index') }}">
-                                Info Adminduk
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->is('admin/renbang*') ? 'active bg-light' : '' }}"
-                        href="#submenu-renbang" data-toggle="collapse"
-                        aria-expanded="{{ request()->is('admin/renbang*') ? 'true' : 'false' }}">
-                        <span class="ml-1 item-text">Renbang-Yu</span>
-                    </a>
-
-                    <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/renbang*') ? 'show' : '' }}" id="submenu-renbang">
-                        <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.deskripsi.index') ? 'active bg-primary text-white' : '' }}"
-                                href="{{ route('admin.renbang.deskripsi.index') }}">
-                                Info Renbang
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->is('admin/izin*') ? 'active bg-light' : '' }}"
-                        href="#submenu-izin" data-toggle="collapse"
-                        aria-expanded="{{ request()->is('admin/izin*') ? 'true' : 'false' }}">
-                        <span class="ml-1 item-text">Izin-Yu</span>
-                    </a>
-
-                    <ul class="collapse list-unstyled pl-4 {{ request()->is('admin/izin*') ? 'show' : '' }}" id="submenu-izin">
-                        <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.info.index') ? 'active bg-primary text-white' : '' }}"
-                                href="{{ route('admin.izin.info.index') }}">
-                                Info Perizinan
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link pl-3 {{ request()->routeIs('admin.wifi.*') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.wifi.index') }}">
-                        <span class="ml-1 item-text">Wifi-Yu</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        </ul>
+        @endif
     </nav>
 </aside>

@@ -52,6 +52,7 @@
                                             <td>{{ $info->longitude }}</td>
                                             <td>{{ $info->fitur }}</td>
                                             <td>{{ $info->rating }}</td>
+                                            <td>{{ $info->aksi }}</td>
                                             <td>{{ $info->deskripsi }}</td>
                                             <td>
                                                 <a href="{{ route('admin.plesir.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>

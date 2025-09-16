@@ -11,19 +11,19 @@ use Illuminate\Support\Facades\Storage;
 
 class PajakController extends Controller
 {
-    public function infoindex()
+    public function index()
     {
         $infoItems = InfoPajak::latest()->get();
         
         return view('admin.pajak.info.index', compact('infoItems'));
     }
 
-    public function infocreate()
+    public function create()
     {
         return view('admin.pajak.info.create');
     }
 
-    public function infostore(Request $request)
+    public function store(Request $request)
     {
         $data = $request->validate([
             'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
@@ -43,13 +43,13 @@ class PajakController extends Controller
         return redirect()->route('admin.pajak.info.index')->with('success', 'Info pajak berhasil ditambahkan.');
     }
 
-    public function infoedit($id)
+    public function edit($id)
     {
         $info = InfoPajak::findOrFail($id);
         return view('admin.pajak.info.edit', compact('info'));
     }
 
-    public function infoupdate(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $info = InfoPajak::findOrFail($id);
 
@@ -75,7 +75,7 @@ class PajakController extends Controller
         return redirect()->route('admin.pajak.info.index')->with('success', 'Info pajak berhasil diperbarui.');
     }
 
-    public function infodestroy($id)
+    public function destroy($id)
     {
         $info = InfoPajak::findOrFail($id);
 
@@ -94,7 +94,7 @@ class PajakController extends Controller
         return back()->with('success', 'Info pajak berhasil dihapus.');
     }
 
-    public function infoupload(Request $request)
+    public function upload(Request $request)
 {
     if ($request->hasFile('upload')) {
         $file = $request->file('upload');
@@ -121,7 +121,7 @@ class PajakController extends Controller
     ], 400);
 }
 
-    public function infoshow($id = null)
+    public function show($id = null)
     {
         if ($id) {
             $data = InfoPajak::find($id);

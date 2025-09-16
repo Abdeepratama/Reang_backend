@@ -29,11 +29,6 @@ class DumasController extends Controller
         ];
     }
 
-    public function index()
-    {
-        return view('admin.dumas.index');
-    }
-
     public function aduanIndex()
     {
         $items = Dumas::latest()->get();

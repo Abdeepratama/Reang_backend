@@ -38,19 +38,35 @@
       </ul>
     </li>
     <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="avatar avatar-sm mt-2">
-          <img src="./assets/avatars/face-1.jpg" alt="..." class="avatar-img rounded-circle">
-        </span>
-      </a>
-      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" href="#">Profile</a>
-        <a class="dropdown-item" href="{{ route('admin.setting.index') }}">Settings</a>
-        <a class="dropdown-item" href="#">Activities</a>
-        <a class="dropdown-item" href="#"
-   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-   Logout
+      <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink"
+   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="avatar avatar-sm mt-2">
+        <img src="{{ Auth::guard('admin')->user()->photo
+                     ? asset('storage/admins/' . Auth::guard('admin')->user()->photo)
+                     : asset('assets/avatars/default.png') }}"
+             alt="..." class="avatar-img rounded-circle">
+    </span>
 </a>
+
+<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+    <a class="dropdown-item" href="{{ route('admin.accounts.profile') }}">
+        {{ Auth::guard('admin')->user()->name }}
+    </a>
+
+    @if(Auth::guard('admin')->user()->role === 'superadmin')
+        <a class="dropdown-item" href="{{ route('admin.accounts.index') }}">Akun</a>
+    @endif
+
+    <a class="dropdown-item" href="{{ route('admin.setting.index') }}">Settings</a>
+
+    <a class="dropdown-item" href="#"
+       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+       Logout
+    </a>
+    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
+</div>
 
 <!-- Form logout tersembunyi -->
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">

@@ -15,8 +15,11 @@ use App\Models\Plesir;
 use App\Models\Aktivitas;
 use App\Models\Dumas;
 use App\Models\Sekolah;
+use App\Models\InfoSekolah;
+use App\Models\InfoKesehatan;
+use App\Models\InfoPajak;
 use App\Models\NotifikasiAktivitas;
-
+use App\Models\Tempat_olahraga;
 
 class DashboardController extends Controller
 {
@@ -25,12 +28,15 @@ class DashboardController extends Controller
         $stats = [
             'total_users' => User::count(),
             'jumlah_ibadah' => Ibadah::count(),
-            'terbaru_ibadah' => Ibadah::latest()->first(),
-            'jumlah_sehat' => Sehat::count(),
             'jumlah_pasar' => Pasar::count(),
             'jumlah_plesir' => Plesir::count(),
             'jumlah_dumas' => Dumas::count(),
             'jumlah_sekolah' => Sekolah::count(),
+            'jumlah_info_sekolah' => InfoSekolah::count(),
+            'jumlah_sehat' => Sehat::count(),
+            'jumlah_info_kesehatan' => InfoKesehatan::count(),
+            'jumlah_lokasi_olahraga' => Tempat_olahraga::count(),
+            'jumlah_info_pajak' => InfoPajak::count(),
         ];
 
         $aktivitas = Aktivitas::latest()->take(10)->get();

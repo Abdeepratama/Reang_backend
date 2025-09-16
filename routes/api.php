@@ -52,6 +52,10 @@ Route::get('/sliders', [DashboardController::class, 'apiSlider']);
 // rating
 Route::post('/rating', [RatingController::class, 'store']);
 Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']); 
+// NEW: daftar rating (paginated) untuk sebuah info_plesir
+Route::get('/info-plesir/{id}/ratings', [RatingController::class, 'ratingsByInfo']);
+///update
+Route::put('/rating/{id}', [RatingController::class,'update']);
 
 // sehat-yu
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 

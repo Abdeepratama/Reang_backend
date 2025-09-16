@@ -11,8 +11,10 @@
         Lihat Kategori
     </a>
 
+    @if(Auth::guard('admin')->user()->role === 'superadmin')
     <a href="{{ route('admin.slider.index') }}" class="btn btn-outline-primary">
         Lihat Sliders
     </a>
+    @endif
 </div>
 @endsection

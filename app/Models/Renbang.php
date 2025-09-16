@@ -10,7 +10,7 @@ class Renbang extends Model
 {
     use HasFactory;
 
-    protected $table = 'renbangs_deskripsi'; // Nama tabel (jika tidak pakai plural default)
+    protected $table = 'renbangs_deskripsi';
 
     protected $fillable = [
         'judul',

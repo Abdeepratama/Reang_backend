@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class, // ← kamu bisa daftarkan di sini
+            'checkadmindinas' => \App\Http\Middleware\CheckAdminDinas::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
