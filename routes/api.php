@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Ibadah-yu
 Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']); // tempat ibadah
 Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  event agama
+Route::get('/tempat-ibadah/all', [IbadahController::class, 'showtempatAll']);
 
 // sekolah-yu
 Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);

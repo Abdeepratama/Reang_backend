@@ -18,6 +18,7 @@ use App\Models\Sekolah;
 use App\Models\InfoSekolah;
 use App\Models\InfoKesehatan;
 use App\Models\InfoPajak;
+use App\Models\InfoKerja;
 use App\Models\NotifikasiAktivitas;
 use App\Models\Tempat_olahraga;
 
@@ -28,7 +29,7 @@ class DashboardController extends Controller
         $stats = [
             'total_users' => User::count(),
             'jumlah_ibadah' => Ibadah::count(),
-            'jumlah_pasar' => Pasar::count(),
+            'jumlah_lokasi_pasar' => Pasar::count(),
             'jumlah_plesir' => Plesir::count(),
             'jumlah_dumas' => Dumas::count(),
             'jumlah_sekolah' => Sekolah::count(),
@@ -37,6 +38,7 @@ class DashboardController extends Controller
             'jumlah_info_kesehatan' => InfoKesehatan::count(),
             'jumlah_lokasi_olahraga' => Tempat_olahraga::count(),
             'jumlah_info_pajak' => InfoPajak::count(),
+            'jumlah_info_kerja' => InfoKerja::count(),
         ];
 
         $aktivitas = Aktivitas::latest()->take(10)->get();

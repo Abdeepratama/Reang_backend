@@ -6,6 +6,15 @@
 <div class="container mt-4">
     <h3 class="mb-4">🏥 Tambah Data Sehat</h3>
 
+    {{-- Flash message --}}
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
@@ -14,27 +23,48 @@
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Tempat</label>
-                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                    <input type="text" name="name" id="name"
+                        class="form-control @error('name') is-invalid @enderror"
+                        value="{{ old('name') }}" required>
+                    @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $latitude ?? '') }}" required>
+                    <input type="text" id="latitude" name="latitude"
+                        class="form-control @error('latitude') is-invalid @enderror"
+                        value="{{ old('latitude', $latitude ?? '') }}" required>
+                    @error('latitude')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $longitude ?? '') }}" required>
+                    <input type="text" id="longitude" name="longitude"
+                        class="form-control @error('longitude') is-invalid @enderror"
+                        value="{{ old('longitude', $longitude ?? '') }}" required>
+                    @error('longitude')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Alamat</label>
-                    <input type="text" id="address" name="address" class="form-control" value="{{ old('address', $address ?? '') }}" required>
+                    <input type="text" id="address" name="address"
+                        class="form-control @error('address') is-invalid @enderror"
+                        value="{{ old('address', $address ?? '') }}" required>
+                    @error('address')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="fitur" class="form-label">Kategori</label>
-                    <select name="fitur" id="fitur" class="form-control" required>
+                    <select name="fitur" id="fitur"
+                        class="form-control @error('fitur') is-invalid @enderror" required>
                         <option value="">-- Pilih Kategori --</option>
                         @foreach($kategoriSehat as $kategori)
                             <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
@@ -42,12 +72,20 @@
                             </option>
                         @endforeach
                     </select>
+                    @error('fitur')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label for="foto">Foto</label>
-                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
-                </div>
+    <label for="foto">Foto</label>
+    <input type="file" name="foto" id="fotoInput"
+        class="form-control @error('foto') is-invalid @enderror"
+        accept="image/*"> {{-- filter hanya foto --}}
+    @error('foto')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>
             </form>
@@ -102,22 +140,12 @@
         document.getElementById('longitude').value = lng;
 
         let alamat = 'Alamat tidak ditemukan';
-        let namaTempat = '';
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const data = await res.json();
-            if (data.address) {
-                namaTempat = data.address.hospital ||
-                    data.address.clinic ||
-                    data.address.pharmacy ||
-                    data.address.building ||
-                    data.address.amenity || '';
+            if (data.display_name) {
+                alamat = data.display_name;
             }
-
-            if (!namaTempat && data.display_name) {
-                namaTempat = data.display_name.split(',')[0];
-            }
-            alamat = data.display_name || alamat;
         } catch (err) {
             console.error('Gagal ambil alamat:', err);
         }
@@ -129,6 +157,14 @@
         clickMarker = L.marker([lat, lng], { icon: sehatIcon }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // otomatis buka file explorer/galeri begitu halaman dibuka
+        const fotoInput = document.getElementById("fotoInput");
+        if (fotoInput) {
+            fotoInput.click();
+        }
     });
 </script>
 

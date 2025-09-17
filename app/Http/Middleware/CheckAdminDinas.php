@@ -83,6 +83,16 @@ class CheckAdminDinas
                     'admin.setting.index',
                     'admin.kategori.*'
                 ];
+            
+            case 'perdagangan':
+                return [
+                    'admin.dashboard',
+                    'admin.pasar.tempat.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
 
             default:
                 return ['admin.dashboard']; // fallback minimal

@@ -43,31 +43,53 @@ class SehatController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'fitur' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120'
-        ]);
+{
+    $validated = $request->validate([
+        'name'      => 'required|string|max:255',
+        'latitude'  => 'required|numeric|between:-90,90',
+        'longitude' => 'required|numeric|between:-180,180',
+        'address'   => 'required|string|max:255',
+        'fitur'     => 'required|string',
+        'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ], [
+        'name.required'      => 'Nama tempat wajib diisi.',
+        'latitude.required'  => 'Latitude wajib diisi.',
+        'latitude.numeric'   => 'Latitude harus berupa angka.',
+        'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
+        'longitude.required' => 'Longitude wajib diisi.',
+        'longitude.numeric'  => 'Longitude harus berupa angka.',
+        'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
+        'address.required'   => 'Alamat wajib diisi.',
+        'fitur.required'     => 'Kategori wajib dipilih.',
+        'foto.image'         => 'File harus berupa gambar.',
+        'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
+        'foto.max'           => 'Ukuran gambar maksimal 2MB.',
+    ]);
+
+    try {
+        $sehat = new \App\Models\Sehat();
+        $sehat->name      = $validated['name'];
+        $sehat->latitude  = $validated['latitude'];
+        $sehat->longitude = $validated['longitude'];
+        $sehat->address   = $validated['address'];
+        $sehat->fitur     = $validated['fitur'];
 
         if ($request->hasFile('foto')) {
-            // simpan PATH relatif di DB, bukan URL penuh
-            $path = $request->file('foto')->store('foto_kesehatan', 'public');
-            $validated['foto'] = $path;
+            $sehat->foto = $request->file('foto')->store('uploads/sehat', 'public');
         }
 
-        Sehat::create($validated);
+        $sehat->save();
 
-        $this->logAktivitas("Lokasi Kesehatan telah ditambahkan");
-        $this->logNotifikasi("Lokasi Kesehatan telah ditambahkan");
-
+        // Kalau mau ke index:
         return redirect()->route('admin.sehat.tempat.index')
-            ->with('success', 'Lokasi Kesehatan berhasil ditambahkan!');
+            ->with('success', '✅ Lokasi Kesehatan berhasil ditambahkan!');
+        // Kalau mau tetap di form create, ganti jadi:
+        // return back()->with('success', '✅ Lokasi Kesehatan berhasil ditambahkan!');
+    } catch (\Exception $e) {
+        return back()->withInput()
+            ->with('error', '❌ Data gagal disimpan. Alasan: ' . $e->getMessage());
     }
-
+}
     public function edit($id)
     {
         $item = Sehat::findOrFail($id);

@@ -50,7 +50,8 @@
                     Auth::guard('admin')->check() &&
                     (
                     Auth::guard('admin')->user()->role === 'superadmin' ||
-                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'kesehatan' && Auth::guard('admin')->user()->dinas != 'pendidikan' && Auth::guard('admin')->user()->dinas != 'perpajakan')))
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'kesehatan' && Auth::guard('admin')->user()->dinas != 'pendidikan' && Auth::guard('admin')->user()->dinas != 'perpajakan'
+                    && Auth::guard('admin')->user()->dinas != 'perdagangan')))
                     <li class="nav-item">
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.info.*') ? 'active bg-primary text-white' : '' }}"
                             href="{{ route('admin.info.index') }}">
@@ -65,7 +66,7 @@
 
             @if (Auth::guard('admin')->check() &&
             (Auth::guard('admin')->user()->role === 'superadmin' ||
-            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan')))
+            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' && Auth::guard('admin')->user()->dinas != 'perdagangan')))
             <li class="nav-item dropdown 
     {{ request()->routeIs('admin.sehat.*') || request()->routeIs('admin.sekolah.*') ? 'show' : '' }}">
 
@@ -173,6 +174,9 @@
                     id="ekonomi">
 
                     {{-- Pajak-Yu --}}
+                    @if (Auth::guard('admin')->check() &&
+                    (Auth::guard('admin')->user()->role === 'superadmin' ||
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perdagangan' )))
                     <li class="nav-item">
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.*') ? 'active bg-light' : '' }}"
                             href="#submenu-pajak" data-toggle="collapse"
@@ -189,6 +193,7 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
 
                     {{-- Pasar-Yu --}}
                     @if (Auth::guard('admin')->check() &&
@@ -215,7 +220,7 @@
                     {{-- Kerja-Yu --}}
                     @if (Auth::guard('admin')->check() &&
                     (Auth::guard('admin')->user()->role === 'superadmin' ||
-                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
+                    (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' && Auth::guard('admin')->user()->dinas != 'perdagangan' )))
                     <li class="nav-item">
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.*') ? 'active bg-light' : '' }}"
                             href="#submenu-kerja" data-toggle="collapse"
@@ -238,7 +243,7 @@
 
             @if (Auth::guard('admin')->check() &&
             (Auth::guard('admin')->user()->role === 'superadmin' ||
-            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
+            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' && Auth::guard('admin')->user()->dinas != 'perdagangan' )))
             <li class="nav-item dropdown {{ request()->routeIs('admin.plesir.*') || request()->routeIs('admin.ibadah.*') ? 'show' : '' }}">
 
                 <a href="#pariwisata"
@@ -305,7 +310,7 @@
 
             @if (Auth::guard('admin')->check() &&
             (Auth::guard('admin')->user()->role === 'superadmin' ||
-            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' )))
+            (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'perpajakan' && Auth::guard('admin')->user()->dinas != 'perdagangan')))
             <li class="nav-item dropdown {{ request()->routeIs('admin.adminduk.*') || request()->routeIs('admin.renbang.*') || request()->routeIs('admin.izin.*') || request()->routeIs('admin.wifi.*') ? 'show' : '' }}">
                 <a href="#lainnya"
                     data-toggle="collapse"

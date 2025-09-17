@@ -11,7 +11,7 @@ $cards = [
 ['title' => 'Total Pengguna', 'value' => $stats['total_users'], 'color' => 'primary', 'icon' => 'fe fe-32 fe-users'],
 ['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_ibadah'] > 0 ? $stats['jumlah_ibadah'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
 ['title' => 'Jumlah Rumah Sakit', 'value' => $stats['jumlah_sehat'] > 0 ? $stats['jumlah_sehat'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-briefcase'],
-['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_pasar'] > 0 ? $stats['jumlah_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_lokasi_pasar'] > 0 ? $stats['jumlah_lokasi_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
 ['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_plesir'] > 0 ? $stats['jumlah_plesir'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
 ['title' => 'Jumlah Aduan Masyarakat', 'value' => $stats['jumlah_dumas'] > 0 ? $stats['jumlah_dumas'] : 'Belum ada', 'color' => 'danger', 'icon' => 'fe fe-32 fe-alert-circle'],
 ];
@@ -36,6 +36,12 @@ $cards = [
 elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'perpajakan') {
 $cards = [
 ['title' => 'Jumlah Info Pajak', 'value' => $stats['jumlah_info_pajak'] > 0 ? $stats['jumlah_info_pajak'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-briefcase'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'perdagangan') {
+$cards = [
+['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_lokasi_pasar'] > 0 ? $stats['jumlah_lokasi_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
 ];
 }
 @endphp
@@ -131,6 +137,9 @@ $cards = [
                         }
                         if($user->dinas === 'perpajakan'){
                         $moduls[] = ['route' => 'admin.pajak.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pajak'];
+                        }
+                        if($user->dinas === 'perdagangan'){
+                        $moduls[] = ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pajak'];
                         }
                         @endphp
 

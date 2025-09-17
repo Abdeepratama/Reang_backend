@@ -134,12 +134,60 @@ class IbadahController extends Controller
     }
 
     /* ========================
-   API TEMPAT
-   ======================== */
+       API TEMPAT
+    ======================== */
 
-    public function showTempat(Request $request, $id = null)
+    /**
+     * Helper: cek apakah request mengandung parameter filter.
+     * Hanya treat sebagai filter jika ada salah satu key filter yang meaningful.
+     * Param 'page' / 'per_page' / 'sort' saja tidak dianggap filter.
+     */
+    private function requestHasFilter(Request $request): bool
     {
-        if ($id) {
+        $filterKeys = [
+            'fitur', 'jenis', 'search', 'q', 'kategori', 'judul', 'tanggal', 'lokasi', 'alamat'
+        ];
+
+        foreach ($filterKeys as $k) {
+            if ($request->filled($k) || $request->has($k)) {
+                return true;
+            }
+        }
+
+        // Jika ada query keys selain pagination/sort, treat as filter.
+        $ignore = ['page', 'per_page', 'sort', 'order'];
+        foreach ($request->query() as $key => $val) {
+            if (!in_array($key, $ignore)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * showtempat:
+     * - numeric $id -> single item
+     * - non-numeric $id -> treat as fitur path filter (e.g. /tempat-ibadah/masjid) and paginate
+     * - query ?fitur=... or ?jenis=... -> paginate(10)
+     * - ?search=... or ?q=... -> paginate(10)
+     * - other filters (non-pagination) -> get() (legacy)
+     * - no filter -> paginate(10)
+     *
+     * NOTE: Tempat Ibadah ordering:
+     *   - ALL (get)  => ORDER BY created_at ASC (terlama di atas)
+     *   - Paginated results (fitur/search/default) => ORDER BY created_at ASC (terlama di atas)
+     */
+    public function showtempat(Request $request, $id = null)
+    {
+        // If path param present and non-numeric, treat as fitur filter (path-based)
+        if ($id !== null && !is_numeric($id)) {
+            $filterValue = urldecode($id);
+            $request->merge(['fitur' => $filterValue, 'kategori' => $filterValue]);
+        }
+
+        // If numeric id -> return single item
+        if ($id !== null && is_numeric($id)) {
             $data = Ibadah::with('kategori')->find($id);
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
@@ -158,23 +206,192 @@ class IbadahController extends Controller
             ], 200);
         }
 
-        $filter = $request->query('fitur', $request->query('jenis', null));
         $query = Ibadah::with('kategori');
 
+        // FEATURE: if fitur/jenis provided -> filter and paginate 10 (terlama atas = ASC)
+        $filter = $request->query('fitur', $request->query('jenis', null));
         if ($filter !== null && $filter !== '') {
             if (is_numeric($filter)) {
                 $query->where('fitur', $filter)
-                    ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+                      ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
                 $text = strtolower($filter);
                 $query->where(function ($q) use ($text) {
                     $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
-                        ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
                 });
             }
+
+            $paginator = $query->orderBy('created_at', 'asc')->paginate(10);
+
+            $paginator->getCollection()->transform(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ]);
+
+            return response()->json($paginator, 200);
         }
 
-        $data = $query->get()->map(fn($item) => [
+        // SEARCH: paginated 10 (terlama atas = ASC)
+        // support both 'search' and 'q' keys
+        if ($request->filled('search') || $request->filled('q')) {
+            $text = strtolower($request->query('search', $request->query('q')));
+            $searchQuery = Ibadah::with('kategori')->where(function ($q) use ($text) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%$text%"])
+                  ->orWhereRaw('LOWER(address) LIKE ?', ["%$text%"])
+                  ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+            });
+
+            $paginator = $searchQuery->orderBy('created_at', 'asc')->paginate(10);
+
+            $paginator->getCollection()->transform(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ]);
+
+            return response()->json($paginator, 200);
+        }
+
+        // If there are other filters (non-pagination keys) -> legacy: return all matching (keeps old behavior)
+        if ($this->requestHasFilter($request)) {
+            $data = $query->orderBy('created_at', 'asc')->get()->map(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ]);
+
+            return response()->json($data, 200);
+        }
+
+        // Default listing: paginated 10 (terlama atas = ASC)
+        $paginator = $query->orderBy('created_at', 'asc')->paginate(10);
+
+        $paginator->getCollection()->transform(fn($item) => [
+            'id'         => $item->id,
+            'name'       => $item->name,
+            'address'    => $item->address,
+            'latitude'   => $item->latitude,
+            'longitude'  => $item->longitude,
+            'fitur'      => $item->kategori->nama ?? $item->fitur,
+            'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+            'created_at' => $item->created_at,
+            'updated_at' => $item->updated_at,
+        ]);
+
+        return response()->json($paginator, 200);
+    }
+
+    /**
+     * New: GET ALL (no pagination) for tempat-ibadah
+     *
+     * Route example:
+     *   GET /api/tempat-ibadah/all?fitur=masjid
+     *
+     * Behavior:
+     *  - supports same filters as showtempat but returns all results (no pagination)
+     *  - ordering: created_at ASC (terlama di atas) — same behavior as existing GET-all in prior code
+     */
+    public function showtempatAll(Request $request)
+    {
+        $query = Ibadah::with('kategori');
+
+        // fitur / jenis filter
+        $filter = $request->query('fitur', $request->query('jenis', null));
+        if ($filter !== null && $filter !== '') {
+            if (is_numeric($filter)) {
+                $query->where('fitur', $filter)
+                      ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+            } else {
+                $text = strtolower($filter);
+                $query->where(function ($q) use ($text) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
+                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                });
+            }
+
+            $data = $query->orderBy('created_at', 'asc')->get()->map(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ]);
+
+            return response()->json($data, 200);
+        }
+
+        // search (q/search) -> return all matching ordered ASC
+        if ($request->filled('search') || $request->filled('q')) {
+            $text = strtolower($request->query('search', $request->query('q')));
+            $searchQuery = Ibadah::with('kategori')->where(function ($q) use ($text) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%$text%"])
+                  ->orWhereRaw('LOWER(address) LIKE ?', ["%$text%"])
+                  ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+            });
+
+            $data = $searchQuery->orderBy('created_at', 'asc')->get()->map(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ]);
+
+            return response()->json($data, 200);
+        }
+
+        // other filters -> legacy get() ordered ASC
+        if ($this->requestHasFilter($request)) {
+            // apply minimal known filters
+            if ($request->filled('tanggal')) {
+                $query->where('tanggal', $request->query('tanggal'));
+            }
+
+            $data = $query->orderBy('created_at', 'asc')->get()->map(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'address'    => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'fitur'      => $item->kategori->nama ?? $item->fitur,
+                'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ]);
+
+            return response()->json($data, 200);
+        }
+
+        // default -> get all ordered ASC
+        $data = $query->orderBy('created_at', 'asc')->get()->map(fn($item) => [
             'id'         => $item->id,
             'name'       => $item->name,
             'address'    => $item->address,
@@ -189,16 +406,18 @@ class IbadahController extends Controller
         return response()->json($data, 200);
     }
 
+    /**
+     * showTempatWeb (view)
+     */
     public function showTempatWeb($id)
     {
         $data = Ibadah::with('kategori')->findOrFail($id);
         return view('admin.ibadah.tempat.show', compact('data'));
     }
 
-
     public function infoIndex()
     {
-        $infoItems = InfoKeagamaan::all(); // gunakan model yang benar
+        $infoItems = InfoKeagamaan::all();
         return view('admin.ibadah.info.index', compact('infoItems'));
     }
 
@@ -235,16 +454,14 @@ class IbadahController extends Controller
             'longitude' => 'required|numeric',
         ]);
 
-        // Upload foto ke disk publik di folder 'foto_ibadah'
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
             $fotoName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('foto_ibadah', $fotoName, 'public'); // disimpan di storage/app/public/foto_ibadah
+            $path = $file->storeAs('foto_ibadah', $fotoName, 'public');
         }
 
-        // Simpan ke database (pakai $path agar asset() bisa memuat)
         InfoKeagamaan::create([
-            'foto' => $path, // Simpan path lengkap relatif ke storage/app/public
+            'foto' => $path,
             'judul' => $request->judul,
             'tanggal' => $request->tanggal,
             'waktu' => $request->waktu,
@@ -287,12 +504,9 @@ class IbadahController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            // Hapus foto lama jika ada
             if ($item->foto) {
                 Storage::disk('public')->delete($item->foto);
             }
-
-            // Upload dan simpan path baru
             $data['foto'] = $request->file('foto')->store('foto_ibadah', 'public');
         }
 
@@ -320,23 +534,42 @@ class IbadahController extends Controller
     {
         $lokasi = InfoKeagamaan::all()->map(function ($loc) {
             return [
-                'judul' => $loc->judul,          // ganti 'name' jadi 'judul'
-                'alamat' => $loc->alamat,      // ganti 'address' jadi 'alamat'
+                'judul' => $loc->judul,
+                'alamat' => $loc->alamat,
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
                 'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
-                'fitur' => $loc->fitur,         // kalau mau tampilkan kategori/fitur
-                'rating' => $loc->rating,       // rating juga bisa ditambahkan
+                'fitur' => $loc->fitur,
+                'rating' => $loc->rating,
             ];
         });
 
         return view('admin.ibadah.info.map', compact('lokasi'));
     }
 
-    public function infoshow($id = null)
+    /**
+     * infoshow:
+     * - numeric $id -> single item
+     * - non-numeric $id -> treat as kategori path filter (e.g. /event-agama/islam) and paginate
+     * - query ?kategori=... or ?fitur=... -> paginate(10)
+     * - ?search=... or ?q=... -> paginate(10)
+     * - other filters -> get() (legacy)
+     * - no filter -> paginate(10)
+     *
+     * NOTE: Event/Info ordering:
+     *   - ALL (get)  => ORDER BY tanggal DESC (terbaru di atas)
+     *   - Paginated results (kategori/search/default) => ORDER BY tanggal DESC (terbaru di atas)
+     */
+    public function infoshow(Request $request, $id = null)
     {
-        if ($id) {
-            // Ambil data tunggal dengan relasi kategori
+        // if $id non-numeric treat as kategori path filter
+        if ($id !== null && !is_numeric($id)) {
+            $filterValue = urldecode($id);
+            $request->merge(['kategori' => $filterValue, 'fitur' => $filterValue]);
+        }
+
+        // numeric id -> single
+        if ($id !== null && is_numeric($id)) {
             $data = InfoKeagamaan::with('kategori')->find($id);
 
             if (!$data) {
@@ -362,9 +595,92 @@ class IbadahController extends Controller
             ];
 
             return response()->json($arr, 200);
-        } else {
-            // Ambil semua data
-            $data = InfoKeagamaan::with('kategori')->get()->map(function ($item) {
+        }
+
+        $query = InfoKeagamaan::with('kategori');
+
+        // kategori/fitur provided -> filter and paginate 10 (latest first by tanggal)
+        $filter = $request->query('kategori', $request->query('fitur', null));
+        if ($filter !== null && $filter !== '') {
+            if (is_numeric($filter)) {
+                $query->where('fitur', $filter)
+                      ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+            } else {
+                $text = strtolower($filter);
+                $query->where(function ($q) use ($text) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
+                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                });
+            }
+
+            $paginator = $query->orderByDesc('tanggal')->paginate(10);
+
+            $paginator->getCollection()->transform(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'judul'      => $item->judul,
+                    'tanggal'    => $item->tanggal,
+                    'waktu'      => $item->waktu,
+                    'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                    'lokasi'     => $item->lokasi,
+                    'alamat'     => $item->alamat,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($paginator, 200);
+        }
+
+        // search -> paginated 10 ordered by tanggal desc (latest first)
+        // support both 'search' and 'q'
+        if ($request->filled('search') || $request->filled('q')) {
+            $text = strtolower($request->query('search', $request->query('q')));
+            $searchQuery = InfoKeagamaan::with('kategori')->where(function ($q) use ($text) {
+                $q->whereRaw('LOWER(judul) LIKE ?', ["%$text%"])
+                  ->orWhereRaw('LOWER(lokasi) LIKE ?', ["%$text%"])
+                  ->orWhereRaw('LOWER(alamat) LIKE ?', ["%$text%"])
+                  ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+            });
+
+            $paginator = $searchQuery->orderByDesc('tanggal')->paginate(10);
+
+            $paginator->getCollection()->transform(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'judul'      => $item->judul,
+                    'tanggal'    => $item->tanggal,
+                    'waktu'      => $item->waktu,
+                    'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                    'lokasi'     => $item->lokasi,
+                    'alamat'     => $item->alamat,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($paginator, 200);
+        }
+
+        // other filters -> legacy get(), order by tanggal desc (latest first)
+        if ($this->requestHasFilter($request)) {
+            if ($request->filled('tanggal')) {
+                $query->where('tanggal', $request->query('tanggal'));
+            }
+
+            $data = $query->orderByDesc('tanggal')->get()->map(function ($item) {
                 return [
                     'id'         => $item->id,
                     'judul'      => $item->judul,
@@ -386,6 +702,31 @@ class IbadahController extends Controller
 
             return response()->json($data, 200);
         }
+
+        // default -> paginate 10 ordered by tanggal desc (latest first)
+        $paginator = InfoKeagamaan::with('kategori')->orderByDesc('tanggal')->paginate(10);
+
+        $paginator->getCollection()->transform(function ($item) {
+            return [
+                'id'         => $item->id,
+                'judul'      => $item->judul,
+                'tanggal'    => $item->tanggal,
+                'waktu'      => $item->waktu,
+                'deskripsi'  => $this->replaceImageUrlsInHtml($item->deskripsi),
+                'lokasi'     => $item->lokasi,
+                'alamat'     => $item->alamat,
+                'foto'       => $item->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                    : null,
+                'kategori'   => $item->kategori->nama ?? ($item->fitur ?? null),
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        });
+
+        return response()->json($paginator, 200);
     }
 
     protected function logAktivitas($pesan)
@@ -404,7 +745,7 @@ class IbadahController extends Controller
         NotifikasiAktivitas::create([
             'keterangan' => $pesan,
             'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index') // route yang valid
+            'url' => route('admin.ibadah.tempat.index')
         ]);
     }
 
@@ -412,17 +753,14 @@ class IbadahController extends Controller
     {
         if (!$foto) return null;
 
-        // Jika sudah berbentuk path relatif (tidak ada http/https), kembalikan langsung
         if (strpos($foto, 'http://') !== 0 && strpos($foto, 'https://') !== 0) {
             return $foto;
         }
 
-        // jika berisi '/storage/...', ambil bagian setelah '/storage/'
         if (preg_match('#/storage/(.+)$#', $foto, $matches)) {
             return $matches[1];
         }
 
-        // jika tidak menemukan '/storage/', ambil path dari URL, dan hapus leading '/'
         $path = parse_url($foto, PHP_URL_PATH);
         if ($path) {
             $path = ltrim($path, '/');
@@ -435,18 +773,12 @@ class IbadahController extends Controller
         return null;
     }
 
-    /**
-     * Utility: bangun foto URL dinamis berdasarkan host yang sedang diakses
-     */
     private function buildFotoUrl($storagePath)
     {
         if (!$storagePath) return null;
         return request()->getSchemeAndHttpHost() . '/storage/' . ltrim($storagePath, '/');
     }
 
-    /**
-     * Replace image URLs dalam deskripsi HTML agar pakai host saat ini
-     */
     private function replaceImageUrlsInHtml($content)
     {
         if (!$content) return $content;
@@ -456,12 +788,10 @@ class IbadahController extends Controller
             $src = $m[2];
             $suffix = $m[3];
 
-            // Biarkan data URI atau external CDN
             if (preg_match('/^data:/i', $src)) {
                 return $m[0];
             }
 
-            // Jika absolute URL
             if (preg_match('/^https?:\/\//i', $src)) {
                 if (preg_match('#/storage/(.+)#i', $src, $matches)) {
                     $rel = $matches[1];
@@ -473,10 +803,9 @@ class IbadahController extends Controller
                     $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($rel, '/');
                     return $prefix . $new . $suffix;
                 }
-                return $m[0]; // external lain biarkan
+                return $m[0];
             }
 
-            // Jika relative
             $parsedPath = $src;
             if (strpos($parsedPath, '/storage/') === 0) {
                 $rel = ltrim(substr($parsedPath, strlen('/storage/')), '/');
