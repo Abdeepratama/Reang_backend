@@ -105,23 +105,20 @@ class SekolahController extends Controller
             ->with('success', 'Tempat sekolah berhasil diupdate');
     }
 
-    public function destroyTempat($id)
+    public function tempatDestroy($id)
     {
-        $sekolah = Tempat_sekolah::findOrFail($id);
+        $item = Sekolah::whereNull('jenis_laporan')->findOrFail($id);
 
-        // Hapus foto jika ada
-        if ($sekolah->foto && Storage::disk('public')->exists($sekolah->foto)) {
-            Storage::disk('public')->delete($sekolah->foto);
+        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+            Storage::disk('public')->delete($item->foto);
         }
 
-        $sekolah->delete();
-
-        $this->logAktivitas("Lokasi Sekolah telah dihapus");
-        $this->logNotifikasi("Lokasi Sekolah telah dihapus");
+        $item->delete();
 
         return redirect()->route('admin.sekolah.tempat.index')
             ->with('success', 'Tempat sekolah berhasil dihapus.');
     }
+
     /**
      * MAP TEMPAT SEKOLAH
      */
@@ -144,7 +141,7 @@ class SekolahController extends Controller
      * SHOW / LIST TEMPAT SEKOLAH (API)
      *
      * Mendukung:
-     * - GET /api/tempat-sekolah               -> semua data
+     * - GET /api/tempat-sekolah               -> semua data (filter fitur optional)
      * - GET /api/tempat-sekolah?fitur=sd     -> filter by fitur
      * - GET /api/tempat-sekolah/{id}         -> single by ID
      */
@@ -201,116 +198,9 @@ class SekolahController extends Controller
         }
     }
 
-    // ======================= ADUAN SEKOLAH =======================
-
-    /**
-     * LIST ADUAN SEKOLAH
-     */
-    public function aduanindex()
-    {
-        $items = Sekolah::whereNotNull('jenis_laporan')->get();
-        return view('admin.sekolah.aduan.index', compact('items'));
-    }
-
-    /**
-     * FORM TAMBAH ADUAN SEKOLAH
-     */
-    public function createAduan()
-    {
-        $kategoriAduan = Kategori::where('fitur', 'aduan-sekolah')->orderBy('nama')->get();
-        return view('admin.sekolah.aduan.create', compact('kategoriAduan'));
-    }
-
-    /**
-     * SIMPAN ADUAN SEKOLAH
-     */
-    public function storeAduan(Request $request)
-    {
-        $validated = $request->validate([
-            'jenis_laporan'  => 'required|string',
-            'bukti_laporan'  => 'nullable|image|max:2048',
-            'lokasi_laporan' => 'required|string',
-            'kategori_laporan' => 'required|string',
-            'deskripsi'      => 'required|string',
-            'pernyataan'     => 'required|boolean',
-        ]);
-
-        if ($request->hasFile('bukti_laporan')) {
-            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('aduan_sekolah', 'public');
-        }
-
-        Sekolah::create($validated);
-
-        return redirect()->route('admin.sekolah.aduan.index')
-            ->with('success', 'Aduan sekolah berhasil ditambahkan.');
-    }
-
-    /**
-     * FORM EDIT ADUAN SEKOLAH
-     */
-    public function editAduan($id)
-    {
-        $item = Sekolah::findOrFail($id);
-        $kategoriAduan = Kategori::where('fitur', 'aduan-sekolah')->get();
-        return view('admin.sekolah.aduan.edit', compact('item', 'kategoriAduan'));
-    }
-
-    /**
-     * UPDATE ADUAN SEKOLAH
-     */
-    public function updateAduan(Request $request, $id)
-    {
-        $aduan = Sekolah::findOrFail($id);
-
-        $validated = $request->validate([
-            'jenis_laporan'  => 'required|string',
-            'bukti_laporan'  => 'nullable|image|max:2048',
-            'lokasi_laporan' => 'required|string',
-            'kategori_laporan' => 'required|string',
-            'deskripsi'      => 'required|string',
-            'pernyataan'     => 'required|boolean',
-        ]);
-
-        if ($request->hasFile('bukti_laporan')) {
-            if ($aduan->bukti_laporan && Storage::disk('public')->exists($aduan->bukti_laporan)) {
-                Storage::disk('public')->delete($aduan->bukti_laporan);
-            }
-            $validated['bukti_laporan'] = $request->file('bukti_laporan')->store('aduan_sekolah', 'public');
-        }
-
-        $aduan->update($validated);
-
-        return redirect()->route('admin.sekolah.aduan.index')
-            ->with('success', 'Aduan sekolah berhasil diperbarui.');
-    }
-
-    public function tempatDestroy($id)
-    {
-        $item = Sekolah::whereNull('jenis_laporan')->findOrFail($id);
-
-        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
-            Storage::disk('public')->delete($item->foto);
-        }
-
-        $item->delete();
-
-        return redirect()->route('admin.sekolah.tempat.index')
-            ->with('success', 'Tempat sekolah berhasil dihapus.');
-    }
-
-    public function aduanDestroy($id)
-    {
-        $item = Sekolah::whereNotNull('jenis_laporan')->findOrFail($id);
-
-        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
-            Storage::disk('public')->delete($item->foto);
-        }
-
-        $item->delete();
-
-        return redirect()->route('admin.sekolah.aduan.index')
-            ->with('success', 'Aduan sekolah berhasil dihapus.');
-    }
+    // ======================= ADUAN SEKOLAH DIHAPUS =======================
+    // Semua method yang berhubungan dengan aduan sekolah telah dihapus sesuai permintaan.
+    // ==================================================================
 
     // info sekolah
     public function infoindex()
@@ -425,6 +315,11 @@ class SekolahController extends Controller
         ], 400);
     }
 
+    /**
+     * infoshow:
+     * - numeric $id -> single item
+     * - no id -> paginated list (10 per page)
+     */
     public function infoshow($id = null)
     {
         if ($id) {
@@ -447,7 +342,11 @@ class SekolahController extends Controller
 
             return response()->json($arr, 200);
         } else {
-            $data = InfoSekolah::latest()->get()->map(function ($item) {
+            // Paginated 10 per page, latest first
+            $paginator = InfoSekolah::with([])->orderByDesc('created_at')->paginate(10);
+
+            // transform items to include replaced image URLs
+            $paginator->getCollection()->transform(function ($item) {
                 return [
                     'id'         => $item->id,
                     'judul'      => $item->judul,
@@ -460,7 +359,7 @@ class SekolahController extends Controller
                 ];
             });
 
-            return response()->json($data, 200);
+            return response()->json($paginator, 200);
         }
     }
 

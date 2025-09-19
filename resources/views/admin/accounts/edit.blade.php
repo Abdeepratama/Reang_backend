@@ -48,11 +48,16 @@
             <label>Dinas</label>
             <select name="dinas" class="form-control">
                 <option value="">-- Pilih Dinas --</option>
-                <option value="kesehatan" {{ old('dinas', $account->dinas) == 'kesehatan' ? 'selected' : '' }}>Dinas Kesehatan</option>
-                <option value="pendidikan" {{ old('dinas', $account->dinas) == 'pendidikan' ? 'selected' : '' }}>Dinas Pendidikan</option>
-                <option value="pariwisata" {{ old('dinas', $account->dinas) == 'pariwisata' ? 'selected' : '' }}>Dinas Pariwisata</option>
-                <option value="perdagangan" {{ old('dinas', $account->dinas) == 'perdagangan' ? 'selected' : '' }}>Dinas Perdagangan</option>
-                <!-- tambahkan sesuai kebutuhan -->
+                <option value="kesehatan">Dinas Kesehatan</option>
+                <option value="pendidikan">Dinas Pendidikan</option>
+                <option value="perpajakan">Dinas Perpajakan</option>
+                <option value="keagamaan">Dinas Keagamaan</option>
+                <option value="perizinan">Dinas Perizinan</option>
+                <option value="kerja">Dinas Tenaga Kerja</option>
+                <option value="perdagangan">Dinas Perdagangan</option>
+                <option value="pariwisata">Dinas Periwisata dan Kebudayaan</option>
+                <option value="pembangunan">Dinas Pembangunan</option>
+                <option value="kependudukan">Dinas Kependudukan</option>
             </select>
         </div>
 

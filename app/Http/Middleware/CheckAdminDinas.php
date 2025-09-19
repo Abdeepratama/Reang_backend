@@ -94,6 +94,81 @@ class CheckAdminDinas
                     'admin.kategori.*'
                 ];
 
+            case 'kerja':
+                return [
+                    'admin.dashboard',
+                    'admin.kerja.info.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
+
+            case 'pariwisata':
+                return [
+                    'admin.dashboard',
+                    'admin.plesir.tempat.*',
+                    'admin.plesir.info.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
+            
+            case 'keagamaan':
+                return [
+                    'admin.dashboard',
+                    'admin.ibadah.tempat.index',
+                    'admin.ibadah.tempat.create',
+                    'admin.ibadah.tempat.store',
+                    'admin.ibadah.tempat.update',
+                    'admin.ibadah.tempat.edit',
+                    'admin.ibadah.tempat.show',
+                    'admin.ibadah.tempat.map',
+                    'admin.ibadah.tempat.destroy',
+                    'admin.ibadah.info.index',
+                    'admin.ibadah.info.map',
+                    'admin.ibadah.info.create',
+                    'admin.ibadah.info.store',
+                    'admin.ibadah.info.update',
+                    'admin.ibadah.info.edit',
+                    'admin.ibadah.info.destroy',
+                    'admin.ibadah.simpan-lokasi',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
+
+            case 'kependudukan':
+                return [
+                    'admin.dashboard',
+                    'admin.adminduk.info.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
+
+            case 'pembangunan':
+                return [
+                    'admin.dashboard',
+                    'admin.renbang.info.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
+
+            case 'perizinan':
+                return [
+                    'admin.dashboard',
+                    'admin.izin.info.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.index',
+                    'admin.setting.index',
+                    'admin.kategori.*'
+                ];
             default:
                 return ['admin.dashboard']; // fallback minimal
         }

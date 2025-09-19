@@ -11,11 +11,14 @@
         <i class="fe fe-sun fe-16"></i>
       </a>
     </li>
+    @if (Auth::guard('admin')->check() &&
+            (Auth::guard('admin')->user()->role === 'superadmin'))
     <li class="nav-item">
       <a class="nav-link text-muted my-2" href="{{ route('admin.fitur.index') }}">
         <span class="fe fe-grid fe-16"></span>
       </a>
     </li>
+    @endif
     <li class="nav-item dropdown">
       <a class="nav-link text-muted my-2 dropdown-toggle" href="#" id="notifDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="fe fe-bell fe-16"></span>

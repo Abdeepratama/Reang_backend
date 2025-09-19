@@ -13,9 +13,10 @@
 
     <a href="{{ route('admin.accounts.create') }}" class="btn btn-primary mb-3">Tambah Akun</a>
 
-    <table class="table table-bordered table-striped">
-        <thead>
+    <table class="table datatables" id="infoTable">
+        <thead class="table-dark">
             <tr>
+                <th>No</th>
                 <th>Nama</th>
                 <th>Email</th>
                 <th>Role</th>
@@ -26,6 +27,7 @@
         <tbody>
         @forelse($admins as $admin)
             <tr>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $admin->name }}</td>
                 <td>{{ $admin->email }}</td>
                 <td>
@@ -55,4 +57,18 @@
         </tbody>
     </table>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        $('#infoTable').DataTable({
+            autoWidth: true,
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ]
+        });
+    });
+</script>
 @endsection

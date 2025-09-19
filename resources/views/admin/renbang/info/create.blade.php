@@ -1,12 +1,12 @@
 @extends('admin.partials.app')
 
-@section('title', 'Tambah Deskripsi Renbang')
+@section('title', 'Tambah Info Renbang')
 
 @section('content')
 <div class="container mt-4">
-    <h2><i class="bi bi-building"></i> Tambah Deskripsi Renbang</h2>
+    <h2><i class="bi bi-building"></i> Tambah Info Renbang</h2>
 
-    <form id="renbangForm" action="{{ route('admin.renbang.deskripsi.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="renbangForm" action="{{ route('admin.renbang.info.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div style="max-width: 800px;">
@@ -63,7 +63,7 @@ let editor;
 ClassicEditor
     .create(document.querySelector('#editor'), {
         ckfinder: {
-            uploadUrl: "{{ route('admin.renbang.deskripsi.upload.image') }}?_token={{ csrf_token() }}"
+            uploadUrl: "{{ route('admin.renbang.info.upload.image') }}?_token={{ csrf_token() }}"
         }
     })
     .then(instance => { editor = instance; })

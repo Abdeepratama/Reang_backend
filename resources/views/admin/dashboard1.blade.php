@@ -9,10 +9,10 @@ $cards = [];
 if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'superadmin') {
 $cards = [
 ['title' => 'Total Pengguna', 'value' => $stats['total_users'], 'color' => 'primary', 'icon' => 'fe fe-32 fe-users'],
-['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_ibadah'] > 0 ? $stats['jumlah_ibadah'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
+['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_lokasi_ibadah'] > 0 ? $stats['jumlah_lokasi_ibadah'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
 ['title' => 'Jumlah Rumah Sakit', 'value' => $stats['jumlah_sehat'] > 0 ? $stats['jumlah_sehat'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-briefcase'],
 ['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_lokasi_pasar'] > 0 ? $stats['jumlah_lokasi_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
-['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_plesir'] > 0 ? $stats['jumlah_plesir'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
+['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_lokasi_plesir'] > 0 ? $stats['jumlah_lokasi_plesir'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
 ['title' => 'Jumlah Aduan Masyarakat', 'value' => $stats['jumlah_dumas'] > 0 ? $stats['jumlah_dumas'] : 'Belum ada', 'color' => 'danger', 'icon' => 'fe fe-32 fe-alert-circle'],
 ];
 }
@@ -42,6 +42,44 @@ $cards = [
 elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'perdagangan') {
 $cards = [
 ['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_lokasi_pasar'] > 0 ? $stats['jumlah_lokasi_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'kerja') {
+$cards = [
+['title' => 'Jumlah Info Pekerjaan', 'value' => $stats['jumlah_info_kerja'] > 0 ? $stats['jumlah_info_kerja'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'pariwisata') {
+$cards = [
+['title' => 'Jumlah Info Plesir', 'value' => $stats['jumlah_info_plesir'] > 0 ? $stats['jumlah_info_plesir'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_lokasi_plesir'] > 0 ? $stats['jumlah_lokasi_plesir'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'keagamaan') {
+$cards = [
+['title' => 'Jumlah Info Keagamaan', 'value' => $stats['jumlah_info_keagamaan'] > 0 ? $stats['jumlah_info_keagamaan'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+['title' => 'Jumlah tempat Ibadah', 'value' => $stats['jumlah_lokasi_ibadah'] > 0 ? $stats['jumlah_lokasi_ibadah'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'kependudukan') {
+$cards = [
+['title' => 'Jumlah Info Kependudukan', 'value' => $stats['jumlah_info_kependudukan'] > 0 ? $stats['jumlah_info_kependudukan'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'pembangunan') {
+$cards = [
+['title' => 'Jumlah Info Pembangunan', 'value' => $stats['jumlah_info_pembangunan'] > 0 ? $stats['jumlah_info_pembangunan'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
+];
+}
+
+elseif (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas === 'perizinan') {
+$cards = [
+['title' => 'Jumlah Info Perizinan', 'value' => $stats['jumlah_info_perizinan'] > 0 ? $stats['jumlah_info_perizinan'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
 ];
 }
 @endphp
@@ -139,7 +177,27 @@ $cards = [
                         $moduls[] = ['route' => 'admin.pajak.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pajak'];
                         }
                         if($user->dinas === 'perdagangan'){
-                        $moduls[] = ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pajak'];
+                        $moduls[] = ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Pasar'];
+                        }
+                        if($user->dinas === 'kerja'){
+                        $moduls[] = ['route' => 'admin.kerja.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Kerja'];
+                        }
+                        if($user->dinas === 'pariwisata'){
+                        $moduls[] = ['route' => 'admin.plesir.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Pariwisata'];
+                        $moduls[] = ['route' => 'admin.plesir.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pariwisata'];
+                        }
+                        if($user->dinas === 'keagamaan'){
+                        $moduls[] = ['route' => 'admin.ibadah.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Tempat Ibadah'];
+                        $moduls[] = ['route' => 'admin.ibadah.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Keagamaan'];
+                        }
+                        if($user->dinas === 'kependudukan'){
+                        $moduls[] = ['route' => 'admin.adminduk.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Kepedendudukan'];
+                        }
+                        if($user->dinas === 'pembangunan'){
+                        $moduls[] = ['route' => 'admin.renbang.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pembangunan'];
+                        }
+                        if($user->dinas === 'perizinan'){
+                        $moduls[] = ['route' => 'admin.izin.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Perizinan'];
                         }
                         @endphp
 

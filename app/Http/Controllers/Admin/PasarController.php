@@ -10,6 +10,7 @@ use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class PasarController extends Controller
 {
@@ -150,9 +151,181 @@ class PasarController extends Controller
         return view('admin.pasar.tempat.index', compact('items'));
     }
 
+    /**
+     * Endpoint baru: ambil semua kategori terkait lokasi pasar
+     * Bisa dipanggil dari Flutter untuk mengisi pilihan filter.
+     *
+     * Route contoh (API):
+     * GET /api/pasar/kategori
+     *
+     * Response: array object { id, nama, fitur }
+     */
+    public function categories(Request $request)
+    {
+        // Ambil kategori yang berhubungan dengan fitur 'lokasi pasar'
+        $kategoriPasar = Kategori::where('fitur', 'lokasi pasar')
+            ->orderBy('nama')
+            ->get(['id', 'nama', 'fitur']);
+
+        // Jika ingin menambahkan jumlah item per kategori, bisa dihitung di sini (opsional).
+        // Untuk sekarang kembalikan list kategori sederhana.
+        return response()->json([
+            'success' => true,
+            'count' => $kategoriPasar->count(),
+            'categories' => $kategoriPasar,
+        ], 200);
+    }
+
+    /**
+     * Helper: cek apakah request mengandung parameter filter.
+     * Hanya treat sebagai filter jika ada salah satu key filter yang meaningful.
+     * Param 'page' / 'per_page' / 'sort' saja tidak dianggap filter.
+     */
+    private function requestHasFilter(Request $request): bool
+    {
+        $filterKeys = [
+            'fitur', 'kategori', 'search', 'q', 'name', 'address'
+        ];
+
+        foreach ($filterKeys as $k) {
+            if ($request->filled($k) || $request->has($k)) {
+                return true;
+            }
+        }
+
+        // Jika ada query keys selain pagination/sort, treat as filter.
+        $ignore = ['page', 'per_page', 'sort', 'order'];
+        foreach ($request->query() as $key => $val) {
+            if (!in_array($key, $ignore)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * applySmartSearch:
+     * - $columns: kolom pada tabel utama (mis. ['name','address','fitur'])
+     * - $relations: array relasi => kolom (tidak digunakan disini, tetapi ada untuk konsistensi)
+     * - perilaku:
+     *    * support single-char search (prefix) dan longer token -> prefix prioritas, lalu contains
+     *    * pemisahan token (spasi) => semua token harus match (AND antar token), tetapi setiap token bisa match di kolom manapun (OR antar kolom)
+     *    * menambahkan ORDER BY relevansi: prefix matches lebih tinggi dari contains
+     */
+    private function applySmartSearch(Builder $query, string $text, array $columns = [], array $secondary = [], array $relations = [])
+    {
+        $text = trim(mb_strtolower($text));
+        if ($text === '') return;
+
+        // tokens: split by whitespace
+        $tokens = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+        if (!$tokens || count($tokens) === 0) return;
+
+        // WHERE: for each token require at least one column or relation to match (AND across tokens)
+        $query->where(function ($q) use ($tokens, $columns, $relations) {
+            foreach ($tokens as $tok) {
+                $tok = trim($tok);
+                if ($tok === '') continue;
+
+                $q->where(function ($q2) use ($tok, $columns, $relations) {
+                    // match in main columns (contains)
+                    foreach ($columns as $col) {
+                        $q2->orWhereRaw("LOWER($col) LIKE ?", ["%{$tok}%"]);
+                    }
+
+                    // also check relations via orWhereHas (keberadaan relasi tetap didukung)
+                    foreach ($relations as $rel => $relCol) {
+                        $q2->orWhereHas($rel, function ($q3) use ($tok, $relCol) {
+                            $q3->whereRaw("LOWER($relCol) LIKE ?", ["%{$tok}%"]);
+                        });
+                    }
+                });
+            }
+        });
+
+        // ORDER BY relevance
+        // Build CASE expression: 0 = any prefix match, 1 = any contains (we already filtered to contains),
+        // after that append secondary ordering.
+        $prefixParts = [];
+        $containsParts = [];
+        $bindings = [];
+
+        foreach ($tokens as $tok) {
+            $tok = trim($tok);
+            if ($tok === '') continue;
+
+            $perTokenPrefix = [];
+            $perTokenContains = [];
+
+            foreach ($columns as $col) {
+                $perTokenPrefix[] = "LOWER($col) LIKE ?";
+                $bindings[] = $tok . '%';
+                $perTokenContains[] = "LOWER($col) LIKE ?";
+                $bindings[] = '%' . $tok . '%';
+            }
+
+            if (!empty($perTokenPrefix)) {
+                $prefixParts[] = '(' . implode(' OR ', $perTokenPrefix) . ')';
+            }
+            if (!empty($perTokenContains)) {
+                $containsParts[] = '(' . implode(' OR ', $perTokenContains) . ')';
+            }
+        }
+
+        $prefixExpr = count($prefixParts) ? implode(' OR ', $prefixParts) : '0=1';
+        $containsExpr = count($containsParts) ? implode(' OR ', $containsParts) : '0=1';
+
+        $caseExpr = "(CASE WHEN ({$prefixExpr}) THEN 0 WHEN ({$containsExpr}) THEN 1 ELSE 2 END)";
+
+        // Apply ordering by relevance - pass bindings
+        $query->orderByRaw($caseExpr, $bindings);
+
+        // apply secondary ordering
+        foreach ($secondary as $sec) {
+            if (is_array($sec) && count($sec) >= 2) {
+                $col = $sec[0];
+                $dir = strtolower($sec[1]) === 'asc' ? 'asc' : 'desc';
+                $query->orderBy($col, $dir);
+            }
+        }
+    }
+
+    /**
+     * show:
+     * - numeric $id -> single item
+     * - non-numeric $id:
+     *     - if 'all' -> return all matching (no pagination)
+     *     - if 'search' -> treat as search-path and run search using q/search query param
+     *     - otherwise treat as fitur path filter (e.g. /tempat-pasar/pasar-tradisional) and paginate
+     * - query ?fitur=... or ?kategori=... -> paginate(10)
+     * - ?search=... or ?q=... -> paginate(10)
+     * - other filters (non-pagination) -> get() (legacy)
+     * - no filter -> paginate(10)
+     */
     public function show(Request $request, $id = null)
     {
-        if ($id) {
+        $isAllPath = false;
+        $isSearchPath = false;
+
+        // if $id present and non-numeric, handle specially
+        if ($id !== null && !is_numeric($id)) {
+            $decoded = urldecode($id);
+
+            // if path is 'all' -> special "get all" behavior
+            if (strtolower($decoded) === 'all') {
+                $isAllPath = true;
+            } elseif (strtolower($decoded) === 'search') {
+                // treat as explicit search path: /tempat-pasar/search?q=...
+                $isSearchPath = true;
+            } else {
+                // treat as fitur path filter (path-based)
+                $request->merge(['fitur' => $decoded, 'kategori' => $decoded]);
+            }
+        }
+
+        // If numeric id -> return single item (unchanged)
+        if ($id !== null && is_numeric($id)) {
             $data = Pasar::find($id);
 
             if (!$data) {
@@ -175,16 +348,207 @@ class PasarController extends Controller
             ];
 
             return response()->json($arr, 200);
-        } else {
-            $kategori = $request->query('kategori');
+        }
 
-            $query = Pasar::query();
+        // Build base query
+        $query = Pasar::query();
 
-            if ($kategori) {
-                $query->where('fitur', $kategori);
+        // If request is path /tempat-pasar/search -> handle smart search regardless of fitur merging above
+        if ($isSearchPath) {
+            $text = $request->query('q', $request->query('search', ''));
+            // if no search term provided, return empty paginated structure to indicate no results for empty search path
+            if (trim($text) === '') {
+                // return empty paginator (page meta) for consistency
+                $empty = (object) [
+                    'current_page' => 1,
+                    'data' => [],
+                    'first_page_url' => url('/api/tempat-pasar/search?page=1'),
+                    'from' => null,
+                    'last_page' => 1,
+                    'last_page_url' => url('/api/tempat-pasar/search?page=1'),
+                    'links' => [
+                        ['url' => null, 'label' => '&laquo; Previous', 'active' => false],
+                        ['url' => url('/api/tempat-pasar/search?page=1'), 'label' => '1', 'active' => true],
+                        ['url' => null, 'label' => 'Next &raquo;', 'active' => false],
+                    ],
+                    'next_page_url' => null,
+                    'path' => url('/api/tempat-pasar/search'),
+                    'per_page' => 10,
+                    'prev_page_url' => null,
+                    'to' => null,
+                    'total' => 0,
+                ];
+
+                return response()->json($empty, 200);
             }
 
-            $data = $query->get()->map(function ($item) {
+            $searchQuery = Pasar::query();
+            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], []);
+
+            // if explicit all requested as path /tempat-pasar/search/all or ?all=1 - but path won't carry 'all' here; check query
+            if ($request->query('all') === '1') {
+                $data = $searchQuery->get()->map(function ($item) {
+                    return [
+                        'id'         => $item->id,
+                        'nama'       => $item->name,
+                        'alamat'     => $item->address,
+                        'latitude'   => $item->latitude,
+                        'longitude'  => $item->longitude,
+                        'foto'       => $item->foto
+                            ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                            : null,
+                        'kategori'   => $item->fitur,
+                        'fitur'      => $item->fitur,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
+                    ];
+                });
+
+                return response()->json($data, 200);
+            }
+
+            $paginator = $searchQuery->paginate(10);
+
+            $paginator->getCollection()->transform(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'nama'       => $item->name,
+                    'alamat'     => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->fitur,
+                    'fitur'      => $item->fitur,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($paginator, 200);
+        }
+
+        // Accept both 'fitur' and 'kategori' as filter keys
+        $filter = $request->query('fitur', $request->query('kategori', null));
+
+        // If fitur/kategori provided -> filter (then either paginate or get all depending)
+        if ($filter !== null && $filter !== '') {
+            $textFilter = strtolower($filter);
+            $query->where(function ($q) use ($textFilter) {
+                $q->whereRaw('LOWER(fitur) LIKE ?', ["%$textFilter%"]);
+            });
+
+            // If search/q is also present, apply smart search inside the filtered results
+            if ($request->filled('search') || $request->filled('q')) {
+                $text = $request->query('search', $request->query('q'));
+                $this->applySmartSearch($query, $text, ['name','address','fitur'], [['created_at','asc']], []);
+            }
+
+            if ($isAllPath || $request->query('all') === '1') {
+                // return all matching (no pagination)
+                $data = $query->orderBy('created_at', 'asc')->get()->map(function ($item) {
+                    return [
+                        'id'         => $item->id,
+                        'nama'       => $item->name,
+                        'alamat'     => $item->address,
+                        'latitude'   => $item->latitude,
+                        'longitude'  => $item->longitude,
+                        'foto'       => $item->foto
+                            ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                            : null,
+                        'kategori'   => $item->fitur,
+                        'fitur'      => $item->fitur,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
+                    ];
+                });
+
+                return response()->json($data, 200);
+            }
+
+            // otherwise paginate (10 per page)
+            $paginator = $query->orderBy('created_at', 'asc')->paginate(10);
+
+            $paginator->getCollection()->transform(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'nama'       => $item->name,
+                    'alamat'     => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->fitur,
+                    'fitur'      => $item->fitur,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($paginator, 200);
+        }
+
+        // SEARCH without fitur -> smart search across name/address/fitur
+        if ($request->filled('search') || $request->filled('q')) {
+            $text = $request->query('search', $request->query('q'));
+
+            $searchQuery = Pasar::query();
+            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], []);
+
+            if ($isAllPath || $request->query('all') === '1') {
+                $data = $searchQuery->get()->map(function ($item) {
+                    return [
+                        'id'         => $item->id,
+                        'nama'       => $item->name,
+                        'alamat'     => $item->address,
+                        'latitude'   => $item->latitude,
+                        'longitude'  => $item->longitude,
+                        'foto'       => $item->foto
+                            ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                            : null,
+                        'kategori'   => $item->fitur,
+                        'fitur'      => $item->fitur,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
+                    ];
+                });
+
+                return response()->json($data, 200);
+            }
+
+            $paginator = $searchQuery->paginate(10);
+
+            $paginator->getCollection()->transform(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'nama'       => $item->name,
+                    'alamat'     => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'kategori'   => $item->fitur,
+                    'fitur'      => $item->fitur,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json($paginator, 200);
+        }
+
+        // other filters -> legacy get(), order by created_at asc
+        if ($this->requestHasFilter($request)) {
+            // minimal known filters (kept simple)
+            if ($request->filled('tanggal')) {
+                $query->where('tanggal', $request->query('tanggal'));
+            }
+
+            // if 'all' requested via path or query, send all; otherwise fall back to get all since it's "other filters"
+            $data = $query->orderBy('created_at', 'asc')->get()->map(function ($item) {
                 return [
                     'id'         => $item->id,
                     'nama'       => $item->name,
@@ -203,6 +567,28 @@ class PasarController extends Controller
 
             return response()->json($data, 200);
         }
+
+        // default -> paginate 10 ordered by created_at asc
+        $paginator = $query->orderBy('created_at', 'asc')->paginate(10);
+
+        $paginator->getCollection()->transform(function ($item) {
+            return [
+                'id'         => $item->id,
+                'nama'       => $item->name,
+                'alamat'     => $item->address,
+                'latitude'   => $item->latitude,
+                'longitude'  => $item->longitude,
+                'foto'       => $item->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                    : null,
+                'kategori'   => $item->fitur,
+                'fitur'      => $item->fitur,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        });
+
+        return response()->json($paginator, 200);
     }
 
     protected function logAktivitas($pesan)
@@ -288,6 +674,6 @@ class PasarController extends Controller
         if (!$foto) {
             return null;
         }
-        return ltrim($foto, '/');
+        return ltrim($foto,'/');
     }
 }

@@ -48,7 +48,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     Route::prefix('ibadah')->name('ibadah.')->group(function () {
         Route::get('/tempat', [IbadahController::class, 'index'])->name('tempat.index');
         Route::post('/simpan-lokasi', [IbadahController::class, 'simpanLokasi'])->name('tempat.simpanLokasi');
-        Route::get('/tempat/map', [IbadahController::class, 'map'])->name('tempat.map');
+        Route::get('/tempat/map', [IbadahController::class, 'mapTempat'])->name('tempat.map');
         Route::get('/tempat/create', [IbadahController::class, 'createTempat'])->name('tempat.create');
         Route::post('/tempat', [IbadahController::class, 'storeTempat'])->name('tempat.store');
         Route::get('/tempat/{id}/edit', [IbadahController::class, 'editTempat'])->name('tempat.edit');
@@ -172,15 +172,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     // ----------------- RENBANG -----------------
     Route::prefix('renbang')->name('renbang.')->group(function () {
         // DESKRIPSI RENBANG
-        Route::get('deskripsi', [RenbangController::class, 'deskripsiIndex'])->name('deskripsi.index');
-        Route::get('deskripsi/create', [RenbangController::class, 'deskripsiCreate'])->name('deskripsi.create');
-        Route::post('deskripsi', [RenbangController::class, 'deskripsiStore'])->name('deskripsi.store');
-        Route::get('deskripsi/{id}/edit', [RenbangController::class, 'deskripsiEdit'])->name('deskripsi.edit');
-        Route::put('deskripsi/{id}', [RenbangController::class, 'deskripsiUpdate'])->name('deskripsi.update');
-        Route::delete('deskripsi/{id}', [RenbangController::class, 'deskripsiDestroy'])->name('deskripsi.destroy');
+        Route::get('Renbang/Info', [RenbangController::class, 'infoIndex'])->name('info.index');
+        Route::get('Renbang/Info/create', [RenbangController::class, 'infoCreate'])->name('info.create');
+        Route::post('Renbang/Info', [RenbangController::class, 'infoStore'])->name('info.store');
+        Route::get('Renbang/Info/{id}/edit', [RenbangController::class, 'infoEdit'])->name('info.edit');
+        Route::put('Renbang/Info/{id}', [RenbangController::class, 'infoUpdate'])->name('info.update');
+        Route::delete('Renbang/Info/{id}', [RenbangController::class, 'infoDestroy'])->name('info.destroy');
 
         // Upload gambar (CKEditor)
-        Route::post('deskripsi/upload-image', [RenbangController::class, 'deskripsiUpload'])->name('deskripsi.upload.image');
+        Route::post('Info/upload-image', [RenbangController::class, 'deskripsiUpload'])->name('deskripsi.upload.image');
     });
 
     // ----------------- DUMAS -----------------

@@ -15,42 +15,42 @@ class RenbangController extends Controller
     /**
      * INDEX DESKRIPSI
      */
-    public function deskripsiIndex()
+    public function InfoIndex()
 {
     // data utama yang ditampilkan di index (daftar renbang)
     $renbangItems = Renbang::latest()->get();
 
     // daftar kategori untuk keperluan filter/dropdown (opsional di index)
-    $kategoriRenbangs = Kategori::where('fitur', 'deskripsi renbang')
+    $kategoriRenbangs = Kategori::where('fitur', 'Info renbang')
         ->orderBy('nama')
         ->get();
 
     // kirim kedua variabel ke view
-    return view('admin.renbang.deskripsi.index', compact('renbangItems', 'kategoriRenbangs'));
+    return view('admin.renbang.info.index', compact('renbangItems', 'kategoriRenbangs'));
 }
 
-public function deskripsiCreate()
+public function infoCreate()
 {
     // pastikan nama variabel sama dengan yang akan dipakai di blade create
-    $kategoriRenbangs = Kategori::where('fitur', 'deskripsi renbang')
+    $kategoriRenbangs = Kategori::where('fitur', 'info renbang')
         ->orderBy('nama')
         ->get();
 
-    return view('admin.renbang.deskripsi.create', compact('kategoriRenbangs'));
+    return view('admin.renbang.info.create', compact('kategoriRenbangs'));
 }
 
-public function deskripsiEdit($id)
+public function infoEdit($id)
 {
     $item = Renbang::findOrFail($id);
 
-    $kategoriRenbangs = Kategori::where('fitur', 'deskripsi renbang')
+    $kategoriRenbangs = Kategori::where('fitur', 'info renbang')
         ->orderBy('nama')
         ->get();
 
-    return view('admin.renbang.deskripsi.edit', compact('item', 'kategoriRenbangs'));
+    return view('admin.renbang.info.edit', compact('item', 'kategoriRenbangs'));
 }
 
-public function deskripsiStore(Request $request)
+public function infoStore(Request $request)
 {
     $data = $request->validate([
         'judul'     => 'required|string|max:255',
@@ -66,14 +66,14 @@ public function deskripsiStore(Request $request)
 
     Renbang::create($data);
 
-    $this->logAktivitas("Deskripsi Renbang telah ditambahkan");
-    $this->logNotifikasi("Deskripsi Renbang telah ditambahkan");
+    $this->logAktivitas("Info Renbang telah ditambahkan");
+    $this->logNotifikasi("Info Renbang telah ditambahkan");
 
-    return redirect()->route('admin.renbang.deskripsi.index')
-        ->with('success', 'Deskripsi Renbang berhasil ditambahkan.');
+    return redirect()->route('admin.renbang.info.index')
+        ->with('success', 'Info Renbang berhasil ditambahkan.');
 }
 
-public function deskripsiUpdate(Request $request, $id)
+public function infoUpdate(Request $request, $id)
 {
     $item = Renbang::findOrFail($id);
 
@@ -94,14 +94,14 @@ public function deskripsiUpdate(Request $request, $id)
 
     $item->update($data);
 
-    $this->logAktivitas("Deskripsi Renbang telah diperbarui");
-    $this->logNotifikasi("Deskripsi Renbang telah diperbarui");
+    $this->logAktivitas("Info Renbang telah diperbarui");
+    $this->logNotifikasi("Info Renbang telah diperbarui");
 
-    return redirect()->route('admin.renbang.deskripsi.index')
-        ->with('success', 'Deskripsi Renbang berhasil diperbarui.');
+    return redirect()->route('admin.renbang.info.index')
+        ->with('success', 'Info Renbang berhasil diperbarui');
 }
 
-public function deskripsiShow($id = null)
+public function infoShow($id = null)
 {
     if ($id) {
         $data = Renbang::with('kategori')->find($id);
@@ -144,7 +144,7 @@ public function deskripsiShow($id = null)
     }
 }
 
-public function deskripsiUpload(Request $request)
+public function infoUpload(Request $request)
 {
     if ($request->hasFile('upload')) {
         $file = $request->file('upload');
@@ -225,7 +225,7 @@ public function deskripsiUpload(Request $request)
         NotifikasiAktivitas::create([
             'keterangan' => $pesan,
             'dibaca' => false,
-            'url' => route('admin.renbang.deskripsi.index')
+            'url' => route('admin.renbang.info.index')
         ]);
     }
 }

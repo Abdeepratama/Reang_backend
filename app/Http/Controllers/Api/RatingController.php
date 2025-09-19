@@ -56,7 +56,7 @@ class RatingController extends Controller
             'comment' => 'nullable|string|max:1000',
         ]);
 
-        // prepare only fields yang diberikan
+        // prepare hanya fields yang diberikan
         $updateData = [];
         if ($request->has('rating')) {
             $updateData['rating'] = $data['rating'];
@@ -148,5 +148,35 @@ class RatingController extends Controller
         $topPlesir = InfoPlesir::orderByDesc('rating')->take(5)->get();
 
         return response()->json($topPlesir);
+    }
+
+    /**
+     * Destroy (hapus) sebuah rating berdasarkan id.
+     * - menghapus record rating
+     * - menghitung ulang avg rating untuk info_plesir terkait
+     * - mengembalikan avg_rating terbaru
+     */
+    public function destroy($id)
+    {
+        $rating = Rating::findOrFail($id);
+
+        $infoId = $rating->info_plesir_id;
+
+        // hapus rating
+        $rating->delete();
+
+        // hitung ulang rata-rata setelah penghapusan
+        $avg = Rating::where('info_plesir_id', $infoId)->avg('rating');
+
+        // jika tidak ada rating tersisa, avg akan null -> kita set null (atau 0 jika mau)
+        $info = InfoPlesir::find($infoId);
+        $info->rating = $avg;
+        $info->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rating berhasil dihapus.',
+            'avg_rating' => $avg !== null ? round($avg, 1) : null,
+        ]);
     }
 }

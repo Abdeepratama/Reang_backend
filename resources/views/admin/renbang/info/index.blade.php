@@ -1,18 +1,18 @@
 @extends('admin.partials.app')
 
-@section('title', 'Deskripsi Renbang')
+@section('title', 'Info Renbang')
 
 @section('content')
 <div class="container mt-4">
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-12">
-                <h2 class="mb-2 page-title">Deskripsi Renbang</h2>
+                <h2 class="mb-2 page-title">Info Renbang</h2>
                 <div class="row my-4">
                     <div class="col-md-12">
                         <div class="card shadow">
                             <div class="card-body">
-                                <a href="{{ route('admin.renbang.deskripsi.create') }}" class="btn btn-primary mb-3">+ Tambah Deskripsi</a>
+                                <a href="{{ route('admin.renbang.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info</a>
 
                                 @if(session('success'))
                                     <div class="alert alert-success">{{ session('success') }}</div>
@@ -46,8 +46,8 @@
                                             <td>{{ $item->alamat }}</td>
                                             <td>{{ Str::limit(strip_tags($item->deskripsi), 50) }}</td>
                                             <td>
-                                                <a href="{{ route('admin.renbang.deskripsi.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                                <form action="{{ route('admin.renbang.deskripsi.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                <a href="{{ route('admin.renbang.info.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                <form action="{{ route('admin.renbang.info.destroy', $item->id) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" class="btn btn-danger btn-sm">Hapus</button>
@@ -56,7 +56,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="7" class="text-center">Belum ada deskripsi renbang.</td>
+                                            <td colspan="7" class="text-center">Belum ada Info renbang.</td>
                                         </tr>
                                         @endforelse
                                     </tbody>

@@ -11,6 +11,7 @@ use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class IbadahController extends Controller
 {
@@ -133,6 +134,22 @@ class IbadahController extends Controller
             ->with('success', 'Data ibadah berhasil dihapus');
     }
 
+    public function mapTempat()
+{
+    $lokasi = Ibadah::all()->map(function ($loc) {
+        return [
+            'name'      => $loc->name,
+            'address'   => $loc->address,
+            'latitude'  => $loc->latitude,
+            'longitude' => $loc->longitude,
+            'foto'      => $loc->foto ? asset('storage/' . $loc->foto) : null,
+            'fitur'     => $loc->fitur,
+        ];
+    });
+
+    return view('admin.ibadah.tempat.map', compact('lokasi'));
+}
+
     /* ========================
        API TEMPAT
     ======================== */
@@ -166,6 +183,95 @@ class IbadahController extends Controller
     }
 
     /**
+     * applySmartSearch:
+     * - $columns: kolom pada tabel utama (mis. ['name','address','fitur'])
+     * - $relations: array relasi => kolom (mis. ['kategori' => 'nama']) untuk mendukung pencarian nama kategori
+     * - perilaku:
+     *    * support single-char search (prefix) dan longer token -> prefix prioritas, lalu contains
+     *    * pemisahan token (spasi) => semua token harus match (AND antar token), tetapi setiap token bisa match di kolom manapun (OR antar kolom)
+     *    * menambahkan ORDER BY relevansi: prefix matches lebih tinggi dari contains
+     */
+    private function applySmartSearch(Builder $query, string $text, array $columns = [], array $secondary = [], array $relations = [])
+    {
+        $text = trim(mb_strtolower($text));
+        if ($text === '') return;
+
+        // tokens: split by whitespace
+        $tokens = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+        if (!$tokens || count($tokens) === 0) return;
+
+        // WHERE: for each token require at least one column or relation to match (AND across tokens)
+        $query->where(function ($q) use ($tokens, $columns, $relations) {
+            foreach ($tokens as $tok) {
+                $tok = trim($tok);
+                if ($tok === '') continue;
+
+                $q->where(function ($q2) use ($tok, $columns, $relations) {
+                    // match in main columns (contains)
+                    foreach ($columns as $col) {
+                        $q2->orWhereRaw("LOWER($col) LIKE ?", ["%{$tok}%"]);
+                    }
+
+                    // also check relations via orWhereHas
+                    foreach ($relations as $rel => $relCol) {
+                        $q2->orWhereHas($rel, function ($q3) use ($tok, $relCol) {
+                            $q3->whereRaw("LOWER($relCol) LIKE ?", ["%{$tok}%"]);
+                        });
+                    }
+                });
+            }
+        });
+
+        // ORDER BY relevance
+        // Build CASE expression: 0 = any prefix match, 1 = any contains (we already filtered to contains),
+        // after that append secondary ordering.
+        // We will create prefix and contains checks for main columns only (relations not included in CASE).
+        $prefixParts = [];
+        $containsParts = [];
+        $bindings = [];
+
+        foreach ($tokens as $tok) {
+            $tok = trim($tok);
+            if ($tok === '') continue;
+
+            $perTokenPrefix = [];
+            $perTokenContains = [];
+
+            foreach ($columns as $col) {
+                $perTokenPrefix[] = "LOWER($col) LIKE ?";
+                $bindings[] = $tok . '%';
+                $perTokenContains[] = "LOWER($col) LIKE ?";
+                $bindings[] = '%' . $tok . '%';
+            }
+
+            if (!empty($perTokenPrefix)) {
+                $prefixParts[] = '(' . implode(' OR ', $perTokenPrefix) . ')';
+            }
+            if (!empty($perTokenContains)) {
+                $containsParts[] = '(' . implode(' OR ', $perTokenContains) . ')';
+            }
+        }
+
+        $prefixExpr = count($prefixParts) ? implode(' OR ', $prefixParts) : '0=1';
+        $containsExpr = count($containsParts) ? implode(' OR ', $containsParts) : '0=1';
+
+        // CASE: prefix -> 0, contains -> 1, else 2
+        $caseExpr = "(CASE WHEN ({$prefixExpr}) THEN 0 WHEN ({$containsExpr}) THEN 1 ELSE 2 END)";
+
+        // Apply ordering by relevance
+        $query->orderByRaw($caseExpr, $bindings);
+
+        // apply secondary ordering
+        foreach ($secondary as $sec) {
+            if (is_array($sec) && count($sec) >= 2) {
+                $col = $sec[0];
+                $dir = strtolower($sec[1]) === 'asc' ? 'asc' : 'desc';
+                $query->orderBy($col, $dir);
+            }
+        }
+    }
+
+    /**
      * showtempat:
      * - numeric $id -> single item
      * - non-numeric $id -> treat as fitur path filter (e.g. /tempat-ibadah/masjid) and paginate
@@ -180,6 +286,11 @@ class IbadahController extends Controller
      */
     public function showtempat(Request $request, $id = null)
     {
+        // NEW: if path is "all" => delegate to showtempatAll so /api/tempat-ibadah/all works properly
+        if ($id !== null && is_string($id) && strtolower($id) === 'all') {
+            return $this->showtempatAll($request);
+        }
+
         // If path param present and non-numeric, treat as fitur filter (path-based)
         if ($id !== null && !is_numeric($id)) {
             $filterValue = urldecode($id);
@@ -215,14 +326,32 @@ class IbadahController extends Controller
                 $query->where('fitur', $filter)
                       ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
-                $text = strtolower($filter);
-                $query->where(function ($q) use ($text) {
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
-                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                // robust non-numeric handling: try match kategori.nama (find ids) or fitur text
+                $textFilter = strtolower($filter);
+                $kategoriIds = Kategori::whereRaw('LOWER(nama) LIKE ?', ["%$textFilter%"])->pluck('id')->toArray();
+
+                $query->where(function ($q) use ($textFilter, $kategoriIds) {
+                    if (!empty($kategoriIds)) {
+                        $q->whereIn('fitur', $kategoriIds);
+                    }
+                    // also try matching fitur as text (use COALESCE to avoid issues)
+                    $q->orWhereRaw("LOWER(COALESCE(fitur, '')) LIKE ?", ["%$textFilter%"]);
+                    // and finally ensure relation match (redundant-safe)
+                    $q->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$textFilter%"]));
                 });
             }
 
-            $paginator = $query->orderBy('created_at', 'asc')->paginate(10);
+            // If search/q is also present, apply smart search inside the filtered results
+            if ($request->filled('search') || $request->filled('q')) {
+                $text = $request->query('search', $request->query('q'));
+                // apply smart search across name, address, fitur, and kategori.nama
+                $this->applySmartSearch($query, $text, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+                // paginate
+                $paginator = $query->paginate(10);
+            } else {
+                // no search; keep default ordering
+                $paginator = $query->orderBy('created_at', 'asc')->paginate(10);
+            }
 
             $paginator->getCollection()->transform(fn($item) => [
                 'id'         => $item->id,
@@ -239,17 +368,16 @@ class IbadahController extends Controller
             return response()->json($paginator, 200);
         }
 
-        // SEARCH: paginated 10 (terlama atas = ASC)
+        // SEARCH: paginated 10 (terlama atas = ASC) - smart search
         // support both 'search' and 'q' keys
         if ($request->filled('search') || $request->filled('q')) {
-            $text = strtolower($request->query('search', $request->query('q')));
-            $searchQuery = Ibadah::with('kategori')->where(function ($q) use ($text) {
-                $q->whereRaw('LOWER(name) LIKE ?', ["%$text%"])
-                  ->orWhereRaw('LOWER(address) LIKE ?', ["%$text%"])
-                  ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
-            });
+            $text = $request->query('search', $request->query('q'));
+            $searchQuery = Ibadah::with('kategori');
 
-            $paginator = $searchQuery->orderBy('created_at', 'asc')->paginate(10);
+            // apply smart search on name, address, fitur and kategori.nama; secondary order by created_at asc
+            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+
+            $paginator = $searchQuery->paginate(10);
 
             $paginator->getCollection()->transform(fn($item) => [
                 'id'         => $item->id,
@@ -323,10 +451,35 @@ class IbadahController extends Controller
                       ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
                 $text = strtolower($filter);
-                $query->where(function ($q) use ($text) {
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
-                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                // robust: find kategori ids that match nama, use them, also attempt matching fitur as text
+                $kategoriIds = Kategori::whereRaw('LOWER(nama) LIKE ?', ["%$text%"])->pluck('id')->toArray();
+
+                $query->where(function ($q) use ($text, $kategoriIds) {
+                    if (!empty($kategoriIds)) {
+                        $q->whereIn('fitur', $kategoriIds);
+                    }
+                    $q->orWhereRaw("LOWER(COALESCE(fitur, '')) LIKE ?", ["%$text%"]);
+                    $q->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
                 });
+            }
+
+            // If search/q present, apply smart search within filtered results
+            if ($request->filled('search') || $request->filled('q')) {
+                $textSearch = $request->query('search', $request->query('q'));
+                $this->applySmartSearch($query, $textSearch, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+                $data = $query->get()->map(fn($item) => [
+                    'id'         => $item->id,
+                    'name'       => $item->name,
+                    'address'    => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'fitur'      => $item->kategori->nama ?? $item->fitur,
+                    'foto'       => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ]);
+
+                return response()->json($data, 200);
             }
 
             $data = $query->orderBy('created_at', 'asc')->get()->map(fn($item) => [
@@ -344,16 +497,14 @@ class IbadahController extends Controller
             return response()->json($data, 200);
         }
 
-        // search (q/search) -> return all matching ordered ASC
+        // search (q/search) -> return all matching ordered by smart relevance then created_at asc
         if ($request->filled('search') || $request->filled('q')) {
-            $text = strtolower($request->query('search', $request->query('q')));
-            $searchQuery = Ibadah::with('kategori')->where(function ($q) use ($text) {
-                $q->whereRaw('LOWER(name) LIKE ?', ["%$text%"])
-                  ->orWhereRaw('LOWER(address) LIKE ?', ["%$text%"])
-                  ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
-            });
+            $text = $request->query('search', $request->query('q'));
+            $searchQuery = Ibadah::with('kategori');
 
-            $data = $searchQuery->orderBy('created_at', 'asc')->get()->map(fn($item) => [
+            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+
+            $data = $searchQuery->get()->map(fn($item) => [
                 'id'         => $item->id,
                 'name'       => $item->name,
                 'address'    => $item->address,
@@ -423,7 +574,7 @@ class IbadahController extends Controller
 
     public function createInfo()
     {
-        $kategoriInfoIbadah = Kategori::where('fitur', 'info ibadah')->get();
+        $kategoriInfoIbadah = Kategori::where('fitur', 'event agama')->get();
 
         $lokasi = InfoKeagamaan::all()->map(function ($loc) {
             return [
@@ -482,7 +633,7 @@ class IbadahController extends Controller
     public function infoEdit($id)
     {
         $info = InfoKeagamaan::findOrFail($id);
-        $kategoriInfoIbadah = Kategori::where('fitur', 'info ibadah')->get();
+        $kategoriInfoIbadah = Kategori::where('fitur', 'event agama')->get();
         return view('admin.ibadah.info.edit', compact('info', 'kategoriInfoIbadah'));
     }
 
@@ -606,14 +757,21 @@ class IbadahController extends Controller
                 $query->where('fitur', $filter)
                       ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
-                $text = strtolower($filter);
-                $query->where(function ($q) use ($text) {
-                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$text%"])
-                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
+                $textFilter = strtolower($filter);
+                $query->where(function ($q) use ($textFilter) {
+                    $q->whereRaw('LOWER(fitur) LIKE ?', ["%$textFilter%"])
+                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$textFilter%"]));
                 });
             }
 
-            $paginator = $query->orderByDesc('tanggal')->paginate(10);
+            // if search/q present too, apply smart search on top of category filter
+            if ($request->filled('search') || $request->filled('q')) {
+                $text = $request->query('search', $request->query('q'));
+                $this->applySmartSearch($query, $text, ['judul','lokasi','alamat','fitur'], [['tanggal','desc']], ['kategori' => 'nama']);
+                $paginator = $query->paginate(10);
+            } else {
+                $paginator = $query->orderByDesc('tanggal')->paginate(10);
+            }
 
             $paginator->getCollection()->transform(function ($item) {
                 return [
@@ -638,18 +796,16 @@ class IbadahController extends Controller
             return response()->json($paginator, 200);
         }
 
-        // search -> paginated 10 ordered by tanggal desc (latest first)
+        // search -> paginated 10 ordered by tanggal desc (latest first) but smart search first
         // support both 'search' and 'q'
         if ($request->filled('search') || $request->filled('q')) {
-            $text = strtolower($request->query('search', $request->query('q')));
-            $searchQuery = InfoKeagamaan::with('kategori')->where(function ($q) use ($text) {
-                $q->whereRaw('LOWER(judul) LIKE ?', ["%$text%"])
-                  ->orWhereRaw('LOWER(lokasi) LIKE ?', ["%$text%"])
-                  ->orWhereRaw('LOWER(alamat) LIKE ?', ["%$text%"])
-                  ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$text%"]));
-            });
+            $text = $request->query('search', $request->query('q'));
+            $searchQuery = InfoKeagamaan::with('kategori');
 
-            $paginator = $searchQuery->orderByDesc('tanggal')->paginate(10);
+            // smart search across judul, lokasi, alamat, fitur; secondary order by tanggal desc
+            $this->applySmartSearch($searchQuery, $text, ['judul','lokasi','alamat','fitur'], [['tanggal','desc']], ['kategori' => 'nama']);
+
+            $paginator = $searchQuery->paginate(10);
 
             $paginator->getCollection()->transform(function ($item) {
                 return [

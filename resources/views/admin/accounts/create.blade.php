@@ -47,7 +47,6 @@
                 <option value="kesehatan">Dinas Kesehatan</option>
                 <option value="pendidikan">Dinas Pendidikan</option>
                 <option value="perpajakan">Dinas Perpajakan</option>
-                <option value="perpajakan">Dinas Kependudukan</option>
                 <option value="keagamaan">Dinas Keagamaan</option>
                 <option value="perizinan">Dinas Perizinan</option>
                 <option value="kerja">Dinas Tenaga Kerja</option>
@@ -55,6 +54,7 @@
                 <option value="pariwisata">Dinas Periwisata dan Kebudayaan</option>
                 <option value="pembangunan">Dinas Pembangunan</option>
                 <option value="perdagangan">Dinas Perpajakan</option>
+                <option value="perpajakan">Dinas Kependudukan</option>
                 <!-- tambahkan sesuai kebutuhan -->
             </select>
         </div>

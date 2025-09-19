@@ -57,6 +57,10 @@ Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
 Route::get('/info-plesir/{id}/ratings', [RatingController::class, 'ratingsByInfo']);
 ///update
 Route::put('/rating/{id}', [RatingController::class,'update']);
+//delete
+Route::delete('/rating/{id}', [RatingController::class, 'destroy']);
+// top plesir
+Route::get('plesir/top', [RatingController::class,'topPlesir']);
 
 // sehat-yu
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
@@ -81,6 +85,7 @@ Route::get('/info-adminduk/{id?}', [AdmindukController::class, 'infoshow']); //i
 
 // pasar-yu
 Route::get('/tempat-pasar/{id?}', [PasarController::class, 'show']);
+Route::get('/pasar/kategori', [PasarController::class, 'categories']);
 
 //renbang-yu
 Route::get('/deskripsi-renbang/{id?}', [RenbangController::class, 'deskripsishow']);
