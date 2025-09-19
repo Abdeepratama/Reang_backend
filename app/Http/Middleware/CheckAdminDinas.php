@@ -61,6 +61,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.setting.index',
                     'admin.kategori.*', 
+                    'admin.dumas.aduan.index',
                 ];
 
             case 'pendidikan':

@@ -15,4 +15,9 @@ class Dumas extends Model
         'status',
         'tanggapan'
     ];
+
+    public function ratings()
+    {
+        return $this->hasMany(DumasRating::class);
+    }
 }

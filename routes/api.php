@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\IzinController;
 use App\Http\Controllers\Admin\RenbangController;
 use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
+use App\Http\Controllers\Api\RatingDumasController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -37,6 +38,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/dumas/{id}', [DumasController::class, 'update']);
     Route::delete('/dumas/{id}', [DumasController::class, 'destroy']);
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/dumas/{id}/rating', [RatingDumasController::class, 'store']);
+});
+
 
 // Ibadah-yu
 Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']); // tempat ibadah
@@ -61,6 +67,7 @@ Route::put('/rating/{id}', [RatingController::class,'update']);
 Route::delete('/rating/{id}', [RatingController::class, 'destroy']);
 // top plesir
 Route::get('plesir/top', [RatingController::class,'topPlesir']);
+Route::get('/dumas/{id}/rating', [RatingDumasController::class, 'show']);
 
 // sehat-yu
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
@@ -68,7 +75,7 @@ Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // inf
 Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga
 
 // pajak-yu
-Route::get('/info-pajak/{id?}', [PajakController::class, 'infoshow']); //info
+Route::get('/info-pajak/{id?}', [PajakController::class, 'show']); //info
 
 // Kerja-yu
 Route::get('/info-kerja/{id?}', [KerjaController::class, 'infoshow']); //info

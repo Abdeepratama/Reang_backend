@@ -39,12 +39,23 @@
                 <ul class="collapse list-unstyled pl-4 w-100 
         {{ request()->routeIs('admin.dumas.*') || request()->routeIs('admin.info.*') ? 'show' : '' }}" id="aduan">
 
+                    @php
+                    $user = Auth::guard('admin')->user();
+                    $allowedDinas = [
+                    'kesehatan','pendidikan','perpajakan','perdagangan',
+                    'kerja','pariwisata','keagamaan','kependudukan',
+                    'pembangunan','perizinan'
+                    ];
+                    @endphp
+
+                    @if ($user && ($user->role === 'superadmin' || ($user->role === 'admindinas' && in_array($user->dinas, $allowedDinas))))
                     <li class="nav-item">
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.dumas.*') ? 'active bg-primary text-white' : '' }}"
                             href="{{ route('admin.dumas.aduan.index') }}">
                             <span class="ml-1 item-text">Dumas-Yu</span>
                         </a>
                     </li>
+                    @endif
 
                     @if (
                     Auth::guard('admin')->check() &&
