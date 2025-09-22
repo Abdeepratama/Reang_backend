@@ -31,9 +31,12 @@ Route::prefix('auth')->group(function () {
 });
 
 // Dumas-yu
+// API publik (tanpa login)
+Route::get('/dumas', [DumasController::class, 'publicIndex']);
+Route::get('/dumas/{id}', [DumasController::class, 'publikShow']);
+
+// API dengan login (auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/dumas', [DumasController::class, 'index']);
-    Route::get('/dumas/{id}', [DumasController::class, 'show']);
     Route::post('/dumas', [DumasController::class, 'store']);
     Route::put('/dumas/{id}', [DumasController::class, 'update']);
     Route::delete('/dumas/{id}', [DumasController::class, 'destroy']);
@@ -69,6 +72,8 @@ Route::delete('/rating/{id}', [RatingController::class, 'destroy']);
 Route::get('plesir/top', [RatingController::class,'topPlesir']);
 Route::get('/dumas/{id}/rating', [RatingDumasController::class, 'show']);
 
+Route::get('/info-plesir/fitur', [PlesirController::class, 'apiGetInfoFitur']);
+
 // sehat-yu
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
 Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // info sehat
@@ -95,4 +100,5 @@ Route::get('/tempat-pasar/{id?}', [PasarController::class, 'show']);
 Route::get('/pasar/kategori', [PasarController::class, 'categories']);
 
 //renbang-yu
-Route::get('/deskripsi-renbang/{id?}', [RenbangController::class, 'deskripsishow']);
+Route::get('/renbang/fitur', [RenbangController::class, 'apiGetFitur']);
+Route::get('/renbang/{id?}', [RenbangController::class,'apiShow']);

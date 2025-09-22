@@ -43,53 +43,50 @@ class SehatController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name'      => 'required|string|max:255',
-        'latitude'  => 'required|numeric|between:-90,90',
-        'longitude' => 'required|numeric|between:-180,180',
-        'address'   => 'required|string|max:255',
-        'fitur'     => 'required|string',
-        'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ], [
-        'name.required'      => 'Nama tempat wajib diisi.',
-        'latitude.required'  => 'Latitude wajib diisi.',
-        'latitude.numeric'   => 'Latitude harus berupa angka.',
-        'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
-        'longitude.required' => 'Longitude wajib diisi.',
-        'longitude.numeric'  => 'Longitude harus berupa angka.',
-        'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
-        'address.required'   => 'Alamat wajib diisi.',
-        'fitur.required'     => 'Kategori wajib dipilih.',
-        'foto.image'         => 'File harus berupa gambar.',
-        'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
-        'foto.max'           => 'Ukuran gambar maksimal 2MB.',
-    ]);
+    {
+        $validated = $request->validate([
+            'name'      => 'required|string|max:255',
+            'latitude'  => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'address'   => 'required|string|max:255',
+            'fitur'     => 'required|string',
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'name.required'      => 'Nama tempat wajib diisi.',
+            'latitude.required'  => 'Latitude wajib diisi.',
+            'latitude.numeric'   => 'Latitude harus berupa angka.',
+            'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
+            'longitude.required' => 'Longitude wajib diisi.',
+            'longitude.numeric'  => 'Longitude harus berupa angka.',
+            'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
+            'address.required'   => 'Alamat wajib diisi.',
+            'fitur.required'     => 'Kategori wajib dipilih.',
+            'foto.image'         => 'File harus berupa gambar.',
+            'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
+            'foto.max'           => 'Ukuran gambar maksimal 2MB.',
+        ]);
 
-    try {
-        $sehat = new \App\Models\Sehat();
-        $sehat->name      = $validated['name'];
-        $sehat->latitude  = $validated['latitude'];
-        $sehat->longitude = $validated['longitude'];
-        $sehat->address   = $validated['address'];
-        $sehat->fitur     = $validated['fitur'];
+        try {
+            $sehat = new Sehat();
+            $sehat->name      = $validated['name'];
+            $sehat->latitude  = $validated['latitude'];
+            $sehat->longitude = $validated['longitude'];
+            $sehat->address   = $validated['address'];
+            $sehat->fitur     = $validated['fitur'];
 
-        if ($request->hasFile('foto')) {
-            $sehat->foto = $request->file('foto')->store('uploads/sehat', 'public');
+            if ($request->hasFile('foto')) {
+                $sehat->foto = $request->file('foto')->store('uploads/sehat', 'public');
+            }
+
+            $sehat->save();
+
+            $this->logAktivitas("Lokasi Kesehatan telah diupdate");
+        $this->logNotifikasi("Lokasi Kesehatan telah diupdate");
+        } catch (\Exception $e) {
+            return back()->withInput()
+                ->with('error', 'Data gagal disimpan. Alasan: ' . $e->getMessage());
         }
-
-        $sehat->save();
-
-        // Kalau mau ke index:
-        return redirect()->route('admin.sehat.tempat.index')
-            ->with('success', '✅ Lokasi Kesehatan berhasil ditambahkan!');
-        // Kalau mau tetap di form create, ganti jadi:
-        // return back()->with('success', '✅ Lokasi Kesehatan berhasil ditambahkan!');
-    } catch (\Exception $e) {
-        return back()->withInput()
-            ->with('error', '❌ Data gagal disimpan. Alasan: ' . $e->getMessage());
     }
-}
     public function edit($id)
     {
         $item = Sehat::findOrFail($id);
@@ -271,7 +268,7 @@ class SehatController extends Controller
     public function infostore(Request $request)
     {
         $data = $request->validate([
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:1024',
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'fitur' => 'required|string|max:255',
@@ -576,20 +573,29 @@ class SehatController extends Controller
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => $this->aktivitasTipe,
+                'user_id'    => $user->id,
+                'tipe'       => $this->aktivitasTipe,
                 'keterangan' => $pesan,
+                'role'       => $user->role,
+                'dinas'      => $user->dinas,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
             'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.sehat.tempat.index') // route yang valid
+            'dibaca'     => false,
+            'url'        => route('admin.sehat.tempat.index'),
+            'role'       => $user->role,
+            'dinas'      => $user->dinas,
         ]);
     }
 
@@ -643,7 +649,7 @@ class SehatController extends Controller
      * - jika src relative seperti 'uploads/..' juga diubah ke storage URL saat ini
      * - biarkan data URI dan external CDN tidak diubah
      */
-    
+
     private function replaceImageUrlsInHtml($content)
     {
         if (!$content) return $content;

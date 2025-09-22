@@ -9,7 +9,9 @@ class NotifikasiAktivitas extends Model
     protected $fillable = [
         'keterangan',
         'dibaca',
-        'url'
+        'url',
+        'role',
+        'dinas',
     ];
 
     public function scopeUnread($query)

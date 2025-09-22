@@ -126,7 +126,7 @@ class PlesirController extends Controller
                 'address' => $loc->address,
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
-                // pastikan sudah menjalankan `php artisan storage:link`
+                // pastikan sudah menjalankan php artisan storage:link
                 'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
             ];
         });
@@ -157,48 +157,55 @@ class PlesirController extends Controller
         return view('admin.plesir.tempat.index', compact('items'));
     }
 
-    public function showTempat($id = null)
-{
-    if ($id) {
-        // Ambil data plesir berdasarkan ID
-        $data = Plesir::find($id);
-
-        if (!$data) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
-        }
-
-        $arr = [
-            'id'         => $data->id,
-            'name'       => $data->name,
-            'address'    => $data->address,
-            'latitude'   => $data->latitude,
-            'longitude'  => $data->longitude,
-            'fitur'      => $data->fitur,
-            'foto'       => $data->foto ? asset('storage/' . $data->foto) : null,
-            'created_at' => $data->created_at,
-            'updated_at' => $data->updated_at,
-        ];
-
-        return response()->json($arr, 200);
-    } else {
-        // Ambil semua data plesir
-        $data = Plesir::all()->map(function ($item) {
-            return [
-                'id'         => $item->id,
-                'name'       => $item->name,
-                'address'    => $item->address,
-                'latitude'   => $item->latitude,
-                'longitude'  => $item->longitude,
-                'fitur'      => $item->fitur,
-                'foto'       => $item->foto ? asset('storage/' . $item->foto) : null,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
+    // --- API UNTUK TEMPAT PLESIR (DIPERBARUI) ---
+    public function showTempat(Request $request, $id = null)
+    {
+        if ($id) {
+            $data = Plesir::find($id);
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+            $arr = [
+                'id'         => $data->id,
+                'name'       => $data->name,
+                'address'    => $data->address,
+                'latitude'   => $data->latitude,
+                'longitude'  => $data->longitude,
+                'fitur'      => $data->fitur,
+                'foto'       => $data->foto ? asset('storage/' . $data->foto) : null,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
             ];
-        });
-
-        return response()->json($data, 200);
+            return response()->json($arr, 200);
+        } else {
+            $query = Plesir::latest();
+            if ($request->has('fitur') && $request->fitur != '') {
+                $query->where('fitur', $request->fitur);
+            }
+            $paginatedData = $query->paginate(10);
+            $paginatedData->getCollection()->transform(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'name'       => $item->name,
+                    'address'    => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'fitur'      => $item->fitur,
+                    'foto'       => $item->foto ? asset('storage/' . $item->foto) : null,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+            return response()->json($paginatedData, 200);
+        }
     }
-}
+
+    // --- ENDPOINT BARU UNTUK MENGAMBIL FITUR TEMPAT PLESIR ---
+    public function apiGetTempatFitur()
+    {
+        $fitur = Plesir::select('fitur')->groupBy('fitur')->orderByRaw('MIN(created_at) asc')->pluck('fitur');
+        return response()->json($fitur, 200);
+    }
 
     public function info()
     {
@@ -308,87 +315,103 @@ class PlesirController extends Controller
     {
         $lokasi = InfoPlesir::all()->map(function ($loc) {
             return [
-                'name' => $loc->judul,          // ganti 'name' jadi 'judul'
+                'name' => $loc->judul,        // ganti 'name' jadi 'judul'
                 'address' => $loc->alamat,      // ganti 'address' jadi 'alamat'
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
                 'foto' => $loc->foto ? asset('storage/' . $loc->foto) : null,
-                'fitur' => $loc->fitur,         // kalau mau tampilkan kategori/fitur
-                'rating' => $loc->rating,       // rating juga bisa ditambahkan
+                'fitur' => $loc->fitur,        // kalau mau tampilkan kategori/fitur
+                'rating' => $loc->rating,      // rating juga bisa ditambahkan
             ];
         });
 
         return view('admin.plesir.info.map', compact('lokasi'));
     }
 
-    public function infoshow($id = null)
-{
-    if ($id) {
-        $data = InfoPlesir::with('kategori')->find($id);
+    // --- API UNTUK INFO PLESIR (DIPERBARUI) ---
+    public function infoshow(Request $request, $id = null)
+    {
+        if ($id) {
+            $data = InfoPlesir::with('kategori')->find($id);
 
-        if (!$data) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $arr = [
+                'id'              => $data->id,
+                'judul'           => $data->judul,
+                'alamat'          => $data->alamat,
+                'rating'          => $data->rating,
+                'latitude'        => $data->latitude,
+                'longitude'       => $data->longitude,
+                'foto'            => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
+                'kategori'        => $data->kategori->nama ?? ($data->fitur ?? null),
+                'deskripsi'       => $this->replaceImageUrlsInHtml($data->deskripsi),
+                'created_at'      => $data->created_at,
+                'updated_at'      => $data->updated_at,
+            ];
+
+            return response()->json($arr, 200);
+        } else {
+            $query = InfoPlesir::with('kategori')->latest();
+
+            if ($request->has('fitur') && $request->fitur != '') {
+                $query->where('fitur', $request->fitur);
+            }
+
+            $paginatedData = $query->paginate(10);
+
+            $paginatedData->getCollection()->transform(function ($item) {
+                return [
+                    'id'              => $item->id,
+                    'judul'           => $item->judul,
+                    'alamat'          => $item->alamat,
+                    'rating'          => $item->rating,
+                    'latitude'        => $item->latitude,
+                    'longitude'       => $item->longitude,
+                    'foto'            => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                    'kategori'        => $item->kategori->nama ?? ($item->fitur ?? null),
+                    'deskripsi'       => $this->replaceImageUrlsInHtml($item->deskripsi),
+                    'created_at'      => $item->created_at,
+                    'updated_at'      => $item->updated_at,
+                ];
+            });
+
+            return response()->json($paginatedData, 200);
+        }
+    }
+
+    // --- ENDPOINT BARU UNTUK MENGAMBIL FITUR INFO PLESIR ---
+    public function apiGetInfoFitur()
+    {
+        $fitur = InfoPlesir::select('fitur')->groupBy('fitur')->orderByRaw('MIN(created_at) asc')->pluck('fitur');
+        return response()->json($fitur, 200);
+    }
+
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
+
+            $path = $file->storeAs('foto_plesir', $filename, 'public');
+            $url = request()->getSchemeAndHttpHost() . '/storage/' . $path;
+
+            return response()->json([
+                'uploaded' => true,
+                'url'      => $url
+            ]);
         }
 
-        $arr = [
-            'id'              => $data->id,
-            'judul'           => $data->judul,
-            'alamat'          => $data->alamat,
-            'rating'          => $data->rating,
-            'latitude'        => $data->latitude,
-            'longitude'       => $data->longitude,
-            'foto'            => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
-            'kategori'        => $data->kategori->nama ?? ($data->fitur ?? null),
-            'deskripsi'       => $this->replaceImageUrlsInHtml($data->deskripsi),
-            'created_at'      => $data->created_at,
-            'updated_at'      => $data->updated_at,
-        ];
-
-        return response()->json($arr, 200);
-    } else {
-        $data = InfoPlesir::with('kategori')->get()->map(function ($item) {
-            return [
-                'id'              => $item->id,
-                'judul'           => $item->judul,
-                'alamat'          => $item->alamat,
-                'rating'          => $item->rating,
-                'latitude'        => $item->latitude,
-                'longitude'       => $item->longitude,
-                'foto'            => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
-                'kategori'        => $item->kategori->nama ?? ($item->fitur ?? null),
-                'deskripsi'       => $this->replaceImageUrlsInHtml($item->deskripsi),
-                'created_at'      => $item->created_at,
-                'updated_at'      => $item->updated_at,
-            ];
-        });
-
-        return response()->json($data, 200);
-    }
-}
-
-
-public function upload(Request $request)
-{
-    if ($request->hasFile('upload')) {
-        $file = $request->file('upload');
-        $filename = time() . '_' . preg_replace('/\s+/', '', $file->getClientOriginalName());
-
-        $path = $file->storeAs('foto_plesir', $filename, 'public');
-        $url = request()->getSchemeAndHttpHost() . '/storage/' . $path;
-
         return response()->json([
-            'uploaded' => true,
-            'url'      => $url
-        ]);
+            'uploaded' => false,
+            'error'    => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
     }
-
-    return response()->json([
-        'uploaded' => false,
-        'error'    => [
-            'message' => 'No file uploaded'
-        ]
-    ], 400);
-}
 
     protected function logAktivitas($pesan)
     {
@@ -453,6 +476,6 @@ public function upload(Request $request)
         if (!$foto) {
             return null;
         }
-        return ltrim($foto, '/');
+        return ltrim($foto,'/');
     }
 }

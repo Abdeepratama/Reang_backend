@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CaptchaController;
 use App\Http\Controllers\Admin\AdminAccountController;
 use App\Models\NotifikasiAktivitas;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // ----------------- HALAMAN DEPAN -----------------
 Route::get('/', fn() => view('landing/pages/dashboard/index'))->name('home');
@@ -152,7 +153,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::delete('info/{id}', [KerjaController::class, 'infodestroy'])->name('info.destroy');
 
         // Upload image (ckeditor atau summernote)
-        Route::post('info/upload-image', [KerjaController::class, 'upload'])->name('info.upload');
+        Route::post('info/upload-image', [KerjaController::class, 'upload'])->name('info.upload.image');
     });
 
     // ----------------- ADMINDUK -----------------
@@ -180,7 +181,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::delete('Renbang/Info/{id}', [RenbangController::class, 'infoDestroy'])->name('info.destroy');
 
         // Upload gambar (CKEditor)
-        Route::post('Info/upload-image', [RenbangController::class, 'deskripsiUpload'])->name('deskripsi.upload.image');
+        Route::post('Info/upload-image', [RenbangController::class, 'infoUpload'])->name('info.upload.image');
     });
 
     // ----------------- DUMAS -----------------
@@ -190,23 +191,30 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ----------------- IZIN -----------------
     Route::prefix('izin')->name('izin.')->group(function () {
-    // CRUD Info Perizinan
-    Route::get('info', [IzinController::class, 'infoindex'])->name('info.index');
-    Route::get('info/create', [IzinController::class, 'infocreate'])->name('info.create');
-    Route::post('info', [IzinController::class, 'infostore'])->name('info.store');
-    Route::get('info/{id}/edit', [IzinController::class, 'infoedit'])->name('info.edit');
-    Route::put('info/{id}', [IzinController::class, 'infoupdate'])->name('info.update');
-    Route::delete('info/{id}', [IzinController::class, 'infodestroy'])->name('info.destroy');
+        // CRUD Info Perizinan
+        Route::get('info', [IzinController::class, 'infoindex'])->name('info.index');
+        Route::get('info/create', [IzinController::class, 'infocreate'])->name('info.create');
+        Route::post('info', [IzinController::class, 'infostore'])->name('info.store');
+        Route::get('info/{id}/edit', [IzinController::class, 'infoedit'])->name('info.edit');
+        Route::put('info/{id}', [IzinController::class, 'infoupdate'])->name('info.update');
+        Route::delete('info/{id}', [IzinController::class, 'infodestroy'])->name('info.destroy');
 
-    // Upload gambar (CKEditor)
-    Route::post('info/upload-image', [IzinController::class, 'upload'])->name('info.upload.image');
-});
+        // Upload gambar (CKEditor)
+        Route::post('info/upload-image', [IzinController::class, 'upload'])->name('info.upload.image');
+    });
 
     // ----------------- WIFI -----------------
     Route::get('wifi', [WifiController::class, 'index'])->name('wifi.index');
 
     // ----------------- SLIDER -----------------
-    Route::resource('slider', DashboardController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::prefix('admin/slider')->name('slider.')->group(function () {
+        Route::get('/', [DashboardController::class, 'sliderIndex'])->name('index');
+        Route::get('/create', [DashboardController::class, 'sliderCreate'])->name('create');
+        Route::post('/store', [DashboardController::class, 'sliderStore'])->name('store');
+        Route::get('/{id}/edit', [DashboardController::class, 'sliderEdit'])->name('edit');
+        Route::put('/{id}/update', [DashboardController::class, 'sliderUpdate'])->name('update');
+        Route::delete('/{id}/destroy', [DashboardController::class, 'sliderDestroy'])->name('destroy');
+    });
 
     // ----------------- SEKOLAH -----------------
     Route::prefix('sekolah')->name('sekolah.')->group(function () {

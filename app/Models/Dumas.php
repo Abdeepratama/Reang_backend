@@ -13,7 +13,8 @@ class Dumas extends Model
         'deskripsi',
         'bukti_laporan',
         'status',
-        'tanggapan'
+        'tanggapan',
+        'pernyataan'
     ];
 
     public function ratings()

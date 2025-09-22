@@ -30,40 +30,68 @@ use App\Models\Tempat_olahraga;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $stats = [
-            'total_users' => User::count(),
-            'jumlah_lokasi_pasar' => Pasar::count(),
-            'jumlah_lokasi_plesir' => Plesir::count(),
-            'jumlah_info_plesir' => InfoPlesir::count(),
-            'jumlah_dumas' => Dumas::count(),
-            'jumlah_sekolah' => Sekolah::count(),
-            'jumlah_info_sekolah' => InfoSekolah::count(),
-            'jumlah_sehat' => Sehat::count(),
-            'jumlah_info_kesehatan' => InfoKesehatan::count(),
-            'jumlah_lokasi_olahraga' => Tempat_olahraga::count(),
-            'jumlah_info_pajak' => InfoPajak::count(),
-            'jumlah_info_kerja' => InfoKerja::count(),
-            'jumlah_lokasi_ibadah' => Ibadah::count(),
-            'jumlah_info_keagamaan' => InfoKeagamaan::count(),
-            'jumlah_info_kependudukan' => InfoAdminduk::count(),
-            'jumlah_info_pembangunan' => Renbang::count(),
-            'jumlah_info_perizinan' => InfoPerizinan::count(),
-        ];
+{
+    $stats = [
+        'total_users' => User::count(),
+        'jumlah_lokasi_pasar' => Pasar::count(),
+        'jumlah_lokasi_plesir' => Plesir::count(),
+        'jumlah_info_plesir' => InfoPlesir::count(),
+        'jumlah_dumas' => Dumas::count(),
+        'jumlah_sekolah' => Sekolah::count(),
+        'jumlah_info_sekolah' => InfoSekolah::count(),
+        'jumlah_sehat' => Sehat::count(),
+        'jumlah_info_kesehatan' => InfoKesehatan::count(),
+        'jumlah_lokasi_olahraga' => Tempat_olahraga::count(),
+        'jumlah_info_pajak' => InfoPajak::count(),
+        'jumlah_info_kerja' => InfoKerja::count(),
+        'jumlah_lokasi_ibadah' => Ibadah::count(),
+        'jumlah_info_keagamaan' => InfoKeagamaan::count(),
+        'jumlah_info_kependudukan' => InfoAdminduk::count(),
+        'jumlah_info_pembangunan' => Renbang::count(),
+        'jumlah_info_perizinan' => InfoPerizinan::count(),
+    ];
 
-        $aktivitas = Aktivitas::latest()->take(10)->get();
-        $notifications = NotifikasiAktivitas::unread()->latest()->take(10)->get();
-        $jumlahNotifikasi = NotifikasiAktivitas::unread()->count();
-        $sliders = Slider::latest()->take(5)->get();
+    $user = auth()->guard('admin')->user();
 
-        return view('admin.dashboard1', compact(
-            'stats',
-            'aktivitas',
-            'notifications',
-            'jumlahNotifikasi',
-            'sliders'
-        ));
-    }
+    // 🔹 Filter aktivitas
+    $aktivitas = Aktivitas::query()
+        ->when($user->role === 'admindinas', function ($q) use ($user) {
+            $q->where('role', 'admindinas')
+              ->where('dinas', $user->dinas);
+        })
+        ->latest()
+        ->take(10)
+        ->get();
+
+    // 🔹 Filter notifikasi
+    $notifications = NotifikasiAktivitas::query()
+        ->unread()
+        ->when($user->role === 'admindinas', function ($q) use ($user) {
+            $q->where('role', 'admindinas')
+              ->where('dinas', $user->dinas);
+        })
+        ->latest()
+        ->take(10)
+        ->get();
+
+    $jumlahNotifikasi = NotifikasiAktivitas::query()
+        ->unread()
+        ->when($user->role === 'admindinas', function ($q) use ($user) {
+            $q->where('role', 'admindinas')
+              ->where('dinas', $user->dinas);
+        })
+        ->count();
+
+    $sliders = Slider::latest()->take(5)->get();
+
+    return view('admin.dashboard1', compact(
+        'stats',
+        'aktivitas',
+        'notifications',
+        'jumlahNotifikasi',
+        'sliders'
+    ));
+}
 
     public function apiSlider()
     {

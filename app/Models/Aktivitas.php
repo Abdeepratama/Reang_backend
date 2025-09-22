@@ -16,6 +16,8 @@ class Aktivitas extends Model
         'tipe',
         'url',
         'item_id',
-        'dibaca'
+        'dibaca',
+        'role',
+        'dinas'
     ];
 }
