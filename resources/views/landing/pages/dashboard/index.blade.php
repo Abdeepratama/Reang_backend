@@ -31,11 +31,11 @@
       <div class="col-lg-4 order-lg-last">
         <!-- <img src="assets/img/hero-img.png" class="img-fluid animated" alt=""> -->
         <div class="d-flex img-fluid animated">
-          <a href="#about" class="btn-get-started me-3 d-inline-flex align-items-center gap-2">
+          <!-- <a href="#about" class="btn-get-started me-3 d-inline-flex align-items-center gap-2">
             <i class="bi bi-question-circle"></i>
             <span>Wadul Reang</span>
-          </a>
-          <a href="https://www.youtube.com/embed/1YkkDHue270"
+          </a> -->
+          <a href="#app"
             class="glightbox btn-get-started d-flex align-items-center">
             <img src="landing/img/playstore.png" alt="Play Store" class="playstore-icon">
             <span>Unduh Reang Apps</span>
@@ -90,7 +90,7 @@
           <!-- items diinject lewat JS -->
         </div>
         <div class="d-flex align-items-center gap-3" style="margin-top:8px;">
-          <a href="#" class="btn-hero-cta">Selengkapnya</a>
+          <a href="#app" class="btn-hero-cta">Selengkapnya</a>
           <div class="small-desc">dan banyak fitur bermanfaat lainnya..</div>
         </div>
       </div>
@@ -144,7 +144,7 @@
 </section>
 
 <!-- Welcome Section -->
-<section id="welcome" class="welcome-section d-flex align-items-center">
+<section id="app" class="welcome-section d-flex align-items-center">
 
   <div class="container">
     <div class="row align-items-center justify-content-between">
@@ -152,14 +152,14 @@
       <!-- Left Content -->
       <div class="col-lg-6 text-white" data-aos="fade-right">
         <h2 class="fw-bold mb-3">
-          Want everything easier <span class="text-info">in Indramayu?</span>
+          Mau Lebih Mudah <span class="text-info">di Indramayu?</span>
         </h2>
         <p class="fs-5 mb-4">
-          Get things done in Indramayu with <strong>Wong Reang Apps</strong><br>
+          Selesaikan berbagai urusan Anda dengan <strong>Wong Reang Apps</strong><br>
           <span class="text-info">#makesiteasy</span>
         </p>
         <p class="fw-semibold mb-4">
-          Good to go? Download Reang now!
+          Siap digunakan! Unduh Reang sekarang juga.
         </p>
 
         <!-- Download Buttons -->

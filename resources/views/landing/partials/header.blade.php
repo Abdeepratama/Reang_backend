@@ -38,4 +38,4 @@
 </head>
 
 <body class="index-page">
-  
+  <div id="content">
