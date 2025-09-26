@@ -7558,6 +7558,16 @@ button:focus {
     .narrow.open .topnav .nav-notif .dot {
       position: absolute; }
 
+/* Default: tampil logo full, sembunyikan mini */
+.logo-full { display: inline-block; }
+.logo-mini { display: none; }
+
+/* Kalau body punya class collapsed → tampil logo mini */
+body.collapsed .logo-full { display: none; }
+body.collapsed .logo-mini { display: inline-block; }
+
+
+
 .vertical .main-content,
 .vertical.hover .main-content,
 .narrow.open .main-content {

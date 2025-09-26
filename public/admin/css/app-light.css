@@ -7589,6 +7589,16 @@ button:focus {
   position: absolute;
   left: 0; }
 
+/* Default: tampil logo full, sembunyikan mini */
+.logo-full { display: inline-block; }
+.logo-mini { display: none; }
+
+/* Kalau body punya class collapsed → tampil logo mini */
+body.collapsed .logo-full { display: none; }
+body.collapsed .logo-mini { display: inline-block; }
+
+
+
 .boxed.vertical.collapsed .main-content, .boxed.vertical.narrow .main-content,
 .boxed.hover.vertical.collapsed .main-content,
 .boxed.hover.vertical.narrow .main-content,
