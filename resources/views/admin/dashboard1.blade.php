@@ -86,27 +86,217 @@ $cards = [
 
 <div class="container-fluid">
 
+    <div class="row">
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow bg-primary text-white border-0">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                            <span class="circle circle-sm bg-primary-light">
+                                <i class="fe fe-16 fe-file text-white mb-0"></i>
+                            </span>
+                        </div>
+                        <div class="col pr-0">
+                            <p class="small text-muted mb-0">Jumlah Pengaduan</p>
+                            <span class="h3 mb-0 text-white">{{ $stats['jumlah_dumas'] }}</span>
+                            <span class="small text-muted"> aduan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Jumlah Puskesmas -->
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                            <span class="circle circle-sm bg-warning">
+                                <i class="fe fe-16 fe-home text-white mb-0"></i>
+                            </span>
+                        </div>
+                        <div class="col pr-0">
+                            <p class="small text-muted mb-0">Jumlah Puskesmas</p>
+                            <span class="h3 mb-0">49</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Rumah Sakit -->
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                            <span class="circle circle-sm bg-primary">
+                                <i class="fe fe-16 fe-plus-square text-white mb-0"></i>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Rumah Sakit</p>
+                            <span class="h3 mb-0">49</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Dokter -->
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                            <span class="circle circle-sm bg-success">
+                                <i class="fe fe-16 fe-user text-white mb-0"></i>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Dokter</p>
+                            <span class="h3 mb-0">121</span>
+                            <span class="small text-success">Dokter</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <hr>
+
+    <!-- =========================================================================================================================== -->
+
     <div class="row my-4">
-        @foreach ($cards as $val)
+        <!-- Jumlah Wifi -->
         <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted mb-1">Jumlah Wifi</small>
+                            <h3 class="card-title mb-0">46</h3>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-wifi"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Tempat Ibadah -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted mb-1">Jumlah Tempat Ibadah</small>
+                            <h3 class="card-title mb-0">46</h3>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-crosshair"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Pasar -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted mb-1">Jumlah Pasar</small>
+                            <h3 class="card-title mb-0">46</h3>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-shopping-bag"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Sekolah -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted mb-1">Jumlah Sekolah</small>
+                            <h3 class="card-title mb-0">46</h3>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-book"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Wisata -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted mb-1">Jumlah Wisata</small>
+                            <h3 class="card-title mb-0">46</h3>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-map"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted mb-1">Jumlah Lowongan Kerja</small>
+                            <h3 class="card-title mb-0">14</h3>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-briefcase"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- <div class="row my-4">
+        @foreach ($cards as $val)
+        <div class="col-md-3">
             <div class="card shadow mb-4">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
                             <small class="text-muted mb-1">{{ $val['title'] }}</small>
                             <h3 class="card-title mb-0">{{ $val['value'] }}</h3>
-                            <!-- <p class="small text-muted mb-0"><span class="fe fe-arrow-down fe-12 text-danger"></span><span>-18.9% Last week</span></p> -->
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline {{ $val['icon'] }}"></span>
                         </div>
-                    </div> <!-- /. row -->
-                </div> <!-- /. card-body -->
-            </div> <!-- /. card -->
-        </div> <!-- /. col -->
+                    </div>
+                </div>
+            </div>
+        </div>
 
         @endforeach
-    </div>
+    </div> -->
+
+
+
 
     <div class="row">
         <div class="col-md-6 mb-4">
