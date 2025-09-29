@@ -35,16 +35,20 @@ Route::prefix('auth')->group(function () {
 // API publik (tanpa login)
 Route::get('/dumas', [DumasController::class, 'publicIndex']);
 Route::get('/dumas/{id}', [DumasController::class, 'publikShow']);
+Route::get('/dumas/{id}/rating', [RatingDumasController::class,'show']);
 
 // API dengan login (auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/dumas', [DumasController::class, 'store']);
     Route::put('/dumas/{id}', [DumasController::class, 'update']);
     Route::delete('/dumas/{id}', [DumasController::class, 'destroy']);
+
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/dumas/{id}/rating', [RatingDumasController::class, 'store']);
+    Route::post('/dumas/{id}/rating', [RatingDumasController::class, 'store']);
+    Route::delete('/dumas/{id}/rating', [RatingDumasController::class,'destroy']);
 });
 
 

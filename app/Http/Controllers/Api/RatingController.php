@@ -145,7 +145,25 @@ class RatingController extends Controller
 
     public function topPlesir()
     {
-        $topPlesir = InfoPlesir::orderByDesc('rating')->take(5)->get();
+        $topPlesir = InfoPlesir::orderByDesc('rating')->take(3)->get();
+
+        // convert foto path -> absolute URL sesuai domain/ip saat aplikasi dijalankan
+        $topPlesir->transform(function ($item) {
+            // pastikan ada field foto, dan hanya konversi jika bukan URL penuh
+            if (!empty($item->foto) && !preg_match('#^https?://#i', $item->foto)) {
+                // bersihkan leading slash kalau ada
+                $foto = ltrim($item->foto, '/');
+
+                // jika sudah termasuk 'storage/' maka langsung gunakan url($foto)
+                if (stripos($foto, 'storage/') === 0) {
+                    $item->foto = url($foto);
+                } else {
+                    // default: foto disimpan di storage/app/public/... dan diakses lewat /storage/...
+                    $item->foto = url('storage/' . $foto);
+                }
+            }
+            return $item;
+        });
 
         return response()->json($topPlesir);
     }

@@ -18,7 +18,6 @@
             <tr>
                 <th>No</th>
                 <th>Nama</th>
-                <th>Email</th>
                 <th>Role</th>
                 <th>Dinas</th>
                 <th width="180">Aksi</th>
@@ -29,7 +28,6 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $admin->name }}</td>
-                <td>{{ $admin->email }}</td>
                 <td>
                     @if($admin->role === 'superadmin')
                         <span class="badge bg-success">Super Admin</span>

@@ -27,7 +27,6 @@ class AdminAccountController extends Controller
 {
     $validated = $request->validate([
         'name'     => 'required|string|max:255',
-        'email'    => 'required|email|unique:admins',
         'password' => 'required|string|min:6|confirmed',
         'role'     => 'required|in:superadmin,admindinas',
         'dinas'    => 'nullable|string|max:255', // tambahkan validasi dinas
@@ -35,7 +34,6 @@ class AdminAccountController extends Controller
 
     Admin::create([
         'name'     => $validated['name'],
-        'email'    => $validated['email'],
         'password' => Hash::make($validated['password']),
         'role'     => $validated['role'],
         'dinas'    => $validated['dinas'] ?? null, // simpan dinas
@@ -51,14 +49,12 @@ public function update(Request $request, $id)
 
     $validated = $request->validate([
         'name'     => 'required|string|max:255',
-        'email'    => 'required|email|unique:admins,email,' . $account->id,
         'password' => 'nullable|string|min:6|confirmed',
         'role'     => 'required|in:superadmin,admindinas',
         'dinas'    => 'nullable|string|max:255', // tambahkan validasi dinas
     ]);
 
     $account->name  = $validated['name'];
-    $account->email = $validated['email'];
     $account->role  = $validated['role'];
     $account->dinas = $validated['dinas'] ?? null; // update dinas
 

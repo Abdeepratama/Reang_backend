@@ -9,11 +9,6 @@
             <label>Nama</label>
             <input type="text" name="name" class="form-control" required>
         </div>
-
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
-        </div>
         
         <div class="mb-3">
             <label>Password</label>

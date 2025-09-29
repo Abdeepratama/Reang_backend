@@ -14,12 +14,6 @@
         </div>
 
         <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" 
-                   value="{{ old('email', $account->email) }}" required>
-        </div>
-
-        <div class="mb-3">
             <label>Password (kosongkan jika tidak ingin diubah)</label>
             <div class="input-group">
                 <input type="password" name="password" id="password" class="form-control">

@@ -49,15 +49,37 @@ class RatingDumasController extends Controller
         ]);
     }
 
+    // --- PENAMBAHAN: Fungsi untuk menghapus rating ---
+    public function destroy($id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        // Cari rating berdasarkan dumas_id dan user_id untuk keamanan
+        $rating = DumasRating::where('dumas_id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($rating) {
+            $rating->delete();
+            return response()->json(['message' => 'Rating berhasil dihapus']);
+        }
+
+        return response()->json(['message' => 'Rating tidak ditemukan'], 404);
+    }
+
+
     // Ambil semua rating + rata-rata
     public function show($id)
     {
         $dumas = Dumas::with('ratings')->findOrFail($id);
 
         return response()->json([
-            'dumas_id'        => $dumas->id,
-            'average_rating'  => round($dumas->ratings->avg('rating'), 2),
-            'ratings'         => $dumas->ratings,
+            'dumas_id'       => $dumas->id,
+            'average_rating' => round($dumas->ratings->avg('rating'), 2),
+            'ratings'        => $dumas->ratings,
         ]);
     }
 }
