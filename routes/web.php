@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\IzinController;
 use App\Http\Controllers\Admin\WifiController;
 use App\Http\Controllers\Admin\WebController;
 use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\KategoriDumasController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CaptchaController;
 use App\Http\Controllers\Admin\AdminAccountController;
@@ -218,14 +219,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ------------------BANNER-------------------
     Route::prefix('admin/banner')->name('banner.')->group(function () {
-    Route::get('/banner', [DashboardController::class, 'bannerIndex'])->name('index');
-    Route::get('/banner/create', [DashboardController::class, 'bannerCreate'])->name('create');
-    Route::post('/banner', [DashboardController::class, 'bannerStore'])->name('store');
-    Route::get('/banner/{id}/edit', [DashboardController::class, 'bannerEdit'])->name('edit');
-    Route::put('/banner/{id}', [DashboardController::class, 'bannerUpdate'])->name('update');
-    Route::delete('/banner/{id}', [DashboardController::class, 'bannerDestroy'])->name('destroy');
-    Route::post('info/upload-image', [DashboardController::class, 'uploadBanner'])->name('upload.image');
-});
+        Route::get('/banner', [DashboardController::class, 'bannerIndex'])->name('index');
+        Route::get('/banner/create', [DashboardController::class, 'bannerCreate'])->name('create');
+        Route::post('/banner', [DashboardController::class, 'bannerStore'])->name('store');
+        Route::get('/banner/{id}/edit', [DashboardController::class, 'bannerEdit'])->name('edit');
+        Route::put('/banner/{id}', [DashboardController::class, 'bannerUpdate'])->name('update');
+        Route::delete('/banner/{id}', [DashboardController::class, 'bannerDestroy'])->name('destroy');
+        Route::post('info/upload-image', [DashboardController::class, 'uploadBanner'])->name('upload.image');
+    });
 
     // ----------------- SEKOLAH -----------------
     Route::prefix('sekolah')->name('sekolah.')->group(function () {
@@ -251,6 +252,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ----------------- KATEGORI -----------------
     Route::resource('kategori', KategoriController::class)->except(['show', 'edit', 'update']);
+
+    // ----------------- KATEGORI DUMAS -----------------
+    Route::get('kategori-dumas', [KategoriDumasController::class, 'index'])->name('kategori_dumas.index');
+    Route::get('kategori-dumas/create', [KategoriDumasController::class, 'create'])->name('kategori_dumas.create');
+    Route::post('kategori-dumas', [KategoriDumasController::class, 'store'])->name('kategori_dumas.store');
+    Route::get('kategori-dumas/{id}/edit', [KategoriDumasController::class, 'edit'])->name('kategori_dumas.edit');
+    Route::put('kategori-dumas/{id}', [KategoriDumasController::class, 'update'])->name('kategori_dumas.update');
+    Route::delete('kategori-dumas/{id}', [KategoriDumasController::class, 'destroy'])->name('kategori_dumas.destroy');
 
     // ----------------- AKUN ADMIN -----------------
     Route::resource('accounts', AdminAccountController::class);

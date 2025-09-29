@@ -10,6 +10,8 @@ class Kategori_dumas extends Model
 
     protected $table = 'kategori_dumas';
 
+    public $timestamps = false;
+
     public function dumas()
     {
         return $this->hasMany(Dumas::class, 'id_kategori', 'id');

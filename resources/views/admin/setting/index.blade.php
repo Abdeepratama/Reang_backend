@@ -8,17 +8,21 @@
 
     {{-- Tombol menuju daftar tempat --}}
     <a href="{{ route('admin.kategori.index') }}" class="btn btn-outline-primary">
-        Lihat Kategori
+        Kategori
+    </a>
+
+    <a href="{{ route('admin.kategori_dumas.index') }}" class="btn btn-outline-primary">
+        Kategori Untuk Dumas
     </a>
 
     @if(Auth::guard('admin')->user()->role === 'superadmin')
     <a href="{{ route('admin.slider.index') }}" class="btn btn-outline-primary">
-        Lihat Sliders
+        Sliders
     </a>
     @endif
 
     <a href="{{ route('admin.banner.index') }}" class="btn btn-outline-primary">
-        Lihat Banner
+        Banner
     </a>
 </div>
 @endsection
