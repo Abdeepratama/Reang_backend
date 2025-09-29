@@ -33,6 +33,7 @@ Route::prefix('auth')->group(function () {
 
 // Dumas-yu
 // API publik (tanpa login)
+Route::get('/dumas/kategori', [DumasController::class, 'getKategori']);
 Route::get('/dumas', [DumasController::class, 'publicIndex']);
 Route::get('/dumas/{id}', [DumasController::class, 'publikShow']);
 Route::get('/dumas/{id}/rating', [RatingDumasController::class,'show']);
