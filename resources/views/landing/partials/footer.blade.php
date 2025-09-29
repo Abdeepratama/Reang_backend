@@ -123,11 +123,19 @@
   let utterance = null;
   let isPaused = false;
   let isSpeaking = false;
+<<<<<<< HEAD
   let hoverReadingEnabled = false;
   let lastFocused = null;
   let lastWordSpoken = null;
   let currentLang = localStorage.getItem("selectedLang") || "id";
   let stopAllReading = true; // hentikan semua mode suara
+=======
+  let hoverReadingEnabled = true;
+  let lastFocused = null;
+  let lastWordSpoken = null;
+  let currentLang = localStorage.getItem("selectedLang") || "id";
+  let stopAllReading = false; // hentikan semua mode suara
+>>>>>>> 6aabbd5a335407bc4964f899fcdeadf19e8342a7
   let throttleTimeout = null;
 
   // ================== ELEMENTS ==================

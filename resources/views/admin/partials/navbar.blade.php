@@ -1,30 +1,30 @@
-<nav class="topnav navbar navbar-light">
+<nav class="topnav navbar navbar-light bg-white shadow-sm fixed-top">
   <button type="button" class="navbar-toggler text-muted mt-2 p-0 mr-3 collapseSidebar">
     <i class="fe fe-menu navbar-toggler-icon"></i>
   </button>
-  <form class="form-inline mr-auto searchform text-muted">
-    <input class="form-control mr-sm-2 bg-transparent border-0 pl-4 text-muted" type="search" placeholder="Type something..." aria-label="Search">
-  </form>
-  <ul class="nav">
+  <ul class="nav ml-auto">
     <li class="nav-item">
       <a class="nav-link text-muted my-2" href="#" id="modeSwitcher" data-mode="light">
         <i class="fe fe-sun fe-16"></i>
       </a>
     </li>
-    @if (Auth::guard('admin')->check() &&
-            (Auth::guard('admin')->user()->role === 'superadmin'))
+
+    <!-- @if (Auth::guard('admin')->check() &&
+    (Auth::guard('admin')->user()->role === 'superadmin'))
     <li class="nav-item">
       <a class="nav-link text-muted my-2" href="{{ route('admin.fitur.index') }}">
         <span class="fe fe-grid fe-16"></span>
       </a>
     </li>
-    @endif
+    @endif -->
+
+    <!-- Notifikasi -->
     <li class="nav-item dropdown">
       <a class="nav-link text-muted my-2 dropdown-toggle" href="#" id="notifDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="fe fe-bell fe-16"></span>
         <span class="dot dot-md bg-success"></span>
       </a>
-      <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="notifDropdown">
+      <ul class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="notifDropdown">
         <li>
           <h6 class="dropdown-header">Notifikasi</h6>
         </li>
@@ -40,41 +40,36 @@
         @endforelse
       </ul>
     </li>
+
+    <!-- User -->
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink"
-   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="avatar avatar-sm mt-2">
-        <img src="{{ Auth::guard('admin')->user()->photo
-                     ? asset('storage/admins/' . Auth::guard('admin')->user()->photo)
-                     : asset('assets/avatars/default.png') }}"
-             alt="..." class="avatar-img rounded-circle">
-    </span>
-</a>
+        role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="avatar avatar-sm d-inline-flex align-items-center justify-content-center 
+                 rounded-circle bg-secondary text-white"
+          style="width: 30px; height: 30px; font-size: 18px;">
+          {{ strtoupper(substr(Auth::guard('admin')->user()->name, 0, 1)) }}
+        </span>
+        <span class="text-primary">{{ ucwords(Auth::guard('admin')->user()->name) }}</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+        <a class="dropdown-item" href="{{ route('admin.accounts.profile') }}">
+          Profile
+        </a>
 
-<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-    <a class="dropdown-item" href="{{ route('admin.accounts.profile') }}">
-        {{ Auth::guard('admin')->user()->name }}
-    </a>
-
-    @if(Auth::guard('admin')->user()->role === 'superadmin')
+        @if(Auth::guard('admin')->user()->role === 'superadmin')
         <a class="dropdown-item" href="{{ route('admin.accounts.index') }}">Akun</a>
-    @endif
+        @endif
 
-    <a class="dropdown-item" href="{{ route('admin.setting.index') }}">Settings</a>
+        <a class="dropdown-item" href="{{ route('admin.setting.index') }}">Settings</a>
 
-    <a class="dropdown-item" href="#"
-       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-       Logout
-    </a>
-    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-</div>
-
-<!-- Form logout tersembunyi -->
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-    @csrf
-</form>
+        <a class="dropdown-item" href="#"
+          onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+          Logout
+        </a>
+        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+          @csrf
+        </form>
       </div>
     </li>
   </ul>

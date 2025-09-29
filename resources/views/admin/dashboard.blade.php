@@ -6,15 +6,15 @@
 
 <div class="row">
     @php
-        $cards = [
-            ['title' => 'Total Pengguna', 'value' => $stats['total_users'], 'color' => 'primary', 'icon' => 'bi-people'],
-            ['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_ibadah'] > 0 ? $stats['jumlah_ibadah'] . ' lokasi' : 'Belum ada', 'color' => 'success', 'icon' => 'fas fa-mosque'],
-            ['title' => 'Jumlah Rumah Sakit', 'value' => $stats['jumlah_sehat'] > 0 ? $stats['jumlah_sehat'] . ' lokasi' : 'Belum ada', 'color' => 'info', 'icon' => 'bi-heart-pulse'],
-            ['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_pasar'] > 0 ? $stats['jumlah_pasar'] . ' lokasi' : 'Belum ada', 'color' => 'warning', 'icon' => 'bi-shop'],
-            ['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_plesir'] > 0 ? $stats['jumlah_plesir'] . ' lokasi' : 'Belum ada', 'color' => 'info', 'icon' => 'bi-geo-alt-fill'],
-            ['title' => 'Jumlah Aduan Masyarakat', 'value' => $stats['jumlah_dumas'] > 0 ? $stats['jumlah_dumas'] . ' aduan' : 'Belum ada', 'color' => 'danger', 'icon' => 'bi-exclamation-circle'],
-            ['title' => 'Jumlah Aduan Sekolah', 'value' => $stats['jumlah_sekolah'] > 0 ? $stats['jumlah_sekolah'] . ' aduan' : 'Belum ada', 'color' => 'warning text-dark', 'icon' => 'bi-book'],
-        ];
+    $cards = [
+    ['title' => 'Total Pengguna', 'value' => $stats['total_users'], 'color' => 'primary', 'icon' => 'bi-people'],
+    ['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_ibadah'] > 0 ? $stats['jumlah_ibadah'] . ' lokasi' : 'Belum ada', 'color' => 'success', 'icon' => 'fas fa-mosque'],
+    ['title' => 'Jumlah Rumah Sakit', 'value' => $stats['jumlah_sehat'] > 0 ? $stats['jumlah_sehat'] . ' lokasi' : 'Belum ada', 'color' => 'info', 'icon' => 'bi-heart-pulse'],
+    ['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_pasar'] > 0 ? $stats['jumlah_pasar'] . ' lokasi' : 'Belum ada', 'color' => 'warning', 'icon' => 'bi-shop'],
+    ['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_plesir'] > 0 ? $stats['jumlah_plesir'] . ' lokasi' : 'Belum ada', 'color' => 'info', 'icon' => 'bi-geo-alt-fill'],
+    ['title' => 'Jumlah Aduan Masyarakat', 'value' => $stats['jumlah_dumas'] > 0 ? $stats['jumlah_dumas'] . ' aduan' : 'Belum ada', 'color' => 'danger', 'icon' => 'bi-exclamation-circle'],
+    ['title' => 'Jumlah Aduan Sekolah', 'value' => $stats['jumlah_sekolah'] > 0 ? $stats['jumlah_sekolah'] . ' aduan' : 'Belum ada', 'color' => 'warning text-dark', 'icon' => 'bi-book'],
+    ];
     @endphp
 
     {{-- Kelola Slider --}}
@@ -29,21 +29,23 @@
         </a>
     </div>
 
+
     {{-- Kartu Statistik --}}
     @foreach ($cards as $card)
-        <div class="col-md-3 mb-4">
-            <div class="card bg-{{ $card['color'] }} text-white h-100">
-                <div class="card-body d-flex justify-content-between align-items-center" style="min-height: 120px;">
-                    <div>
-                        <h6 class="card-title">{{ $card['title'] }}</h6>
-                        <h2 class="mb-0">{{ $card['value'] }}</h2>
-                    </div>
-                    <i class="{{ $card['icon'] }} fs-1"></i>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-{{ $card['color'] }} text-white h-100">
+            <div class="card-body d-flex justify-content-between align-items-center" style="min-height: 120px;">
+                <div>
+                    <h6 class="card-title">{{ $card['title'] }}</h6>
+                    <h2 class="mb-0">{{ $card['value'] }}</h2>
                 </div>
+                <i class="{{ $card['icon'] }} fs-1"></i>
             </div>
         </div>
+    </div>
     @endforeach
 </div>
+
 
 
 {{-- Aktivitas & Modul Aplikasi --}}
@@ -55,16 +57,16 @@
             </div>
             <div class="card-body overflow-auto" style="max-height: 400px;">
                 @if($aktivitas->isEmpty())
-                    <p class="text-muted">Belum ada aktivitas</p>
+                <p class="text-muted">Belum ada aktivitas</p>
                 @else
-                    <ul class="list-group list-group-flush">
-                        @foreach($aktivitas as $item)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $item->keterangan }}
-                            <span class="text-muted small">{{ $item->created_at->diffForHumans() }}</span>
-                        </li>
-                        @endforeach
-                    </ul>
+                <ul class="list-group list-group-flush">
+                    @foreach($aktivitas as $item)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ $item->keterangan }}
+                        <span class="text-muted small">{{ $item->created_at->diffForHumans() }}</span>
+                    </li>
+                    @endforeach
+                </ul>
                 @endif
             </div>
         </div>
@@ -138,7 +140,7 @@
 
 @section('scripts')
 <script>
-    document.getElementById('sidebarToggle').addEventListener('click', function () {
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
         document.querySelector('.sidebar').classList.toggle('d-none');
     });
 </script>
