@@ -15,7 +15,7 @@ class NotifikasiAktivitas extends Model
     ];
 
     public function scopeUnread($query)
-    {
-        return $query->where('dibaca', false);
-    }
+{
+    return $query->where('dibaca', 0);
+}
 }

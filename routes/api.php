@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\RenbangController;
 use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RatingDumasController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -57,7 +58,10 @@ Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);
 Route::get('/info-sekolah/{id?}', [SekolahController::class, 'infoshow']); // info sekolah
 
 // slider
-Route::get('/sliders', [DashboardController::class, 'apiSlider']);
+Route::get('/slider', [DashboardController::class, 'apiSlider']);
+
+// banner
+Route::get('/banner', [DashboardController::class, 'apiBanner']);
 
 // rating
 Route::post('/rating', [RatingController::class, 'store']);

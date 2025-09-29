@@ -14,7 +14,7 @@ class PajakController extends Controller
     public function index()
     {
         $infoItems = InfoPajak::latest()->get();
-        
+
         return view('admin.pajak.info.index', compact('infoItems'));
     }
 
@@ -35,10 +35,10 @@ class PajakController extends Controller
             $data['foto'] = $request->file('foto')->store('foto_pajak', 'public');
         }
 
-        InfoPajak::create($data);
+        $info = InfoPajak::create($data);
 
-        $this->logAktivitas("Info Pajak telah ditambahkan");
-        $this->logNotifikasi("Info Pajak telah ditambahkan");
+        $this->logAktivitas("Info Pajak telah ditambahkan", $info->id);
+        $this->logNotifikasi("Info Pajak telah ditambahkan", $info->id);
 
         return redirect()->route('admin.pajak.info.index')->with('success', 'Info pajak berhasil ditambahkan.');
     }
@@ -69,8 +69,8 @@ class PajakController extends Controller
 
         $info->update($data);
 
-        $this->logAktivitas("Info Pajak telah diupdate");
-        $this->logNotifikasi("Info Pajak telah diupdate");
+        $this->logAktivitas("Info Pajak telah diupdate", $info->id);
+        $this->logNotifikasi("Info Pajak telah diupdate", $info->id);
 
         return redirect()->route('admin.pajak.info.index')->with('success', 'Info pajak berhasil diperbarui.');
     }
@@ -88,8 +88,8 @@ class PajakController extends Controller
 
         $info->delete();
 
-        $this->logAktivitas("Info Pajak telah dihapus");
-        $this->logNotifikasi("Info Pajak telah dihapus");
+        $this->logAktivitas("Info Pajak telah dihapus", $info->id);
+        $this->logNotifikasi("Info Pajak telah dihapus", $info->id);
 
         return back()->with('success', 'Info pajak berhasil dihapus.');
     }
@@ -199,23 +199,33 @@ class PajakController extends Controller
         }, $content);
     }
 
-    protected function logAktivitas($pesan)
+    protected function logAktivitas($pesan, $itemId = null)
     {
-        if (auth()->check()) {
+        $user = auth()->guard('admin')->user();
+
+        if ($user) {
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => 'sekolah',
                 'keterangan' => $pesan,
+                'tipe'       => 'info_pajak',
+                'url'        => route('admin.pajak.info.index'),
+                'item_id'    => $itemId,
+                'dibaca'     => 0,
+                'role'       => $user->role,
+                'dinas'      => $user->dinas,
             ]);
         }
     }
 
-    protected function logNotifikasi($pesan)
+    protected function logNotifikasi($pesan, $itemId = null)
     {
+        $user = auth()->guard('admin')->user();
+
         NotifikasiAktivitas::create([
             'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index')
+            'dibaca'     => 0,
+            'url'        => route('admin.pajak.info.index'),
+            'role'       => $user->role,
+            'dinas'      => $user->dinas,
         ]);
     }
 
@@ -234,6 +244,6 @@ class PajakController extends Controller
             return null;
         }
 
-        return ltrim($foto,'/');
-     }
+        return ltrim($foto, '/');
+    }
 }

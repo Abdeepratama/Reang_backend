@@ -23,23 +23,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Untuk semua view di dalam folder admin/layouts/*
-        View::composer('admin.layouts.*', function ($view) {
-            $notifikasiAktivitas = Aktivitas::latest()->take(5)->get();
-            $jumlahNotifikasi = Aktivitas::where('dibaca', false)->count();
+        View::composer('*', function ($view) {
+            if (auth('admin')->check()) {
+                $admin = auth('admin')->user();
 
-            $view->with('notifikasiAktivitas', $notifikasiAktivitas)
-                ->with('jumlahNotifikasi', $jumlahNotifikasi);
-        });
+                $notifikasiAktivitas = NotifikasiAktivitas::query()
+                    ->when($admin->role !== 'superadmin', function ($q) use ($admin) {
+                        $q->where('role', $admin->role)
+                            ->where('dinas', $admin->dinas);
+                    })
+                    ->latest()
+                    ->take(10)
+                    ->get();
 
-        view()->composer('*', function ($view) {
-            $notifikasiAktivitas = NotifikasiAktivitas::where('dibaca', false)
-                ->orderByDesc('created_at')
-                ->take(10)
-                ->get();
-
-            $view->with('notifikasiAktivitas', $notifikasiAktivitas);
-            $view->with('jumlahNotifikasi', $notifikasiAktivitas->count());
+                $view->with('notifikasiAktivitas', $notifikasiAktivitas);
+            } else {
+                $view->with('notifikasiAktivitas', collect());
+            }
         });
     }
 }

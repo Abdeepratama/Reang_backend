@@ -80,11 +80,15 @@ class SehatController extends Controller
 
             $sehat->save();
 
-            $this->logAktivitas("Lokasi Kesehatan telah diupdate");
-        $this->logNotifikasi("Lokasi Kesehatan telah diupdate");
+            // ✅ Perbaikan log aktivitas & notifikasi
+            $this->logAktivitas("Lokasi Kesehatan baru telah ditambahkan");
+            $this->logNotifikasi("Lokasi Kesehatan baru telah ditambahkan");
+
+            return redirect()->route('admin.sehat.tempat.index')
+                ->with('success', 'Data berhasil ditambahkan!');
         } catch (\Exception $e) {
             return back()->withInput()
-                ->with('error', 'Data gagal disimpan. Alasan: ' . $e->getMessage());
+                ->with('error', 'Data gagal disimpan ' . $e->getMessage());
         }
     }
     public function edit($id)

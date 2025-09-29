@@ -16,9 +16,8 @@
             <thead class="table-dark">
                 <tr>
                     <th>No</th>
+                    <th>kategori</th>
                     <th>Judul Laporan</th>
-                    <th>Kategori</th>
-                    <th>Dinas</th>
                     <th>Alamat</th>
                     <th>Status</th>
                     <th>Bukti</th>
@@ -33,9 +32,8 @@
                 @foreach($items as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->kategori->nama ?? '-' }}</td>
                     <td>{{ $item->jenis_laporan }}</td>
-                    <td>{{ $item->kategori_laporan }}</td>
-                    <td>{{ $item->dinas ?? '-' }}</td>
                     <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                     <td>
                         <form action="{{ route('admin.dumas.aduan.update', $item->id) }}" method="POST">

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('pengaduans', function (Blueprint $table) {
     $table->id();
     $table->string('jenis_laporan');
-    $table->string('kategori_laporan');
     $table->string('lokasi_laporan')->nullable();
     $table->text('deskripsi');
     $table->string('bukti_laporan')->nullable(); // untuk path foto

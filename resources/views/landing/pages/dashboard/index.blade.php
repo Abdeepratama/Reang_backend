@@ -109,32 +109,32 @@
     <!-- Card Ikon -->
     <div class="feature-card d-flex flex-wrap justify-content-center gap-3 shadow-lg px-4 py-3 rounded-4 bg-white bg-opacity-75">
 
-      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Check KJMU and KJP data easily">
+      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Melaporkan masalah, kejadian darurat, atau aduan masyarakat">
         <i class="bi bi-exclamation-circle fs-4 text-primary"></i>
         <div class="small mt-1">Aduan & Kedaruratan</div>
       </div>
 
-      <div class="text-center mx-2">
+      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Akses info/layanan terkait fasilitas dan program kesehatan">
         <i class="bi bi-heart-pulse fs-4 text-danger"></i>
         <div class="small mt-1">Kesehatan</div>
       </div>
 
-      <div class="text-center mx-2">
+      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Layanan seputar sekolah, siswa, dan dukungan pendidikan">
         <i class="bi bi-people fs-4 text-success"></i>
         <div class="small mt-1">Pendidikan</div>
       </div>
 
-      <div class="text-center mx-2">
+      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Bantuan sosial, pemberdayaan ekonomi, dan kesejahteraan">
         <i class="bi bi-check-circle fs-4 text-warning"></i>
         <div class="small mt-1">Sosial & Ekonomi</div>
       </div>
 
-      <div class="text-center mx-2">
+      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Informasi tempat wisata dan kegiatan plesir">
         <i class="bi bi-globe2 fs-4 text-info"></i>
         <div class="small mt-1">Pariwisata</div>
       </div>
 
-      <div class="text-center mx-2">
+      <div class="text-center mx-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Layanan dan informasi kegiatan ibadah serta sarana keagamaan">
         <i class="bi bi-moon-stars fs-4 text-secondary"></i>
         <div class="small mt-1">Keagamaan</div>
       </div>

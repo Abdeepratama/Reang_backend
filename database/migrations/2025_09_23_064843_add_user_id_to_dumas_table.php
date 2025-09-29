@@ -6,17 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('dumas', function (Blueprint $table) {
-            $table->string('dinas')->nullable()->after('kategori_laporan');
+            $table->unsignedBigInteger('user_id')->nullable()->after('id_kategori');
+
+            // kalau ada tabel users
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('dumas', function (Blueprint $table) {
-            $table->dropColumn('dinas');
+            //
         });
     }
 };

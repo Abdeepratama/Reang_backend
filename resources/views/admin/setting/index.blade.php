@@ -16,5 +16,9 @@
         Lihat Sliders
     </a>
     @endif
+
+    <a href="{{ route('admin.banner.index') }}" class="btn btn-outline-primary">
+        Lihat Banner
+    </a>
 </div>
 @endsection

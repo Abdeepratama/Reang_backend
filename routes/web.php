@@ -216,6 +216,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::delete('/{id}/destroy', [DashboardController::class, 'sliderDestroy'])->name('destroy');
     });
 
+    // ------------------BANNER-------------------
+    Route::prefix('admin/banner')->name('banner.')->group(function () {
+    Route::get('/banner', [DashboardController::class, 'bannerIndex'])->name('index');
+    Route::get('/banner/create', [DashboardController::class, 'bannerCreate'])->name('create');
+    Route::post('/banner', [DashboardController::class, 'bannerStore'])->name('store');
+    Route::get('/banner/{id}/edit', [DashboardController::class, 'bannerEdit'])->name('edit');
+    Route::put('/banner/{id}', [DashboardController::class, 'bannerUpdate'])->name('update');
+    Route::delete('/banner/{id}', [DashboardController::class, 'bannerDestroy'])->name('destroy');
+    Route::post('info/upload-image', [DashboardController::class, 'uploadBanner'])->name('upload.image');
+});
+
     // ----------------- SEKOLAH -----------------
     Route::prefix('sekolah')->name('sekolah.')->group(function () {
         Route::get('tempat', [SekolahController::class, 'indexTempat'])->name('tempat.index');
