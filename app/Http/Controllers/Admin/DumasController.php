@@ -57,45 +57,48 @@ class DumasController extends Controller
 }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'id_kategori'      => 'required|exists:kategori_dumas,id',
-            'jenis_laporan'    => 'required',
-            'lokasi_laporan'   => 'required',
-            'deskripsi'        => 'required',
-            'pernyataan'       => 'nullable|string',
-            'bukti_laporan'    => 'nullable|image',
-        ]);
+{
+    $request->validate([
+        'nama_kategori'   => 'required|exists:kategori_dumas,nama_kategori',
+        'jenis_laporan'   => 'required',
+        'lokasi_laporan'  => 'required',
+        'deskripsi'       => 'required',
+        'pernyataan'      => 'nullable|string',
+        'bukti_laporan'   => 'nullable|image',
+    ]);
 
-        $dumas = new Dumas();
-        $dumas->id_kategori    = $request->id_kategori;
-        $dumas->jenis_laporan  = $request->jenis_laporan;
-        $dumas->lokasi_laporan = $request->lokasi_laporan;
-        $dumas->pernyataan     = $request->pernyataan;
-        $dumas->deskripsi      = $request->deskripsi;
+    // Cari kategori berdasarkan nama
+    $kategori = Kategori_dumas::where('nama_kategori', $request->nama_kategori)->first();
 
-        if ($request->user()) {
-            $dumas->user_id = $request->user()->id;
-        }
+    $dumas = new Dumas();
+    $dumas->id_kategori    = $kategori->id; // simpan id hasil pencarian
+    $dumas->jenis_laporan  = $request->jenis_laporan;
+    $dumas->lokasi_laporan = $request->lokasi_laporan;
+    $dumas->pernyataan     = $request->pernyataan;
+    $dumas->deskripsi      = $request->deskripsi;
 
-        if ($request->hasFile('bukti_laporan')) {
-            $path = $request->file('bukti_laporan')->store('bukti_laporan', 'public');
-            $dumas->bukti_laporan = $path;
-        }
-
-        $dumas->status = 'menunggu';
-        $dumas->save();
-
-        $dumasResponse = $dumas->load('kategori')->toArray();
-        if ($dumas->bukti_laporan) {
-            $dumasResponse['bukti_laporan'] = url(Storage::url($dumas->bukti_laporan));
-        }
-
-        return response()->json([
-            'message' => 'Pengaduan berhasil ditambahkan',
-            'data'    => $dumasResponse,
-        ], 201);
+    if ($request->user()) {
+        $dumas->user_id = $request->user()->id;
     }
+
+    if ($request->hasFile('bukti_laporan')) {
+        $path = $request->file('bukti_laporan')->store('bukti_laporan', 'public');
+        $dumas->bukti_laporan = $path;
+    }
+
+    $dumas->status = 'menunggu';
+    $dumas->save();
+
+    $dumasResponse = $dumas->load('kategori')->toArray();
+    if ($dumas->bukti_laporan) {
+        $dumasResponse['bukti_laporan'] = url(Storage::url($dumas->bukti_laporan));
+    }
+
+    return response()->json([
+        'message' => 'Pengaduan berhasil ditambahkan',
+        'data'    => $dumasResponse,
+    ], 201);
+}
 
     public function update(Request $request, $id)
     {

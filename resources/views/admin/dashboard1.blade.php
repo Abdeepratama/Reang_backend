@@ -136,7 +136,8 @@ $cards = [
                         </div>
                         <div class="col">
                             <p class="small text-muted mb-0">Jumlah Rumah Sakit</p>
-                            <span class="h3 mb-0">49</span>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_sehat'] }}</span>
+                            <span class="small text-muted"> rumah sakit</span>
                         </div>
                     </div>
                 </div>
@@ -168,8 +169,10 @@ $cards = [
 
     <!-- =========================================================================================================================== -->
 
+    
     <div class="row my-4">
         <!-- Jumlah Wifi -->
+        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -185,15 +188,18 @@ $cards = [
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Jumlah Tempat Ibadah -->
+         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <small class="text-muted mb-1">Jumlah Tempat Ibadah</small>
-                            <h3 class="card-title mb-0">46</h3>
+                            <p class="small text-muted mb-0">Jumlah Tempat Ibadah</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_ibadah'] }}</span>
+                            <span class="small text-muted">tempat ibadah</span>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-crosshair"></span>
@@ -202,15 +208,18 @@ $cards = [
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Jumlah Pasar -->
+         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <small class="text-muted mb-1">Jumlah Pasar</small>
-                            <h3 class="card-title mb-0">46</h3>
+                            <p class="small text-muted mb-0">Jumlah Pasar</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_pasar'] }}</span>
+                            <span class="small text-muted">pasar</span>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-shopping-bag"></span>
@@ -219,15 +228,18 @@ $cards = [
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Jumlah Sekolah -->
+         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <small class="text-muted mb-1">Jumlah Sekolah</small>
-                            <h3 class="card-title mb-0">46</h3>
+                            <p class="small text-muted mb-0">Jumlah Sekolah</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_sekolah'] }}</span>
+                            <span class="small text-muted">sekolah</span>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-book"></span>
@@ -236,15 +248,18 @@ $cards = [
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Jumlah Wisata -->
+         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <small class="text-muted mb-1">Jumlah Wisata</small>
-                            <h3 class="card-title mb-0">46</h3>
+                            <p class="small text-muted mb-0">Jumlah Wisata</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_plesir'] }}</span>
+                            <span class="small text-muted">wisata</span>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-map"></span>
@@ -253,14 +268,17 @@ $cards = [
                 </div>
             </div>
         </div>
+        @endif
 
+        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <small class="text-muted mb-1">Jumlah Lowongan Kerja</small>
-                            <h3 class="card-title mb-0">14</h3>
+                            <p class="small text-muted mb-0">Jumlah Info Pekerjaan</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_kerja'] }}</span>
+                            <span class="small text-muted">info</span>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-briefcase"></span>
@@ -269,6 +287,7 @@ $cards = [
                 </div>
             </div>
         </div>
+        @endif
 
     </div>
 

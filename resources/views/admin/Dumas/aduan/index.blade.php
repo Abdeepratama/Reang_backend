@@ -32,7 +32,7 @@
                 @foreach($items as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->kategori->nama ?? '-' }}</td>
+                    <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
                     <td>{{ $item->jenis_laporan }}</td>
                     <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                     <td>
