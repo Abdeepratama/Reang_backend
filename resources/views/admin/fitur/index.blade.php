@@ -178,7 +178,7 @@
 
 <!-- Renbang-Yu -->
 <div class="col-md-3 col-6">
-    <a href="{{ route('admin.renbang.deskripsi.index') }}" class="text-decoration-none">
+    <a href="{{ route('admin.renbang.info.index') }}" class="text-decoration-none">
         <div class="p-3 border rounded text-center hover-shadow">
             <div class="icon-box">
                 <i class="bi bi-building text-warning icon-size"></i>
