@@ -64,9 +64,9 @@
                     <input type="file" name="foto" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="deskripsi" id="editor" class="form-control" rows="5"></textarea>
+                <div class="mb-3">
+                    <label for="deskripsi" class="form-label">Deskripsi</label>
+                    <textarea name="deskripsi" id="editor">{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>

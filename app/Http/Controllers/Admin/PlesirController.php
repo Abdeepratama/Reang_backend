@@ -118,6 +118,24 @@ class PlesirController extends Controller
             ->with('success', 'Lokasi berhasil diperbarui!');
     }
 
+    public function destroy($id)
+    {
+        $plesir = Plesir::findOrFail($id);
+
+        // Hapus foto jika ada
+        if ($plesir->foto && Storage::disk('public')->exists($plesir->foto)) {
+            Storage::disk('public')->delete($plesir->foto);
+        }
+
+        $plesir->delete();
+
+        $this->logAktivitas("Lokasi Plesir telah dihapus");
+        $this->logNotifikasi("Lokasi Plesir telah dihapus");
+
+        return redirect()->route('admin.plesir.tempat.index')
+            ->with('success', 'Lokasi plesir berhasil dihapus!');
+    }
+
     public function map()
     {
         $lokasi = Plesir::all()->map(function ($loc) {
@@ -476,6 +494,6 @@ class PlesirController extends Controller
         if (!$foto) {
             return null;
         }
-        return ltrim($foto,'/');
+        return ltrim($foto, '/');
     }
 }

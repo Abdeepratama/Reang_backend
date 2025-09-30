@@ -51,7 +51,7 @@ class PasarController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
-        if (isset($validated['foto'])) {
+        if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('Pasar_foto', 'public');
             $validated['foto'] = $path;
         }
@@ -111,6 +111,24 @@ class PasarController extends Controller
 
         return redirect()->route('admin.pasar.tempat.index')
             ->with('success', 'Lokasi berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $pasar = Pasar::findOrFail($id);
+
+        // Hapus foto jika ada
+        if ($pasar->foto && Storage::disk('public')->exists($pasar->foto)) {
+            Storage::disk('public')->delete($pasar->foto);
+        }
+
+        $pasar->delete();
+
+        $this->logAktivitas("Lokasi Pasar telah dihapus");
+        $this->logNotifikasi("Lokasi Pasar telah dihapus");
+
+        return redirect()->route('admin.pasar.tempat.index')
+            ->with('success', 'Lokasi pasar berhasil dihapus!');
     }
 
     public function map()
@@ -184,7 +202,12 @@ class PasarController extends Controller
     private function requestHasFilter(Request $request): bool
     {
         $filterKeys = [
-            'fitur', 'kategori', 'search', 'q', 'name', 'address'
+            'fitur',
+            'kategori',
+            'search',
+            'q',
+            'name',
+            'address'
         ];
 
         foreach ($filterKeys as $k) {
@@ -383,7 +406,7 @@ class PasarController extends Controller
             }
 
             $searchQuery = Pasar::query();
-            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], []);
+            $this->applySmartSearch($searchQuery, $text, ['name', 'address', 'fitur'], [['created_at', 'asc']], []);
 
             // if explicit all requested as path /tempat-pasar/search/all or ?all=1 - but path won't carry 'all' here; check query
             if ($request->query('all') === '1') {
@@ -442,7 +465,7 @@ class PasarController extends Controller
             // If search/q is also present, apply smart search inside the filtered results
             if ($request->filled('search') || $request->filled('q')) {
                 $text = $request->query('search', $request->query('q'));
-                $this->applySmartSearch($query, $text, ['name','address','fitur'], [['created_at','asc']], []);
+                $this->applySmartSearch($query, $text, ['name', 'address', 'fitur'], [['created_at', 'asc']], []);
             }
 
             if ($isAllPath || $request->query('all') === '1') {
@@ -495,7 +518,7 @@ class PasarController extends Controller
             $text = $request->query('search', $request->query('q'));
 
             $searchQuery = Pasar::query();
-            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], []);
+            $this->applySmartSearch($searchQuery, $text, ['name', 'address', 'fitur'], [['created_at', 'asc']], []);
 
             if ($isAllPath || $request->query('all') === '1') {
                 $data = $searchQuery->get()->map(function ($item) {
@@ -674,6 +697,6 @@ class PasarController extends Controller
         if (!$foto) {
             return null;
         }
-        return ltrim($foto,'/');
+        return ltrim($foto, '/');
     }
 }

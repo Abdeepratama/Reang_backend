@@ -4,12 +4,12 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">🎒 Tambah Tempat Plesir</h3>
+    <h3 class="mb-4">Tambah Tempat Plesir</h3>
 
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.plesir.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.plesir.tempat.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">

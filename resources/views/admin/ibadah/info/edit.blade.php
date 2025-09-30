@@ -78,9 +78,9 @@
                     @endif
                 </div>
 
-                <div class="form-group mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" rows="3" required>{{ old('deskripsi', $info->deskripsi) }}</textarea>
+                <div class="mb-3">
+                    <label for="deskripsi" class="form-label">Deskripsi</label>
+                    <textarea name="deskripsi" id="editor" class="form-control" rows="5">{{ old('deskripsi', $info->deskripsi) }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Update Data</button>

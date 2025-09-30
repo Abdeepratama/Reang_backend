@@ -22,7 +22,7 @@ class IzinController extends Controller
 
     public function infocreate()
     {
-        $kategoriPerizinan = Kategori::where('fitur', 'Perizinan')
+        $kategoriPerizinan = Kategori::where('fitur', 'Info perizinan')
             ->orderBy('nama')
             ->get();
 
@@ -56,7 +56,7 @@ class IzinController extends Controller
     public function infoedit($id)
     {
         $info = InfoPerizinan::findOrFail($id);
-        $kategoriPerizinan = Kategori::where('fitur', 'Perizinan')->get();
+        $kategoriPerizinan = Kategori::where('fitur', 'Info perizinan')->get();
 
         return view('admin.izin.info.edit', [
             'info' => $info,

@@ -25,12 +25,12 @@
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" name="latitude" id="latitude" class="form-control" value="{{ $item->latitude }}" required readonly>
+                    <input type="text" name="latitude" id="latitude" class="form-control" value="{{ $item->latitude }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" name="longitude" id="longitude" class="form-control" value="{{ $item->longitude }}" required readonly>
+                    <input type="text" name="longitude" id="longitude" class="form-control" value="{{ $item->longitude }}" required>
                 </div>
 
                 <div class="mb-3">

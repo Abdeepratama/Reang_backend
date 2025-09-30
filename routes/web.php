@@ -90,11 +90,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     Route::prefix('plesir')->name('plesir.')->group(function () {
         Route::get('/tempat', [PlesirController::class, 'tempat'])->name('tempat.index');
         Route::get('/tempat/map', [PlesirController::class, 'map'])->name('tempat.map');
-        Route::get('/tempat/create', [PlesirController::class, 'createInfo'])->name('tempat.create');
-        Route::post('/tempat/store', [PlesirController::class, 'storeInfo'])->name('tempat.store');
-        Route::get('/tempat/edit/{id}', [PlesirController::class, 'infoEdit'])->name('tempat.edit');
-        Route::put('/tempat/update/{id}', [PlesirController::class, 'infoUpdate'])->name('tempat.update');
-        Route::delete('/tempat/destroy/{id}', [PlesirController::class, 'infoDestroy'])->name('tempat.destroy');
+        Route::get('/tempat/create', [PlesirController::class, 'create'])->name('tempat.create');
+        Route::post('/tempat/store', [PlesirController::class, 'store'])->name('tempat.store');
+        Route::get('/tempat/edit/{id}', [PlesirController::class, 'Edit'])->name('tempat.edit');
+        Route::put('/tempat/update/{id}', [PlesirController::class, 'Update'])->name('tempat.update');
+        Route::delete('/tempat/destroy/{id}', [PlesirController::class, 'Destroy'])->name('tempat.destroy');
 
         Route::get('/tempat/info-map', [PlesirController::class, 'infomap'])->name('info.map');
         Route::get('/info', [PlesirController::class, 'info'])->name('info.index');

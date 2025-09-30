@@ -92,6 +92,25 @@ class RenbangController extends Controller
         return redirect()->route('admin.renbang.info.index')
             ->with('success', 'Info Renbang berhasil diperbarui');
     }
+
+    public function infoDestroy($id)
+{
+    $item = Renbang::findOrFail($id);
+
+    // Hapus gambar kalau ada
+    if ($item->gambar && Storage::disk('public')->exists($item->gambar)) {
+        Storage::disk('public')->delete($item->gambar);
+    }
+
+    // Hapus data dari DB
+    $item->delete();
+
+    $this->logAktivitas("Info Renbang telah dihapus");
+    $this->logNotifikasi("Info Renbang telah dihapus");
+
+    return redirect()->route('admin.renbang.info.index')
+        ->with('success', 'Info Renbang berhasil dihapus');
+}
     
     // Metode ini tetap dipertahankan jika masih digunakan oleh bagian lain
     public function infoShow($id = null)

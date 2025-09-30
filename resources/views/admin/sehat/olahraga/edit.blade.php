@@ -9,7 +9,9 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <form action="{{ route('admin.sehat.olahraga.update', $olahraga->id) }}" method="POST">
+            <<form action="{{ route('admin.sehat.olahraga.update', $olahraga->id) }}"
+                method="POST"
+                enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -50,7 +52,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Update Data</button>
-            </form>
+                </form>
         </div>
 
         <!-- Map -->
@@ -62,7 +64,15 @@
 </div>
 
 <script>
-    const map = L.map('peta').setView([{{ $olahraga->latitude }}, {{ $olahraga->longitude }}], 15);
+    const map = L.map('peta').setView([{
+        {
+            $olahraga - > latitude
+        }
+    }, {
+        {
+            $olahraga - > longitude
+        }
+    }], 15);
     let clickMarker = null;
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -87,7 +97,17 @@
     });
 
     // tampilkan marker default
-    clickMarker = L.marker([{{ $olahraga->latitude }}, {{ $olahraga->longitude }}], { icon: olahragaIcon }).addTo(map)
+    clickMarker = L.marker([{
+            {
+                $olahraga - > latitude
+            }
+        }, {
+            {
+                $olahraga - > longitude
+            }
+        }], {
+            icon: olahragaIcon
+        }).addTo(map)
         .bindPopup(`<b>{{ $olahraga->name }}</b><br>{{ $olahraga->address }}`)
         .openPopup();
 
@@ -122,7 +142,9 @@
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], { icon: olahragaIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], {
+                icon: olahragaIcon
+            }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });

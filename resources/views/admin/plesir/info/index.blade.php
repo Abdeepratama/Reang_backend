@@ -29,10 +29,11 @@
                                             <th>Alamat</th>
                                             <th>Latitude</th>
                                             <th>Longitude</th>
-                                            <th>Fitur</th>
+                                            <th>Kategori</th>
                                             <th>Rating</th>
-                                            <th>Aksi</th>
                                             <th>deskripsi</th>
+                                            <th>Aksi</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -52,7 +53,6 @@
                                             <td>{{ $info->longitude }}</td>
                                             <td>{{ $info->fitur }}</td>
                                             <td>{{ $info->rating }}</td>
-                                            <td>{{ $info->aksi }}</td>
                                             <td>{{ $info->deskripsi }}</td>
                                             <td>
                                                 <a href="{{ route('admin.plesir.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
