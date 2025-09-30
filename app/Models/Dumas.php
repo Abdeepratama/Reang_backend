@@ -27,6 +27,6 @@ class Dumas extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(kategori_dumas::class, 'id_kategori');
+        return $this->belongsTo(KategoriDumas::class, 'id_kategori');
     }
 }

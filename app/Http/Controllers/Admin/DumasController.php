@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dumas;
-use App\Models\DumasRating;
 use App\Models\UserData;
-use App\Models\Kategori_dumas;
+use App\Models\KategoriDumas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -73,7 +72,7 @@ class DumasController extends Controller
     public function getKategori()
     {
         // Ambil semua nama kategori unik dan urutkan berdasarkan nama
-        $kategori = Kategori_dumas::orderBy('nama_kategori', 'asc')->pluck('nama_kategori');
+        $kategori = KategoriDumas::orderBy('nama_kategori', 'asc')->pluck('nama_kategori');
 
         return response()->json($kategori, 200);
     }
@@ -116,7 +115,7 @@ class DumasController extends Controller
         ]);
 
         // Cari kategori berdasarkan nama
-        $kategori = Kategori_dumas::where('nama_kategori', $request->nama_kategori)->first();
+        $kategori = KategoriDumas::where('nama_kategori', $request->nama_kategori)->first();
 
         $dumas = new Dumas();
         $dumas->id_kategori    = $kategori->id; // simpan id hasil pencarian

@@ -214,19 +214,22 @@ class SehatController extends Controller
     }
 
     public function map()
-    {
-        $lokasi = Sehat::all()->map(function ($loc) {
-            return [
-                'name' => $loc->name,
-                'address' => $loc->address,
-                'latitude' => $loc->latitude,
-                'longitude' => $loc->longitude,
-                'foto' => $loc->foto ?: null,
-            ];
-        });
+{
+    $lokasi = Sehat::all()->map(function ($loc) {
+        return [
+            'name'      => $loc->name,
+            'address'   => $loc->address,
+            'latitude'  => $loc->latitude,
+            'longitude' => $loc->longitude,
+            'fitur'     => $loc->fitur,
+            'foto'      => $loc->foto 
+                            ? asset('storage/'.$loc->foto) 
+                            : '/images/placeholder.png',
+        ];
+    });
 
-        return view('admin.sehat.tempat.map', compact('lokasi'));
-    }
+    return view('admin.sehat.tempat.map', compact('lokasi'));
+}
 
     public function simpanLokasi(Request $request)
     {

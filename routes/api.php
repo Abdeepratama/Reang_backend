@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\SekolahController;
 use App\Http\Controllers\Admin\SehatController;
 use App\Http\Controllers\Admin\PajakController;
 use App\Http\Controllers\Admin\PasarController;
-use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Admin\PlesirController;
 use App\Http\Controllers\Admin\IzinController;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Kategori_dumas;
+use App\Models\KategoriDumas;
 use App\Models\Instansi;
 use Illuminate\Http\Request;
 
@@ -11,7 +11,7 @@ class KategoriDumasController extends Controller
 {
     public function index()
     {
-        $kategoris = Kategori_dumas::with('instansi')->get();
+        $kategoris = KategoriDumas::with('instansi')->get();
         return view('admin.kategori_dumas.index', compact('kategoris'));
     }
 
@@ -28,7 +28,7 @@ class KategoriDumasController extends Controller
             'nama_kategori' => 'required|string|max:255',
         ]);
 
-        Kategori_dumas::create($request->only('id_instansi', 'nama_kategori'));
+        KategoriDumas::create($request->only('id_instansi', 'nama_kategori'));
 
         return redirect()->route('admin.kategori_dumas.index')
                          ->with('success', 'Kategori berhasil ditambahkan!');
@@ -36,7 +36,7 @@ class KategoriDumasController extends Controller
 
     public function edit($id)
     {
-        $kategori = Kategori_dumas::findOrFail($id);
+        $kategori = KategoriDumas::findOrFail($id);
         $instansis = Instansi::all();
         return view('admin.kategori_dumas.edit', compact('kategori', 'instansis'));
     }
@@ -48,7 +48,7 @@ class KategoriDumasController extends Controller
             'nama_kategori' => 'required|string|max:255',
         ]);
 
-        $kategori = Kategori_dumas::findOrFail($id);
+        $kategori = KategoriDumas::findOrFail($id);
         $kategori->update($request->only('id_instansi', 'nama_kategori'));
 
         return redirect()->route('admin.kategori_dumas.index')
@@ -57,7 +57,7 @@ class KategoriDumasController extends Controller
 
     public function destroy($id)
     {
-        $kategori = Kategori_dumas::findOrFail($id);
+        $kategori = KategoriDumas::findOrFail($id);
         $kategori->delete();
 
         return redirect()->route('admin.kategori_dumas.index')
