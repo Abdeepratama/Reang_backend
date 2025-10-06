@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">🏥 Tambah Data Sehat</h3>
+    <h3 class="mb-4">🏥 Tambah Lokasi Kesehatan</h3>
 
     {{-- Flash message --}}
     @if(session('success'))

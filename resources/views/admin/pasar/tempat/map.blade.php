@@ -87,14 +87,14 @@
 
   const iconMap = {
     pasar: L.divIcon({
-      html: `<div style="font-size:28px; line-height:1;">🛒</div>`,
+      html: `<div style="font-size:28px; line-height:1;">🎒</div>`,
       className: '',
       iconSize: [32, 32],
       iconAnchor: [16, 32],
       popupAnchor: [0, -32]
     }),
     default: L.divIcon({
-      html: `<div style="font-size:28px;">🎒</div>`,
+      html: `<div style="font-size:28px;">🛒</div>`,
       className: '',
       iconSize: [32, 32],
       iconAnchor: [16, 32],
@@ -193,7 +193,7 @@
       marker.bindPopup(`
         <strong>${loc.name}</strong><br>
         ${loc.address ? `<em>${loc.address}</em><br>` : ''}
-        ${loc.foto ? `<img src="${loc.foto}" width="100%" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
+        ${loc.foto ? `<img src="${loc.foto}" width="50%" onerror="this.onerror=null; this.src='/images/placeholder.png';">` : ''}
       `);
       allMarkers.push({ marker, data: loc });
     });

@@ -33,6 +33,8 @@
                         <span class="badge bg-success">Super Admin</span>
                     @elseif($admin->role === 'admindinas')
                         <span class="badge bg-info">Admin Dinas</span>
+                    @elseif($admin->role === 'dokter')
+                        <span class="badge bg-danger">Dokter</span>
                     @endif
                 </td>
                 <td>

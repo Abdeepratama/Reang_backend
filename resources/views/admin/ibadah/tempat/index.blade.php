@@ -11,25 +11,25 @@
     <a href="{{ route('admin.ibadah.tempat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Ibadah</a>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <div class="table-responsive">
-    <table class="table datatables" id="infoTable">
-        <thead class="table-dark">
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Alamat</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Kategori</th>
-                <th>Foto</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($items as $item)
+        <table class="table datatables" id="infoTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Kategori</th>
+                    <th>Foto</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($items as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->name }}</td>
@@ -39,17 +39,17 @@
                     <td>{{ $item->fitur }}</td>
                     <td>
                         @if($item->foto)
-                            <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
+                        <img src="{{ Storage::url($item->foto) }}" alt="Foto {{ $item->name }}" style="max-width:80px; height:auto;">
                         @else
-                            <span class="text-muted">-</span>
+                        <span class="text-muted">-</span>
                         @endif
                     </td>
                     <td>
                         <a href="{{ route('admin.ibadah.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
-                        <a href="{{ route('admin.ibadah.tempat.show', $item->id) }}" 
-   class="btn btn-info btn-sm">
-    <i class="bi bi-eye"></i> Detail
-</a>
+                        <a href="{{ route('admin.ibadah.tempat.show', $item->id) }}"
+                            class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Detail
+                        </a>
                         <form action="{{ route('admin.ibadah.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
@@ -57,11 +57,13 @@
                         </form>
                     </td>
                 </tr>
-            @empty
-                <tr><td colspan="7" class="text-center">Belum ada data.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">Belum ada data.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection

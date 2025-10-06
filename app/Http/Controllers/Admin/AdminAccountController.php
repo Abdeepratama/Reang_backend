@@ -28,7 +28,7 @@ class AdminAccountController extends Controller
     $validated = $request->validate([
         'name'     => 'required|string|max:255',
         'password' => 'required|string|min:6|confirmed',
-        'role'     => 'required|in:superadmin,admindinas',
+        'role'     => 'required|in:superadmin,admindinas,dokter',
         'dinas'    => 'nullable|string|max:255', // tambahkan validasi dinas
     ]);
 
@@ -50,7 +50,7 @@ public function update(Request $request, $id)
     $validated = $request->validate([
         'name'     => 'required|string|max:255',
         'password' => 'nullable|string|min:6|confirmed',
-        'role'     => 'required|in:superadmin,admindinas',
+        'role'     => 'required|in:superadmin,admindinas,dokter',
         'dinas'    => 'nullable|string|max:255', // tambahkan validasi dinas
     ]);
 

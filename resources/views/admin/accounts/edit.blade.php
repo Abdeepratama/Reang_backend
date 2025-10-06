@@ -35,6 +35,7 @@
                 <option value="">-- Pilih Role --</option>
                 <option value="superadmin" {{ old('role', $account->role) == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                 <option value="admindinas" {{ old('role', $account->role) == 'admindinas' ? 'selected' : '' }}>Admin Dinas</option>
+                <option value="dokter" {{ old('role', $account->role) == 'dokter' ? 'selected' : '' }}>Dokter</option>
             </select>
         </div>
 

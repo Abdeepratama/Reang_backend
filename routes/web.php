@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\IbadahController;
 use App\Http\Controllers\Admin\SehatController;
+use App\Http\Controllers\Admin\PuskesmasController;
+use App\Http\Controllers\Admin\DokterController;
 use App\Http\Controllers\Admin\PasarController;
 use App\Http\Controllers\Admin\PlesirController;
 use App\Http\Controllers\Admin\DumasController;
@@ -76,14 +78,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('tempat/{id}/edit', [PasarController::class, 'edit'])->name('tempat.edit');
         Route::put('tempat/{id}', [PasarController::class, 'update'])->name('tempat.update');
         Route::delete('tempat/{id}', [PasarController::class, 'destroy'])->name('tempat.destroy');
+        Route::get('tempat/{id}', [PasarController::class, 'showTempatWeb'])->name('tempat.show');
 
         // Tambahan
         Route::get('tempat/map', [PasarController::class, 'map'])->name('tempat.map');
         Route::post('tempat/simpan-lokasi', [PasarController::class, 'simpanLokasi'])->name('tempat.simpan');
         Route::post('tempat/upload-image', [PasarController::class, 'upload'])->name('tempat.upload');
-
-        // API JSON
-        Route::get('tempat/show/{id?}', [PasarController::class, 'show'])->name('tempat.show');
     });
 
     // ----------------- PLESIR -----------------
@@ -95,6 +95,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('/tempat/edit/{id}', [PlesirController::class, 'Edit'])->name('tempat.edit');
         Route::put('/tempat/update/{id}', [PlesirController::class, 'Update'])->name('tempat.update');
         Route::delete('/tempat/destroy/{id}', [PlesirController::class, 'Destroy'])->name('tempat.destroy');
+        Route::get('tempat/{id}', [PlesirController::class, 'showTempatWeb'])->name('tempat.show');
 
         Route::get('/tempat/info-map', [PlesirController::class, 'infomap'])->name('info.map');
         Route::get('/info', [PlesirController::class, 'info'])->name('info.index');
@@ -115,6 +116,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::put('/tempat/update/{id}', [SehatController::class, 'update'])->name('tempat.update');
         Route::get('/tempat/map', [SehatController::class, 'map'])->name('tempat.map');
         Route::delete('/tempat/{id}', [SehatController::class, 'destroy'])->name('tempat.destroy');
+        Route::get('/tempat/{id}', [SehatController::class, 'showTempatWeb'])->name('tempat.show');
 
         // info sehat
         Route::get('/info', [SehatController::class, 'infoindex'])->name('info.index');
@@ -135,6 +137,27 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::put('/tempat/update/{id}', [SehatController::class, 'updateolahraga'])->name('update');
         Route::delete('/tempat/delete/{id}', [SehatController::class, 'destroyolahraga'])->name('destroy');
         Route::get('/tempat/map', [SehatController::class, 'mapolahraga'])->name('map');
+        Route::get('/tempat/{id}', [SehatController::class, 'showOlahragaWeb'])->name('show');
+    });
+
+    //------------------PUSKESMAS------------------
+    Route::prefix('puskesmas')->name('sehat.puskesmas.')->group(function () {
+        Route::get('/', [PuskesmasController::class, 'index'])->name('index');
+        Route::get('/create', [PuskesmasController::class, 'create'])->name('create');
+        Route::post('/store', [PuskesmasController::class, 'store'])->name('store');
+        Route::get('/edit/{puskesma}', [PuskesmasController::class, 'edit'])->name('edit');
+        Route::put('/update/{puskesma}', [PuskesmasController::class, 'update'])->name('update');
+        Route::delete('/delete/{puskesma}', [PuskesmasController::class, 'destroy'])->name('destroy');
+    });
+
+    //------------------Dokter----------------------
+    Route::prefix('dokter')->name('sehat.dokter.')->group(function () {
+        Route::get('/', [DokterController::class, 'index'])->name('index');
+        Route::get('/create', [DokterController::class, 'create'])->name('create');
+        Route::post('/store', [DokterController::class, 'store'])->name('store');
+        Route::get('/edit/{dokter}', [DokterController::class, 'edit'])->name('edit');
+        Route::put('/update/{dokter}', [DokterController::class, 'update'])->name('update');
+        Route::delete('/delete/{dokter}', [DokterController::class, 'destroy'])->name('destroy');
     });
 
     // ----------------- PAJAK -----------------
@@ -237,6 +260,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::put('tempat/{id}', [SekolahController::class, 'updateTempat'])->name('tempat.update');
         Route::delete('tempat/{id}', [SekolahController::class, 'destroyTempat'])->name('tempat.destroy');
         Route::get('tempat/map', [SekolahController::class, 'mapTempat'])->name('tempat.map');
+        Route::get('tempat/{id}', [SekolahController::class, 'showTempatWeb'])->name('tempat.show');
 
         Route::get('info', [SekolahController::class, 'infoindex'])->name('info.index');
         Route::get('info/create', [SekolahController::class, 'infocreate'])->name('info.create');

@@ -1,10 +1,10 @@
 @extends('admin.partials.app')
 
-@section('title', 'Detail Tempat Pasar')
+@section('title', 'Detail Tempat Olahraga')
 
 @section('content')
 <div class="container mt-4">
-    <h2><i class="bi bi-shop"></i> Detail Tempat Pasar</h2>
+    <h2><i class="bi bi-basketball"></i> Detail Tempat Olahraga</h2>
 
     <div class="card mt-3" style="max-width: 800px;">
         <div class="card-body">
@@ -25,10 +25,10 @@
             @endif
 
             <div class="mt-4">
-                <a href="{{ route('admin.pasar.tempat.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.sehat.olahraga.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
-                <a href="{{ route('admin.pasar.tempat.edit', $data->id) }}" class="btn btn-warning">
+                <a href="{{ route('admin.sehat.olahraga.edit', $data->id) }}" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Edit
                 </a>
             </div>

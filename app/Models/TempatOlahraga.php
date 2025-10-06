@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 
-class Tempat_olahraga extends Model
+class TempatOlahraga extends Model
 {
     use HasFactory;
 
@@ -18,8 +18,15 @@ class Tempat_olahraga extends Model
         'latitude',
         'longitude',
         'address',
-        'foto'
+        'foto',
+        'fitur'
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
 
     public function getPhotoUrlAttribute()
     {

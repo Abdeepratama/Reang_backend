@@ -1,10 +1,10 @@
 @extends('admin.partials.app')
 
-@section('title', 'Detail Tempat Pasar')
+@section('title', 'Detail Tempat Kesehatan')
 
 @section('content')
 <div class="container mt-4">
-    <h2><i class="bi bi-shop"></i> Detail Tempat Pasar</h2>
+    <h2><i class="bi bi-hospital"></i> Detail Tempat Kesehatan</h2>
 
     <div class="card mt-3" style="max-width: 800px;">
         <div class="card-body">
@@ -18,17 +18,18 @@
                 <div class="mb-3">
                     <img src="{{ asset('storage/'.$data->foto) }}" 
                          alt="{{ $data->name }}" 
-                         class="img-fluid rounded shadow">
+                         class="img-fluid rounded shadow" 
+                         style="max-width:400px; height:auto;">
                 </div>
             @else
                 <p><em>Tidak ada foto</em></p>
             @endif
 
             <div class="mt-4">
-                <a href="{{ route('admin.pasar.tempat.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.sehat.tempat.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
-                <a href="{{ route('admin.pasar.tempat.edit', $data->id) }}" class="btn btn-warning">
+                <a href="{{ route('admin.sehat.tempat.edit', $data->id) }}" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Edit
                 </a>
             </div>

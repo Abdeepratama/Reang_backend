@@ -51,6 +51,18 @@
                     <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
                 </div>
 
+                <div class="mb-3">
+                    <label for="fitur" class="form-label">Kategori</label>
+                    <select name="fitur" class="form-control" required>
+                        <option value="">Pilih Kategori</option>
+                        @foreach($kategoriOlahraga as $kategori)
+                        <option value="{{ $kategori->nama }}" {{ $olahraga->fitur == $kategori->nama ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-success w-100">💾 Update Data</button>
                 </form>
         </div>

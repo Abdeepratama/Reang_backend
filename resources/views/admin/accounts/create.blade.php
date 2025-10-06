@@ -32,6 +32,7 @@
                 <option value="">-- Pilih Role --</option>
                 <option value="superadmin">Super Admin</option>
                 <option value="admindinas">Admin Dinas</option>
+                <option value="dokter">Dokter</option>
             </select>
         </div>
 

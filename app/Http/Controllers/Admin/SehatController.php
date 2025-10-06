@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\CRUDHelper;
 use App\Models\Sehat;
 use App\Models\InfoKesehatan;
-use App\Models\Tempat_olahraga;
+use App\Models\TempatOlahraga;
 use App\Models\Kategori;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
@@ -214,22 +214,22 @@ class SehatController extends Controller
     }
 
     public function map()
-{
-    $lokasi = Sehat::all()->map(function ($loc) {
-        return [
-            'name'      => $loc->name,
-            'address'   => $loc->address,
-            'latitude'  => $loc->latitude,
-            'longitude' => $loc->longitude,
-            'fitur'     => $loc->fitur,
-            'foto'      => $loc->foto 
-                            ? asset('storage/'.$loc->foto) 
-                            : '/images/placeholder.png',
-        ];
-    });
+    {
+        $lokasi = Sehat::all()->map(function ($loc) {
+            return [
+                'name'      => $loc->name,
+                'address'   => $loc->address,
+                'latitude'  => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'fitur'     => $loc->fitur,
+                'foto'      => $loc->foto
+                    ? asset('storage/' . $loc->foto)
+                    : '/images/placeholder.png',
+            ];
+        });
 
-    return view('admin.sehat.tempat.map', compact('lokasi'));
-}
+        return view('admin.sehat.tempat.map', compact('lokasi'));
+    }
 
     public function simpanLokasi(Request $request)
     {
@@ -251,6 +251,12 @@ class SehatController extends Controller
     {
         $items = Sehat::all();
         return view('admin.sehat.tempat.index', compact('items'));
+    }
+
+    public function showTempatWeb($id)
+    {
+        $data = Sehat::with('kategori')->findOrFail($id);
+        return view('admin.sehat.tempat.show', compact('data'));
     }
 
     public function infoindex()
@@ -426,15 +432,17 @@ class SehatController extends Controller
     //Tempat olahraga
     public function indexolahraga()
     {
-        $items = Tempat_olahraga::all();
+        $kategoriOlahraga = Kategori::where('fitur', 'lokasi olahraga')->orderBy('nama')->get();
+        $items = TempatOlahraga::all();
         return view('admin.sehat.olahraga.index', compact('items'));
     }
 
     public function createolahraga()
     {
-        $lokasi = Tempat_olahraga::all(); // untuk peta
+        $kategoriOlahraga = Kategori::where('fitur', 'lokasi olahraga')->orderBy('nama')->get();
+        $lokasi = TempatOlahraga::all();
 
-        return view('admin.sehat.olahraga.create', compact('lokasi'));
+        return view('admin.sehat.olahraga.create', compact('lokasi', 'kategoriOlahraga'));
     }
 
     public function storeolahraga(Request $request)
@@ -445,6 +453,7 @@ class SehatController extends Controller
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
             'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+            'fitur'     => 'required|string'
         ]);
 
         if ($request->hasFile('foto')) {
@@ -453,7 +462,7 @@ class SehatController extends Controller
             $validated['foto'] = $path;
         }
 
-        Tempat_olahraga::create($validated);
+        TempatOlahraga::create($validated);
 
         $this->logAktivitas("Tempat olahraga telah ditambahkan");
         $this->logNotifikasi("Tempat olahraga telah ditambahkan");
@@ -464,17 +473,19 @@ class SehatController extends Controller
 
     public function editolahraga($id)
     {
-        $item = Tempat_olahraga::findOrFail($id);
+        $kategoriOlahraga = Kategori::where('fitur', 'lokasi olahraga')->orderBy('nama')->get();
+        $item = TempatOlahraga::findOrFail($id);
 
         return view('admin.sehat.olahraga.edit', [
             'olahraga' => $item,
             'lokasi' => [],
+            'kategoriOlahraga' => $kategoriOlahraga,
         ]);
     }
 
     public function updateolahraga(Request $request, $id)
     {
-        $olahraga = Tempat_olahraga::findOrFail($id);
+        $olahraga = TempatOlahraga::findOrFail($id);
 
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
@@ -482,6 +493,7 @@ class SehatController extends Controller
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
             'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+            'fitur'     => 'required|string',
         ]);
 
         // simpan data dulu
@@ -512,7 +524,7 @@ class SehatController extends Controller
 
     public function destroyolahraga($id)
     {
-        $olahraga = Tempat_olahraga::findOrFail($id);
+        $olahraga = TempatOlahraga::findOrFail($id);
         if ($olahraga->foto) {
             $oldPath = $this->getStoragePathFromFoto($olahraga->foto);
             if ($oldPath && Storage::disk('public')->exists($oldPath)) {
@@ -530,51 +542,76 @@ class SehatController extends Controller
 
     public function mapolahraga()
     {
-        $lokasi = Tempat_olahraga::all()->map(function ($loc) {
+        $lokasi = TempatOlahraga::all()->map(function ($loc) {
             return [
                 'name'      => $loc->name,
                 'address'   => $loc->address,
                 'latitude'  => $loc->latitude,
                 'longitude' => $loc->longitude,
-                'foto' => $loc->foto ?: null,
+                'foto'      => $loc->foto ? asset('storage/' . $loc->foto) : null,
             ];
         });
 
         return view('admin.sehat.olahraga.map', compact('lokasi'));
     }
 
-    public function showolahraga($id = null)
+    public function showolahraga(Request $request, $id = null)
     {
         if ($id) {
-            $data = Tempat_olahraga::find($id);
+            $data = TempatOlahraga::with('kategori')->find($id);
+
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
 
-            $result = [
-                'id'        => $data->id,
-                'name'      => $data->name,
-                'address'   => $data->address,
-                'latitude'  => $data->latitude,
-                'longitude' => $data->longitude,
-                'foto'      => $data->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto)) : null,
+            $arr = [
+                'id'         => $data->id,
+                'name'       => $data->name,
+                'address'    => $data->address,
+                'latitude'   => $data->latitude,
+                'longitude'  => $data->longitude,
+                'fitur'      => $data->kategori->nama ?? $data->fitur, // ambil nama kategori jika ada
+                'foto'       => $data->foto
+                    ? $this->buildFotoUrl($this->getStoragePathFromFoto($data->foto))
+                    : null,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
             ];
 
-            return response()->json($result, 200);
+            return response()->json($arr, 200);
         } else {
-            $data = Tempat_olahraga::all()->map(function ($item) {
+            // Build query dan apply filter 'fitur' jika ada
+            $query = TempatOlahraga::with('kategori');
+
+            if ($request->has('fitur') && !empty($request->query('fitur'))) {
+                $fitur = $request->query('fitur');
+                $query->where('fitur', $fitur);
+            }
+
+            $data = $query->get()->map(function ($item) {
                 return [
-                    'id'        => $item->id,
-                    'name'      => $item->name,
-                    'address'   => $item->address,
-                    'latitude'  => $item->latitude,
-                    'longitude' => $item->longitude,
-                    'foto'      => $item->foto ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto)) : null,
+                    'id'         => $item->id,
+                    'name'       => $item->name,
+                    'address'    => $item->address,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'kategori'   => $item->kategori->nama ?? $item->fitur,
+                    'foto'       => $item->foto
+                        ? $this->buildFotoUrl($this->getStoragePathFromFoto($item->foto))
+                        : null,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
                 ];
             });
 
             return response()->json($data, 200);
         }
+    }
+
+    public function showOlahragaWeb($id)
+    {
+        $data = TempatOlahraga::with('kategori')->findOrFail($id);
+        return view('admin.sehat.olahraga.show', compact('data'));
     }
 
     protected function logAktivitas($pesan)

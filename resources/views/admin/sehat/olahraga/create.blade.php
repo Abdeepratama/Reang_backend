@@ -41,6 +41,22 @@
                     <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
                 </div>
 
+                <div class="mb-3">
+                    <label for="fitur" class="form-label">Kategori</label>
+                    <select name="fitur" id="fitur"
+                        class="form-control @error('fitur') is-invalid @enderror" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        @foreach($kategoriOlahraga as $kategori)
+                            <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                                {{ $kategori->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('fitur')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>
             </form>
         </div>

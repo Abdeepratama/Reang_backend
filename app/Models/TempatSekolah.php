@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class Tempat_sekolah extends Model
+class TempatSekolah extends Model
 {
     // Nama tabel di database
     protected $table = 'tempat_sekolahs';

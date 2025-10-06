@@ -218,6 +218,12 @@ class PlesirController extends Controller
         }
     }
 
+    public function showTempatWeb($id)
+    {
+        $data = Plesir::with('kategori')->findOrFail($id);
+        return view('admin.plesir.tempat.show', compact('data'));
+    }
+
     // --- ENDPOINT BARU UNTUK MENGAMBIL FITUR TEMPAT PLESIR ---
     public function apiGetTempatFitur()
     {

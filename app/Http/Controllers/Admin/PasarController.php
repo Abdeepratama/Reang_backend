@@ -169,6 +169,12 @@ class PasarController extends Controller
         return view('admin.pasar.tempat.index', compact('items'));
     }
 
+    public function showTempatWeb($id)
+    {
+        $data = Pasar::with('kategori')->findOrFail($id);
+        return view('admin.pasar.tempat.show', compact('data'));
+    }
+
     /**
      * Endpoint baru: ambil semua kategori terkait lokasi pasar
      * Bisa dipanggil dari Flutter untuk mengisi pilihan filter.

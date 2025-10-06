@@ -19,6 +19,7 @@
                     <th>Longitude</th>
                     <th>Alamat</th>
                     <th>Foto</th>
+                    <th>Kategori</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -39,8 +40,13 @@
                         <span class="text-muted">Tidak ada foto</span>
                         @endif
                     </td>
+                    <td>{{ $olahraga->fitur }}</td>
                     <td>
                         <a href="{{ route('admin.sehat.olahraga.edit', $olahraga->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{{ route('admin.sehat.olahraga.show', $olahraga->id) }}"
+                            class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Detail
+                        </a>
                         <form action="{{ route('admin.sehat.olahraga.destroy', $olahraga->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin hapus data ini?')">
                             @csrf
                             @method('DELETE')

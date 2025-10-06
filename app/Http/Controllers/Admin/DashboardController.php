@@ -15,7 +15,7 @@ use App\Models\Pasar;
 use App\Models\Plesir;
 use App\Models\Aktivitas;
 use App\Models\Dumas;
-use App\Models\Sekolah;
+use App\Models\TempatSekolah;
 use App\Models\Renbang;
 use App\Models\InfoSekolah;
 use App\Models\InfoKesehatan;
@@ -26,7 +26,7 @@ use App\Models\InfoKerja;
 use App\Models\InfoPerizinan;
 use App\Models\InfoPlesir;
 use App\Models\NotifikasiAktivitas;
-use App\Models\Tempat_olahraga;
+use App\Models\TempatOlahraga;
 
 class DashboardController extends Controller
 {
@@ -38,11 +38,11 @@ class DashboardController extends Controller
             'jumlah_lokasi_plesir' => Plesir::count(),
             'jumlah_info_plesir' => InfoPlesir::count(),
             'jumlah_dumas' => Dumas::count(),
-            'jumlah_sekolah' => Sekolah::count(),
+            'jumlah_sekolah' => TempatSekolah::count(),
             'jumlah_info_sekolah' => InfoSekolah::count(),
             'jumlah_sehat' => Sehat::count(),
             'jumlah_info_kesehatan' => InfoKesehatan::count(),
-            'jumlah_lokasi_olahraga' => Tempat_olahraga::count(),
+            'jumlah_lokasi_olahraga' => TempatOlahraga::count(),
             'jumlah_info_pajak' => InfoPajak::count(),
             'jumlah_info_kerja' => InfoKerja::count(),
             'jumlah_lokasi_ibadah' => Ibadah::count(),

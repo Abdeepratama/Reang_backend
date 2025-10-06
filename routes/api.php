@@ -17,6 +17,11 @@ use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RatingDumasController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\AdminAuthController;
+use App\Http\Controllers\Admin\PuskesmasController;
+use App\Http\Controllers\Admin\DokterController;
+use Illuminate\Http\Request; 
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -31,25 +36,37 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+Route::middleware('auth:sanctum')->get('/check-token', function (Request $request) {
+    return response()->json([
+        'status' => 'valid',
+        'message' => 'Token masih berlaku',
+    ]);
+});
+
+Route::post('/admin/login', [AdminAuthController::class, 'login']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/admin/profile', [AdminAuthController::class, 'profile']);
+    Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
+});
+
 // Dumas-yu
 // API publik (tanpa login)
 Route::get('/dumas/kategori', [DumasController::class, 'getKategori']);
 Route::get('/dumas', [DumasController::class, 'publicIndex']);
 Route::get('/dumas/{id}', [DumasController::class, 'publikShow']);
-Route::get('/dumas/{id}/rating', [RatingDumasController::class,'show']);
+Route::get('/dumas/{id}/rating', [RatingDumasController::class, 'show']);
 
 // API dengan login (auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/dumas', [DumasController::class, 'store']);
     Route::put('/dumas/{id}', [DumasController::class, 'update']);
     Route::delete('/dumas/{id}', [DumasController::class, 'destroy']);
-
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/dumas/{id}/rating', [RatingDumasController::class, 'store']);
-    Route::post('/dumas/{id}/rating', [RatingDumasController::class, 'store']);
-    Route::delete('/dumas/{id}/rating', [RatingDumasController::class,'destroy']);
+    Route::delete('/dumas/{id}/rating', [RatingDumasController::class, 'destroy']);
 });
 
 
@@ -70,15 +87,15 @@ Route::get('/banner', [DashboardController::class, 'apiBanner']);
 
 // rating
 Route::post('/rating', [RatingController::class, 'store']);
-Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']); 
+Route::get('/rating/{info_plesir_id}', [RatingController::class, 'show']);
 // NEW: daftar rating (paginated) untuk sebuah info_plesir
 Route::get('/info-plesir/{id}/ratings', [RatingController::class, 'ratingsByInfo']);
 ///update
-Route::put('/rating/{id}', [RatingController::class,'update']);
+Route::put('/rating/{id}', [RatingController::class, 'update']);
 //delete
 Route::delete('/rating/{id}', [RatingController::class, 'destroy']);
 // top plesir
-Route::get('plesir/top', [RatingController::class,'topPlesir']);
+Route::get('plesir/top', [RatingController::class, 'topPlesir']);
 Route::get('/dumas/{id}/rating', [RatingDumasController::class, 'show']);
 
 Route::get('/info-plesir/fitur', [PlesirController::class, 'apiGetInfoFitur']);
@@ -86,7 +103,7 @@ Route::get('/info-plesir/fitur', [PlesirController::class, 'apiGetInfoFitur']);
 // sehat-yu
 Route::get('/hospital/{id?}', [SehatController::class, 'show']);      // lokasi sehat 
 Route::get('/info-sehat/{id?}', [SehatController::class, 'infoshow']);    // info sehat
-Route::get('/sehat-olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga
+Route::get('/olahraga/{id?}', [SehatController::class, 'showolahraga']); // lokasi olahraga
 
 // pajak-yu
 Route::get('/info-pajak/{id?}', [PajakController::class, 'show']); //info
@@ -110,4 +127,27 @@ Route::get('/pasar/kategori', [PasarController::class, 'categories']);
 
 //renbang-yu
 Route::get('/renbang/fitur', [RenbangController::class, 'apiGetFitur']);
-Route::get('/renbang/{id?}', [RenbangController::class,'apiShow']);
+Route::get('/renbang/{id?}', [RenbangController::class, 'apiShow']);
+
+// puskesmas
+Route::get('/puskesmas', [PuskesmasController::class, 'apiIndex']);
+Route::get('/puskesmas/{id?}', [PuskesmasController::class, 'apiShow']);
+
+//dokter
+Route::get('/dokter', [DokterController::class, 'apiIndex']);
+Route::get('/dokter/{id?}', [DokterController::class, 'apiShow']);
+
+//chat
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
+    Route::get('/chat/{user_id}', [ChatController::class, 'getMessages']);
+});
+
+Route::middleware('auth:admin')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index']);
+});
+
+// untuk user login (lihat chat dengan dokter tertentu)
+Route::middleware('auth:sanctum')->get('/chat/{dokter_id}', [ChatController::class, 'getMessages']);
+
+Route::middleware('auth:sanctum')->get('/dokter/chats', [ChatController::class, 'getAllMessagesForDokter']);

@@ -45,6 +45,10 @@
                     </td>
                     <td>
                         <a href="{{ route('admin.pasar.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <a href="{{ route('admin.pasar.tempat.show', $item->id) }}"
+                            class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Detail
+                        </a>
                         <form action="{{ route('admin.pasar.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
