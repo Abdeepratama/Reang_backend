@@ -4,14 +4,14 @@
 
 @section('content')
 <div class="container mt-4">
-    <h4 class="mb-4">Daftar Dokter</h4>
+    <h3 class="mb-4">👨‍⚕️ Daftar Dokter</h3>
 
-    <!-- Tombol Tambah -->
+    {{-- Tombol Tambah --}}
     <a href="{{ route('admin.sehat.dokter.create') }}" class="btn btn-primary mb-3">
-        <i class="bi bi-plus-circle"></i> Tambah Dokter
+        ➕ Tambah Dokter
     </a>
 
-    <!-- Notifikasi -->
+    {{-- Notifikasi --}}
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -19,20 +19,21 @@
         </div>
     @endif
 
-    <!-- Tabel Dokter -->
+    {{-- Tabel Dokter --}}
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle datatables" id="dokterTable">
+                <table id="dokterTable" class="table table-bordered table-striped align-middle">
                     <thead class="table-dark text-center">
                         <tr>
                             <th>No</th>
                             <th>Puskesmas</th>
                             <th>Nama</th>
                             <th>Pendidikan</th>
-                            <th>Spesialisasi / Fitur</th>
-                            <th>Umur</th>
-                            <th>Nomor HP</th>
+                            <th>Spesialisasi</th>
+                            <th>Masa Kerja</th>
+                            <th>Nomor STR</th>
+                            <th>Foto</th>
                             <th width="150px">Aksi</th>
                         </tr>
                     </thead>
@@ -44,29 +45,32 @@
                                 <td>{{ $item->nama }}</td>
                                 <td>{{ $item->pendidikan }}</td>
                                 <td>{{ $item->fitur }}</td>
-                                <td class="text-center">{{ $item->umur }}</td>
+                                <td class="text-center">{{ $item->masa_kerja }}</td>
                                 <td>{{ $item->nomer }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.sehat.dokter.edit', $item->id) }}" 
-                                       class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil-square"></i> Edit
+                                    @if($item->foto)
+                                        <img src="{{ asset('storage/'.$item->foto) }}" alt="Foto Dokter" width="60" class="rounded">
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('admin.sehat.dokter.edit', $item->id) }}" class="btn btn-warning btn-sm">
+                                        ✏️ Edit
                                     </a>
-                                    <form action="{{ route('admin.sehat.dokter.destroy', $item->id) }}" 
-                                          method="POST" 
-                                          style="display:inline-block;">
+                                    <form action="{{ route('admin.sehat.dokter.destroy', $item->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
-                                                onclick="return confirm('Yakin ingin menghapus data ini?')" 
-                                                class="btn btn-danger btn-sm">
-                                            <i class="bi bi-trash"></i> Hapus
+                                        <button type="submit" class="btn btn-danger btn-sm" 
+                                                onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                            🗑️ Hapus
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Belum ada data Dokter.</td>
+                                <td colspan="9" class="text-center text-muted">Belum ada data dokter.</td>
                             </tr>
                         @endforelse
                     </tbody>

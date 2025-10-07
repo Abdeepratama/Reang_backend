@@ -17,9 +17,10 @@ class Dokter extends Model
         'nama',
         'pendidikan',
         'fitur',
-        'umur',
+        'masa_kerja',
         'nomer',
         'admin_id',
+        'foto'
     ];
 
     public function puskesmas()

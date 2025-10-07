@@ -13,10 +13,10 @@ class ChatController extends Controller
 {
     public function index()
     {
-        $admin = Auth::guard('admin')->user();
+        $admin = Auth::guard('admin')->user() ?? Auth::user();
 
         if (!$admin) {
-            return response()->json(['message' => 'Admin belum login atau token tidak valid'], 401);
+            return response()->json(['message' => 'Belum login atau token tidak valid'], 401);
         }
 
         $dokter = Dokter::where('admin_id', $admin->id)->first();

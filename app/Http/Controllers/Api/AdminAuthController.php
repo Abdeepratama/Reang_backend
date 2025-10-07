@@ -16,7 +16,7 @@ class AdminAuthController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('name', 'password');
 
         if (!Auth::guard('admin')->attempt($credentials)) {
             return response()->json(['message' => 'Login gagal'], 401);

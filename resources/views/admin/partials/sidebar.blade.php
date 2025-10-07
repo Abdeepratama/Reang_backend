@@ -80,7 +80,6 @@
                     <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.info.index') }}">Info Sehat</a></li>
                     <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.olahraga.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.olahraga.index') }}">Lokasi Olahraga</a></li>
                     <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.puskesmas.index') }}">Puskesmas</a></li>
-                     <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.dokter.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.dokter.index') }}">Dokter</a></li>
                 </ul>
             </li>
             @endif

@@ -60,7 +60,7 @@ class PuskesmasController extends Controller
     // GET /api/puskesmas
     public function apiIndex()
     {
-        $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
+        $puskesmas = Puskesmas::orderBy('id', 'desc')->paginate(10);
         return response()->json($puskesmas);
     }
 
@@ -75,7 +75,31 @@ class PuskesmasController extends Controller
             return response()->json($data);
         }
 
-        $data = Puskesmas::all();
+        $data = Puskesmas::paginate(10);
         return response()->json($data);
+    }
+
+    public function apiSearch(Request $request)
+    {
+        $keyword = $request->query('q'); // ambil query ?q=
+
+        $query = Puskesmas::query();
+
+        if ($keyword) {
+            $query->where('nama', 'like', "%{$keyword}%")
+                ->orWhere('alamat', 'like', "%{$keyword}%")
+                ->orWhere('jam', 'like', "%{$keyword}%");
+        }
+
+        $result = $query->orderBy('id', 'desc')->paginate(10);
+
+        if ($result->isEmpty()) {
+            return response()->json([
+                'message' => 'Tidak ada hasil untuk pencarian "' . $keyword . '"',
+                'data' => []
+            ], 404);
+        }
+
+        return response()->json($result);
     }
 }

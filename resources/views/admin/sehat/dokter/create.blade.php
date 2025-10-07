@@ -10,7 +10,8 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('admin.sehat.dokter.store') }}" method="POST">
+    {{-- Tambahkan enctype agar upload file bisa --}}
+    <form action="{{ route('admin.sehat.dokter.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label for="id_puskesmas" class="form-label">Puskesmas</label>
@@ -45,13 +46,20 @@
         </div>
 
         <div class="mb-3">
-            <label for="umur" class="form-label">Umur</label>
-            <input type="number" name="umur" class="form-control" value="{{ old('umur') }}" required>
+            <label for="masa_kerja" class="form-label">Masa Kerja</label>
+            <input type="text" name="masa_kerja" class="form-control" value="{{ old('masa_kerja') }}" required>
         </div>
 
         <div class="mb-3">
-            <label for="nomer" class="form-label">Nomor HP</label>
+            <label for="nomer" class="form-label">Nomor STR</label>
             <input type="text" name="nomer" class="form-control" value="{{ old('nomer') }}" required>
+        </div>
+
+        {{-- Tambahkan kembali input foto --}}
+        <div class="mb-3">
+            <label for="foto" class="form-label">Foto Dokter</label>
+            <input type="file" name="foto" class="form-control" accept="image/*">
+            <small class="text-muted">Format: JPG, PNG, WEBP | Maks: 5MB</small>
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>

@@ -7,6 +7,7 @@
     <h2>Daftar Puskesmas</h2>
 
     <a href="{{ route('admin.sehat.puskesmas.create') }}" class="btn btn-primary mb-3">+ Tambah Puskesmas</a>
+    <a href="{{ route('admin.sehat.dokter.index') }}" class="btn btn-primary mb-3">+ Tambah Dokter</a>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>

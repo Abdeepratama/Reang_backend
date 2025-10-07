@@ -21,7 +21,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Admin\PuskesmasController;
 use App\Http\Controllers\Admin\DokterController;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -131,7 +131,8 @@ Route::get('/renbang/{id?}', [RenbangController::class, 'apiShow']);
 
 // puskesmas
 Route::get('/puskesmas', [PuskesmasController::class, 'apiIndex']);
-Route::get('/puskesmas/{id?}', [PuskesmasController::class, 'apiShow']);
+Route::get('/puskesmas/search', [PuskesmasController::class, 'apiSearch']);
+Route::get('/puskesmas/{id}', [PuskesmasController::class, 'apiShow']);
 
 //dokter
 Route::get('/dokter', [DokterController::class, 'apiIndex']);
