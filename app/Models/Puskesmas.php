@@ -12,4 +12,9 @@ class Puskesmas extends Model
     protected $table = 'puskesmas';
     protected $fillable = ['nama', 'alamat', 'jam'];
     public $timestamps = false; // ✅ ini WAJIB kalau tidak mau pakai timestamps
+      public function dokter()
+    {
+        // 'id_puskesmas' adalah nama kolom foreign key di tabel 'dokter' Anda
+        return $this->hasMany(Dokter::class, 'id_puskesmas');
+    }
 }

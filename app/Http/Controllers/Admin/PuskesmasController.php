@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class PuskesmasController extends Controller
 {
+    // --- Bagian Admin Panel (TIDAK DIUBAH) ---
     public function index()
     {
         $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
@@ -57,10 +58,15 @@ class PuskesmasController extends Controller
         return redirect()->route('admin.sehat.puskesmas.index')->with('success', 'Data berhasil dihapus');
     }
 
+    // --- Bagian API (DIPERBARUI) ---
+
     // GET /api/puskesmas
     public function apiIndex()
     {
-        $puskesmas = Puskesmas::orderBy('id', 'desc')->paginate(10);
+        // --- DIPERBARUI ---
+        $puskesmas = Puskesmas::withCount('dokter as dokter_tersedia')
+                              ->orderBy('id', 'desc')
+                              ->paginate(10);
         return response()->json($puskesmas);
     }
 
@@ -68,37 +74,33 @@ class PuskesmasController extends Controller
     public function apiShow($id = null)
     {
         if ($id) {
-            $data = Puskesmas::find($id);
+            // --- DIPERBARUI ---
+            $data = Puskesmas::withCount('dokter as dokter_tersedia')->find($id);
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
             return response()->json($data);
         }
 
-        $data = Puskesmas::paginate(10);
+        // --- DIPERBARUI ---
+        $data = Puskesmas::withCount('dokter as dokter_tersedia')->paginate(10);
         return response()->json($data);
     }
 
     public function apiSearch(Request $request)
     {
-        $keyword = $request->query('q'); // ambil query ?q=
+        $keyword = $request->query('q');
 
-        $query = Puskesmas::query();
+        // --- DIPERBARUI ---
+        $query = Puskesmas::withCount('dokter as dokter_tersedia');
 
         if ($keyword) {
             $query->where('nama', 'like', "%{$keyword}%")
-                ->orWhere('alamat', 'like', "%{$keyword}%")
-                ->orWhere('jam', 'like', "%{$keyword}%");
+                  ->orWhere('alamat', 'like', "%{$keyword}%")
+                  ->orWhere('jam', 'like', "%{$keyword}%");
         }
 
         $result = $query->orderBy('id', 'desc')->paginate(10);
-
-        if ($result->isEmpty()) {
-            return response()->json([
-                'message' => 'Tidak ada hasil untuk pencarian "' . $keyword . '"',
-                'data' => []
-            ], 404);
-        }
 
         return response()->json($result);
     }
