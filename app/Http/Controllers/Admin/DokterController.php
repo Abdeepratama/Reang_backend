@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DokterController extends Controller
 {
+    // --- Bagian Admin Panel (TIDAK DIUBAH) ---
     public function index()
     {
         $dokter = Dokter::with(['puskesmas', 'kategori'])->orderBy('id', 'desc')->get();
@@ -37,14 +38,12 @@ class DokterController extends Controller
             'foto'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
-        // Upload foto
         if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('dokter_foto', 'public');
             $validated['foto'] = $path;
         }
 
-        // Tambahkan admin_id dari admin yang sedang login
-        $validated['admin_id'] = auth('admin')->id(); // pastikan guard admin aktif
+        $validated['admin_id'] = auth('admin')->id();
 
         Dokter::create($validated);
 
@@ -101,16 +100,24 @@ class DokterController extends Controller
 
     // ===================== API ===================== //
 
-    public function apiIndex()
+    // --- FUNGSI INI TELAH DIPERBAIKI ---
+    public function apiIndex(Request $request)
     {
-        $dokter = Dokter::with('puskesmas')
-            ->orderBy('id', 'desc')
-            ->get()
-            ->map(function ($d) {
-                $d->foto_url = $this->buildFotoUrl($d->foto);
-                unset($d->foto);
-                return $d;
-            });
+        // Mulai query builder, jangan langsung get()
+        $query = Dokter::with('puskesmas')->orderBy('id', 'desc');
+
+        // Cek apakah ada parameter 'puskesmas_id' di request
+        if ($request->has('puskesmas_id')) {
+            // Jika ada, filter berdasarkan ID tersebut
+            $query->where('id_puskesmas', $request->puskesmas_id);
+        }
+
+        // Eksekusi query
+        $dokter = $query->get()->map(function ($d) {
+            $d->foto_url = $this->buildFotoUrl($d->foto);
+            unset($d->foto);
+            return $d;
+        });
 
         return response()->json($dokter);
     }
@@ -127,6 +134,8 @@ class DokterController extends Controller
             return response()->json($dokter);
         }
 
+        // Blok ini sekarang menjadi redundan karena sudah ditangani oleh apiIndex,
+        // namun kita biarkan saja agar tidak mengubah struktur yang sudah ada.
         $dokter = Dokter::with('puskesmas')->get()->map(function ($d) {
             $d->foto_url = $this->buildFotoUrl($d->foto);
             unset($d->foto);
@@ -136,20 +145,16 @@ class DokterController extends Controller
         return response()->json($dokter);
     }
 
-    // ===================== Helper Gambar ===================== //
-
+    // --- Sisa kode (Helper Gambar) tidak diubah ---
     private function getStoragePathFromFoto($foto)
     {
         if (!$foto) return null;
-
         if (strpos($foto, 'http://') !== 0 && strpos($foto, 'https://') !== 0) {
             return $foto;
         }
-
         if (preg_match('#/storage/(.+)$#', $foto, $matches)) {
             return $matches[1];
         }
-
         $path = parse_url($foto, PHP_URL_PATH);
         if ($path) {
             $path = ltrim($path, '/');
@@ -158,7 +163,6 @@ class DokterController extends Controller
             }
             return $path;
         }
-
         return null;
     }
 
@@ -171,16 +175,13 @@ class DokterController extends Controller
     private function replaceImageUrlsInHtml($content)
     {
         if (!$content) return $content;
-
         return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
             $prefix = $m[1];
             $src = $m[2];
             $suffix = $m[3];
-
             if (preg_match('/^data:/i', $src)) {
                 return $m[0];
             }
-
             if (preg_match('/^https?:\/\//i', $src)) {
                 if (preg_match('#/storage/(.+)#i', $src, $matches)) {
                     $rel = $matches[1];
@@ -194,7 +195,6 @@ class DokterController extends Controller
                 }
                 return $m[0];
             }
-
             $parsedPath = $src;
             if (strpos($parsedPath, '/storage/') === 0) {
                 $rel = ltrim(substr($parsedPath, strlen('/storage/')), '/');
@@ -210,7 +210,6 @@ class DokterController extends Controller
                 $new = request()->getSchemeAndHttpHost() . '/storage/' . ltrim($parsedPath, '/');
                 return $prefix . $new . $suffix;
             }
-
             return $m[0];
         }, $content);
     }

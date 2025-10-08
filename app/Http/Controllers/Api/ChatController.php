@@ -51,28 +51,6 @@ class ChatController extends Controller
         return response()->json($messages);
     }
 
-    /**
-     *  Menampilkan semua pesan yang masuk ke dokter (semua user)
-     */
-    public function getAllMessagesForDokter()
-    {
-        // ambil user dari sanctum
-        $admin = Auth::user();
-
-        // cari dokter berdasarkan admin login
-        $dokter = Dokter::where('admin_id', $admin->id)->first();
-
-        if (!$dokter) {
-            return response()->json(['message' => 'Data dokter tidak ditemukan'], 404);
-        }
-
-        $messages = Message::where('dokter_id', $dokter->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json($messages);
-    }
-
 
     // Kirim pesan
     public function sendMessage(Request $request)
@@ -96,7 +74,7 @@ class ChatController extends Controller
         }
         // kalau yang login itu ADMIN (dokter)
         else {
-            $dokter = \App\Models\Dokter::where('admin_id', $user->id)->first();
+            $dokter = Dokter::where('admin_id', $user->id)->first();
 
             if (!$dokter) {
                 return response()->json(['message' => 'Dokter tidak ditemukan'], 404);

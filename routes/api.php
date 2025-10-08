@@ -139,16 +139,16 @@ Route::get('/dokter', [DokterController::class, 'apiIndex']);
 Route::get('/dokter/{id?}', [DokterController::class, 'apiShow']);
 
 //chat
+//mengirim pesan
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chat/send', [ChatController::class, 'sendMessage']);
     Route::get('/chat/{user_id}', [ChatController::class, 'getMessages']);
 });
 
-Route::middleware('auth:admin')->group(function () {
+//dokter melihat chat yang masuk
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat', [ChatController::class, 'index']);
 });
 
 // untuk user login (lihat chat dengan dokter tertentu)
 Route::middleware('auth:sanctum')->get('/chat/{dokter_id}', [ChatController::class, 'getMessages']);
-
-Route::middleware('auth:sanctum')->get('/dokter/chats', [ChatController::class, 'getAllMessagesForDokter']);
