@@ -11,11 +11,16 @@ class NotifikasiAktivitas extends Model
         'dibaca',
         'url',
         'role',
-        'dinas',
+        'id_instansi',
     ];
 
     public function scopeUnread($query)
-{
-    return $query->where('dibaca', 0);
-}
+    {
+        return $query->where('dibaca', 0);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
 }

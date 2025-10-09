@@ -13,165 +13,182 @@ class CheckAdminDinas
     {
         $user = Auth::guard('admin')->user();
 
+        // Jika belum login → arahkan ke login
         if (!$user) {
             return redirect()->route('admin.login');
         }
 
-        // Superadmin bebas akses semua
+        // Superadmin bebas akses ke semua
         if ($user->role === 'superadmin') {
             return $next($request);
         }
 
-        // Jika role admindinas → cek hak akses berdasarkan dinas
-        if ($user->role === 'admindinas') {
-            $allowedRoutesByDinas = $this->getAllowedRoutesByDinas($user->dinas);
+        // Dokter hanya boleh ke modul dokter dan chat
+        if ($user->role === 'dokter') {
+            $allowedRoutes = [
+                'admin.dashboard',
+                'admin.sehat.dokter.*',
+                'admin.chat.*',
+                'admin.accounts.profile',
+            ];
 
             $routeName = $request->route()->getName();
-            $allowed = false;
 
-            foreach ($allowedRoutesByDinas as $pattern) {
+            foreach ($allowedRoutes as $pattern) {
                 if (Str::is($pattern, $routeName)) {
-                    $allowed = true;
-                    break;
+                    return $next($request);
                 }
             }
 
-            if (!$allowed) {
-                abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-            }
-        } else {
-            abort(403, 'Role tidak dikenali.');
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        return $next($request);
+        // Admin Dinas → cek akses berdasar id_instansi
+        if ($user->role === 'admindinas') {
+            // Jika belum punya id_instansi, tolak akses
+            if (is_null($user->id_instansi)) {
+                abort(403, 'Akun Anda belum terhubung dengan instansi manapun.');
+            }
+
+            $allowedRoutesByInstansi = $this->getAllowedRoutesByInstansi($user->id_instansi);
+
+            $routeName = $request->route()->getName();
+
+            foreach ($allowedRoutesByInstansi as $pattern) {
+                if (Str::is($pattern, $routeName)) {
+                    return $next($request);
+                }
+            }
+
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
+        // Jika role tidak dikenali
+        abort(403, 'Role tidak dikenali.');
     }
 
     /**
-     * Mapping daftar route yang boleh diakses tiap dinas
+     * 🔐 Mapping route berdasarkan id_instansi
      */
-    private function getAllowedRoutesByDinas(string $dinas): array
+    private function getAllowedRoutesByInstansi($id_instansi)
     {
-        switch ($dinas) {
-            case 'kesehatan':
+        switch ($id_instansi) {
+            case 2: // 🏥 Dinas Kesehatan
                 return [
                     'admin.dashboard',
                     'admin.sehat.tempat.*',
                     'admin.sehat.info.*',
                     'admin.sehat.olahraga.*',
+                    'admin.sehat.puskesmas.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.setting.index',
-                    'admin.kategori.*', 
-                    'admin.dumas.aduan.index',
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
 
-            case 'pendidikan':
+            case 3: // 🎓 Dinas Pendidikan
                 return [
                     'admin.dashboard',
                     'admin.sekolah.tempat.*',
                     'admin.sekolah.info.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
-            
-            case 'perpajakan':
-                return [
-                    'admin.dashboard',
-                    'admin.pajak.info.*',
-                    'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
-                ];
-            
-            case 'perdagangan':
+
+            case 1: // 🛒 Dinas Perdagangan
                 return [
                     'admin.dashboard',
                     'admin.pasar.tempat.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
 
-            case 'kerja':
-                return [
-                    'admin.dashboard',
-                    'admin.kerja.info.*',
-                    'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
-                ];
-
-            case 'pariwisata':
+            case 4: // 🏖️ Dinas Pariwisata
                 return [
                     'admin.dashboard',
                     'admin.plesir.tempat.*',
                     'admin.plesir.info.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
-                ];
-            
-            case 'keagamaan':
-                return [
-                    'admin.dashboard',
-                    'admin.ibadah.tempat.index',
-                    'admin.ibadah.tempat.create',
-                    'admin.ibadah.tempat.store',
-                    'admin.ibadah.tempat.update',
-                    'admin.ibadah.tempat.edit',
-                    'admin.ibadah.tempat.show',
-                    'admin.ibadah.tempat.map',
-                    'admin.ibadah.tempat.destroy',
-                    'admin.ibadah.info.index',
-                    'admin.ibadah.info.map',
-                    'admin.ibadah.info.create',
-                    'admin.ibadah.info.store',
-                    'admin.ibadah.info.update',
-                    'admin.ibadah.info.edit',
-                    'admin.ibadah.info.destroy',
-                    'admin.ibadah.simpan-lokasi',
-                    'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
 
-            case 'kependudukan':
+            case 5: // 🕌 Dinas Keagamaan
+                return [
+                    'admin.dashboard',
+                    'admin.ibadah.tempat.*',
+                    'admin.ibadah.info.*',
+                    'admin.kategori.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
+                ];
+
+            case 6: // 🧾 Dinas Perpajakan
+                return [
+                    'admin.dashboard',
+                    'admin.pajak.info.*',
+                    'admin.kategori.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
+                ];
+
+            case 7: // 👷 Dinas Tenaga Kerja
+                return [
+                    'admin.dashboard',
+                    'admin.kerja.info.*',
+                    'admin.kategori.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
+                ];
+
+            case 8: // 🧍 Dinas Kependudukan
                 return [
                     'admin.dashboard',
                     'admin.adminduk.info.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
 
-            case 'pembangunan':
+            case 9: // 🏗️ Dinas Pembangunan
                 return [
                     'admin.dashboard',
                     'admin.renbang.info.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
 
-            case 'perizinan':
+            case 10: // 📜 Dinas Perizinan
                 return [
                     'admin.dashboard',
                     'admin.izin.info.*',
+                    'admin.kategori.*',
                     'admin.accounts.profile',
-                    'admin.dumas.aduan.index',
-                    'admin.setting.index',
-                    'admin.kategori.*'
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
                 ];
+
             default:
-                return ['admin.dashboard']; // fallback minimal
+                return ['admin.dashboard']; // Default minimal akses
         }
+    }
+
+    public function sidebar()
+    {
+        $user = auth()->guard('admin')->user();
+        $allowedRoutes = $this->getAllowedRoutesByInstansi($user->dinas ?? 0);
+
+        return view('admin.partials.sidebar', compact('allowedRoutes', 'user'));
     }
 }

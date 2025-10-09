@@ -90,7 +90,7 @@ class DumasController extends Controller
             $items = Dumas::with(['kategori.instansi', 'ratings'])->get();
         } else {
             // Admin dinas, ambil id_instansi dari user_data
-            $userData = UserData::where('id_admins', $user->id)->first();
+            $userData = UserData::where('id_admin', $user->id)->first();
             $idInstansi = $userData?->id_instansi;
 
             $items = Dumas::with(['kategori.instansi', 'ratings'])

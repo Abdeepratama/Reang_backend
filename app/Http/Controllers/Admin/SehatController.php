@@ -621,11 +621,11 @@ class SehatController extends Controller
 
             // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id'    => $user->id,
-                'tipe'       => $this->aktivitasTipe,
-                'keterangan' => $pesan,
-                'role'       => $user->role,
-                'dinas'      => $user->dinas,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
@@ -635,11 +635,11 @@ class SehatController extends Controller
         $user = auth()->user();
 
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca'     => false,
-            'url'        => route('admin.sehat.tempat.index'),
-            'role'       => $user->role,
-            'dinas'      => $user->dinas,
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.sehat.tempat.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

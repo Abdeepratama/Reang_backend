@@ -10,14 +10,7 @@ class Admin extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-        'id_instansi',
-    ];
-
+    protected $fillable = ['name', 'password', 'role', 'id_instansi', 'id_dokter'];
     protected $hidden = [
         'password',
         'remember_token',
@@ -26,6 +19,16 @@ class Admin extends Authenticatable
     public function instansi()
     {
         return $this->belongsTo(Instansi::class, 'id_instansi');
+    }
+
+    public function dokter()
+    {
+        return $this->belongsTo(Dokter::class, 'id_dokter', 'id');
+    }
+
+    public function userData()
+    {
+        return $this->hasOne(UserData::class, 'id_admin');
     }
 
     public function hasAccess($module)

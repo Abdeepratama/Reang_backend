@@ -44,7 +44,7 @@
             </li>
 
             {{-- Menu Info-Yu --}}
-            @if($user && ($user->role === 'superadmin' || ($user->role === 'admindinas' && !in_array($user->dinas, $allowedDinas))))
+            @if ($user && $user->hasAccess('info'))
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('admin.info.*') ? 'text-primary bg-light' : '' }}"
                     href="{{ route('admin.info.index') }}">
@@ -56,17 +56,13 @@
 
 
             @php
-            $user = Auth::guard('admin')->user();
-            $isSuper = $user && $user->role === 'superadmin';
-            $isAdminDinas = $user && $user->role === 'admindinas';
+            use Illuminate\Support\Facades\Auth;
 
-            $excludedForMain = ['perpajakan','perdagangan','kerja','pariwisata','keagamaan','kependudukan','pembangunan','perizinan'];
-            $excludedForSehat = ['pendidikan','perpajakan'];
-            $excludedForSekolah = ['kesehatan','perpajakan'];
+            $user = Auth::guard('admin')->user();
             @endphp
 
-            {{-- Submenu Sehat-Yu --}}
-            @if ($isSuper || ($isAdminDinas && !in_array($user->dinas, $excludedForSehat)))
+            {{-- Sehat-Yu --}}
+            @if ($user && $user->hasAccess('sehat'))
             <li class="nav-item dropdown">
                 <a class="dropdown-toggle nav-link {{ request()->routeIs('admin.sehat.*') ? 'active bg-light' : '' }}"
                     href="#submenu-sehat"
@@ -84,8 +80,8 @@
             </li>
             @endif
 
-            {{-- Submenu Sekolah-Yu --}}
-            @if ($isSuper || ($isAdminDinas && !in_array($user->dinas, $excludedForSekolah)))
+            {{-- Sekolah-Yu --}}
+            @if ($user && $user->hasAccess('sekolah'))
             <li class="nav-item dropdown">
                 <a class="dropdown-toggle nav-link {{ request()->routeIs('admin.sekolah.*') ? 'active bg-light' : '' }}"
                     href="#submenu-sekolah"
@@ -104,7 +100,7 @@
 
             <!-- =========================================================================================================================================== -->
 
-
+        @if ($user && $user->hasAccess('sekolah'))
             @if (Auth::guard('admin')->check() &&
             (Auth::guard('admin')->user()->role === 'superadmin' ||
             (Auth::guard('admin')->user()->role === 'admindinas' && Auth::guard('admin')->user()->dinas != 'kesehatan' && Auth::guard('admin')->user()->dinas != 'pendidikan')))
@@ -183,6 +179,7 @@
                 @endif
 
             </ul>
+            @endif
 
             <!-- =========================================================================================================================================== -->
 

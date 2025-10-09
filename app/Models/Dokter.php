@@ -19,7 +19,6 @@ class Dokter extends Model
         'fitur',
         'masa_kerja',
         'nomer',
-        'admin_id',
         'foto'
     ];
 

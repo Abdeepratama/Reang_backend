@@ -14,7 +14,8 @@
     <div class="card mt-3 shadow-sm">
         <div class="card-body">
             <p><strong>Nama:</strong> {{ $admin->name }}</p>
-            <p><strong>Email:</strong> {{ $admin->email }}</p>
+            <p><strong>Email:</strong> {{ $admin->userData->email ?? '-' }}</p>
+            <p><strong>No. HP:</strong> {{ $admin->userData->no_hp ?? '-' }}</p>
             
             <p><strong>Role:</strong> 
                 @if($admin->role === 'superadmin')
@@ -22,14 +23,13 @@
                 @elseif($admin->role === 'admindinas')
                     <span class="badge bg-success">Admin Dinas</span>
                 @else
-                    <span class="badge bg-secondary">{{ $admin->role }}</span>
+                    <span class="badge bg-secondary">{{ ucfirst($admin->role) }}</span>
                 @endif
             </p>
 
-            @if(!empty($admin->dinas))
-                <p><strong>Dinas:</strong> {{ $admin->dinas }}</p>
+            @if(!empty($admin->userData->instansi))
+                <p><strong>Instansi:</strong> {{ $admin->userData->instansi->nama }}</p>
             @endif
-
         </div>
     </div>
 

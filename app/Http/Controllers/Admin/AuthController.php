@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\Admin;
+
 class AuthController extends Controller
 {
     public function showLoginForm()
@@ -65,7 +67,7 @@ class AuthController extends Controller
 
     public function profile()
     {
-        $admin = Auth::guard('admin')->user();
+        $admin = Auth::guard('admin')->user()->load('userData.instansi');
         return view('admin.accounts.profile', compact('admin'));
     }
 
