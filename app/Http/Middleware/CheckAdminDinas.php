@@ -45,10 +45,15 @@ class CheckAdminDinas
 
         // Admin Dinas → cek akses berdasar id_instansi
         if ($user->role === 'admindinas') {
-            // Jika belum punya id_instansi, tolak akses
-            if (is_null($user->id_instansi)) {
+            $user->load('userData.instansi');
+
+            $idInstansi = optional($user->userData->instansi)->id;
+
+            if (empty($idInstansi)) {
                 abort(403, 'Akun Anda belum terhubung dengan instansi manapun.');
             }
+
+            $allowedRoutesByInstansi = $this->getAllowedRoutesByInstansi($idInstansi);
 
             $allowedRoutesByInstansi = $this->getAllowedRoutesByInstansi($user->id_instansi);
 
@@ -97,7 +102,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 1: // 🛒 Dinas Perdagangan
+            case 7: // 🛒 Dinas Perdagangan
                 return [
                     'admin.dashboard',
                     'admin.pasar.tempat.*',
@@ -107,7 +112,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 4: // 🏖️ Dinas Pariwisata
+            case 9: // 🏖️ Dinas Pariwisata
                 return [
                     'admin.dashboard',
                     'admin.plesir.tempat.*',
@@ -118,7 +123,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 5: // 🕌 Dinas Keagamaan
+            case 10: // 🕌 Dinas Keagamaan
                 return [
                     'admin.dashboard',
                     'admin.ibadah.tempat.*',
@@ -139,7 +144,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 7: // 👷 Dinas Tenaga Kerja
+            case 8: // 👷 Dinas Tenaga Kerja
                 return [
                     'admin.dashboard',
                     'admin.kerja.info.*',
@@ -149,7 +154,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 8: // 🧍 Dinas Kependudukan
+            case 11: // 🧍 Dinas Kependudukan
                 return [
                     'admin.dashboard',
                     'admin.adminduk.info.*',
@@ -159,7 +164,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 9: // 🏗️ Dinas Pembangunan
+            case 12: // 🏗️ Dinas Pembangunan
                 return [
                     'admin.dashboard',
                     'admin.renbang.info.*',
@@ -169,7 +174,7 @@ class CheckAdminDinas
                     'admin.setting.*',
                 ];
 
-            case 10: // 📜 Dinas Perizinan
+            case 13: // 📜 Dinas Perizinan
                 return [
                     'admin.dashboard',
                     'admin.izin.info.*',

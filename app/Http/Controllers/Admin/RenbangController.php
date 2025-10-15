@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Renbang;
+use App\Models\RenbangAjuan;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class RenbangController extends Controller
 {
@@ -94,24 +96,30 @@ class RenbangController extends Controller
     }
 
     public function infoDestroy($id)
-{
-    $item = Renbang::findOrFail($id);
+    {
+        $item = Renbang::findOrFail($id);
 
-    // Hapus gambar kalau ada
-    if ($item->gambar && Storage::disk('public')->exists($item->gambar)) {
-        Storage::disk('public')->delete($item->gambar);
+        // Hapus gambar kalau ada
+        if ($item->gambar && Storage::disk('public')->exists($item->gambar)) {
+            Storage::disk('public')->delete($item->gambar);
+        }
+
+        // Hapus data dari DB
+        $item->delete();
+
+        $this->logAktivitas("Info Renbang telah dihapus");
+        $this->logNotifikasi("Info Renbang telah dihapus");
+
+        return redirect()->route('admin.renbang.info.index')
+            ->with('success', 'Info Renbang berhasil dihapus');
     }
 
-    // Hapus data dari DB
-    $item->delete();
+    public function infoShowDetail($id)
+    {
+        $item = Renbang::findOrFail($id);
+        return view('admin.renbang.info.show', compact('item'));
+    }
 
-    $this->logAktivitas("Info Renbang telah dihapus");
-    $this->logNotifikasi("Info Renbang telah dihapus");
-
-    return redirect()->route('admin.renbang.info.index')
-        ->with('success', 'Info Renbang berhasil dihapus');
-}
-    
     // Metode ini tetap dipertahankan jika masih digunakan oleh bagian lain
     public function infoShow($id = null)
     {
@@ -127,8 +135,8 @@ class RenbangController extends Controller
                 'fitur'     => $data->kategori->nama ?? ($data->fitur ?? null),
                 'gambar'    => $data->gambar ? $this->buildFotoUrl($data->gambar) : null,
                 'alamat'    => $data->alamat,
-                'created_at'=> $data->created_at,
-                'updated_at'=> $data->updated_at,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
             ];
             return response()->json($arr, 200);
         } else {
@@ -140,8 +148,8 @@ class RenbangController extends Controller
                     'fitur'     => $item->kategori->nama ?? ($item->fitur ?? null),
                     'gambar'    => $item->gambar ? $this->buildFotoUrl($item->gambar) : null,
                     'alamat'    => $item->alamat,
-                    'created_at'=> $item->created_at,
-                    'updated_at'=> $item->updated_at,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
                 ];
             });
             return response()->json($data, 200);
@@ -164,6 +172,114 @@ class RenbangController extends Controller
             'uploaded' => false,
             'error'    => ['message' => 'No file uploaded']
         ], 400);
+    }
+
+    // Ajuan renbang
+    // =======================
+    // 🔹 BAGIAN WEB
+    // =======================
+    public function index()
+    {
+        $user = Auth::guard('admin')->user();
+
+        if ($user->role === 'superadmin') {
+            $items = RenbangAjuan::with('user')
+                ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
+                ->latest()
+                ->get();
+        } else {
+            $items = RenbangAjuan::with('user')
+                ->whereHas('user.userData', function ($q) use ($user) {
+                    $q->where('id_admin', $user->id);
+                })
+                ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
+                ->latest()
+                ->get();
+        }
+
+        return view('admin.renbang.ajuan.index', compact('items'));
+    }
+
+    public function show($id)
+    {
+        $item = RenbangAjuan::with('user')->findOrFail($id);
+        return view('admin.renbang.ajuan.show', compact('ajuan'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $ajuan = RenbangAjuan::findOrFail($id);
+
+        $request->validate([
+            'status' => 'nullable|in:menunggu,diproses,selesai,ditolak',
+            'tanggapan' => 'nullable|string|max:1000',
+        ]);
+
+        if ($request->filled('status')) {
+            $ajuan->status = $request->status;
+        }
+
+        if ($request->filled('tanggapan')) {
+            $ajuan->tanggapan = $request->tanggapan;
+        }
+
+        $ajuan->save();
+
+        return back()->with('success', 'Status atau tanggapan berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $ajuan = RenbangAjuan::findOrFail($id);
+        $ajuan->delete();
+
+        return back()->with('success', 'Ajuan berhasil dihapus!');
+    }
+
+    // =======================
+    // 🔹 BAGIAN API (Flutter)
+    // =======================
+    public function apiIndex()
+    {
+        $data = RenbangAjuan::with('user')->latest()->get();
+        return response()->json(['success' => true, 'data' => $data]);
+    }
+
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'judul'     => 'required|string|max:255',
+            'kategori'  => 'required|string|max:255',
+            'lokasi'    => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+        ]);
+
+        $user = auth('sanctum')->user();
+
+        $ajuan = new RenbangAjuan();
+        $ajuan->judul     = $request->judul;
+        $ajuan->kategori  = $request->kategori;
+        $ajuan->lokasi    = $request->lokasi;
+        $ajuan->deskripsi = $request->deskripsi;
+        $ajuan->status    = 'menunggu';
+        $ajuan->user_id   = $user?->id;
+        $ajuan->save();
+
+        return response()->json([
+            'message' => 'Ajuan berhasil dikirim',
+            'data' => $ajuan,
+        ], 201);
+    }
+
+    public function apiajuanShow($id)
+    {
+        $ajuan = RenbangAjuan::with('user')->find($id);
+
+        if (!$ajuan) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        return response()->json(['success' => true, 'data' => $ajuan]);
     }
 
     /**
@@ -209,8 +325,8 @@ class RenbangController extends Controller
                 'fitur'     => $data->kategori->nama ?? ($data->fitur ?? null),
                 'gambar'    => $data->gambar ? $this->buildFotoUrl($data->gambar) : null,
                 'alamat'    => $data->alamat,
-                'created_at'=> $data->created_at,
-                'updated_at'=> $data->updated_at,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
             ];
             return response()->json($formattedData, 200);
         }
@@ -237,8 +353,8 @@ class RenbangController extends Controller
                 'fitur'     => $item->kategori->nama ?? ($item->fitur ?? null),
                 'gambar'    => $item->gambar ? $this->buildFotoUrl($item->gambar) : null,
                 'alamat'    => $item->alamat,
-                'created_at'=> $item->created_at,
-                'updated_at'=> $item->updated_at,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
             ];
         });
 
@@ -279,23 +395,34 @@ class RenbangController extends Controller
         return request()->getSchemeAndHttpHost() . '/storage/' . ltrim($path, '/');
     }
 
+    protected $aktivitasTipe = 'renbang';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => 'renbang',
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.renbang.info.index')
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.renbang.info.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 }

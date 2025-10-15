@@ -14,26 +14,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PlesirController extends Controller
 {
-    use CRUDHelper;
-
-    public function __construct()
-    {
-        $this->model = Plesir::class;
-        $this->routePrefix = 'plesir';
-        $this->viewPrefix = 'plesir';
-        $this->viewSubfolder = 'tempat';
-        $this->aktivitasTipe = 'Tempat Plesir';
-        $this->aktivitasCreateMessage = 'Tempat plesir baru ditambahkan';
-        $this->validationRules = [
-            'name' => 'required|string',
-            'address' => 'nullable|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'fitur' => 'required|exists:kategoris,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
-        ];
-    }
-
     public function create()
     {
         $kategoriPlesir = Kategori::where('fitur', 'lokasi plesir')->orderBy('nama')->get();
@@ -335,6 +315,12 @@ class PlesirController extends Controller
         return back()->with('success', 'Info plesir berhasil dihapus.');
     }
 
+    public function infoshowDetail($id)
+    {
+        $info = InfoPlesir::findOrFail($id);
+        return view('admin.plesir.info.show', compact('info'));
+    }
+
     public function infomap()
     {
         $lokasi = InfoPlesir::all()->map(function ($loc) {
@@ -437,23 +423,34 @@ class PlesirController extends Controller
         ], 400);
     }
 
+    protected $aktivitasTipe = 'Sekolah';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => $this->aktivitasTipe,
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index') // route yang valid
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.sekolah.tempat.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 use App\Models\Admin;
 
 class AuthController extends Controller
 {
+    /**
+     * Tampilkan form login admin
+     */
     public function showLoginForm()
     {
         $code = strtoupper(substr(md5(mt_rand()), 0, 5));
@@ -18,45 +20,42 @@ class AuthController extends Controller
         return view('admin.login');
     }
 
+    /**
+     * Proses login admin
+     */
     public function login(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required',
             'password' => 'required',
             'captcha' => 'required',
         ]);
 
-        // Cek captcha manual
+        // 🧩 Validasi captcha
         if ($request->captcha !== session('captcha_code')) {
             return back()->withErrors(['captcha' => 'Captcha tidak sesuai'])->withInput();
         }
 
-        // Ambil hanya name & password
         $credentials = $request->only('name', 'password');
 
         if (Auth::guard('admin')->attempt($credentials)) {
-            $user = Auth::guard('admin')->user();
+            $user = Admin::find(Auth::guard('admin')->id());
+            $user->load('userData.instansi');
 
-            // simpan ke session manual (opsional)
+            $instansiNama = optional($user->userData->instansi)->nama;
+
+            if ($user->role === 'admindinas' && empty(trim($instansiNama))) {
+                Auth::guard('admin')->logout();
+                return back()->with('error', 'Akun Anda belum terhubung dengan instansi manapun.');
+            }
+
             session([
+                'admin_id' => $user->id,
                 'name' => $user->name,
-                'password' => $user->password,
+                'role' => $user->role,
+                'instansi' => $instansiNama,
             ]);
 
-            // cek role
-            if ($user->role === 'superadmin') {
-                return redirect()->route('admin.dashboard');
-            }
-
-            if ($user->role === 'admindinas') {
-                switch ($user->dinas) {
-                    case 'kesehatan':
-                        return redirect()->route('admin.dashboard');
-                }
-            }
-
-            // fallback
             return redirect()->route('admin.dashboard');
         }
 
@@ -65,12 +64,18 @@ class AuthController extends Controller
         ])->withInput();
     }
 
+    /**
+     * Profil admin (menampilkan data + relasi instansi)
+     */
     public function profile()
     {
         $admin = Auth::guard('admin')->user()->load('userData.instansi');
         return view('admin.accounts.profile', compact('admin'));
     }
 
+    /**
+     * Logout admin
+     */
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();

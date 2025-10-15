@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PajakController;
 use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Admin\RenbangController;
+use App\Http\Controllers\RenbangAjuanController;
 use App\Http\Controllers\Admin\IzinController;
 use App\Http\Controllers\Admin\WifiController;
 use App\Http\Controllers\Admin\WebController;
@@ -38,8 +39,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     });
+});
 
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:admin')->name('logout');
+Route::prefix('admin')->group(function () {
+    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])
+        ->middleware('auth:admin')
+        ->name('admin.logout');
 });
 
 // ----------------- ROUTE ADMIN -----------------
@@ -64,9 +69,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('/info/map', [IbadahController::class, 'infomap'])->name('info.map');
         Route::get('/info/create', [IbadahController::class, 'createInfo'])->name('info.create');
         Route::post('/info', [IbadahController::class, 'storeInfo'])->name('info.store');
-        Route::get('/info/{id}/edit', [IbadahController::class, 'infoEdit'])->name('info.edit');
+        Route::get('/info/edit/{id}', [IbadahController::class, 'infoEdit'])->name('info.edit');
         Route::put('/info/{id}', [IbadahController::class, 'infoUpdate'])->name('info.update');
         Route::delete('/info/{id}', [IbadahController::class, 'infoDestroy'])->name('info.destroy');
+        Route::get('/info/show/{id}', [IbadahController::class, 'infoshowDetail'])->name('info.show');
     });
 
     // ----------------- PASAR -----------------
@@ -104,6 +110,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('/edit/{id}', [PlesirController::class, 'infoEdit'])->name('info.edit');
         Route::put('/update/{id}', [PlesirController::class, 'infoUpdate'])->name('info.update');
         Route::delete('/destroy/{id}', [PlesirController::class, 'infoDestroy'])->name('info.destroy');
+        Route::get('/show/{id}', [PlesirController::class, 'infoshowDetail'])->name('info.show');
     });
 
     // ----------------- SEHAT -----------------
@@ -124,6 +131,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::post('/info/store', [SehatController::class, 'infostore'])->name('info.store');
         Route::get('/info/edit/{id}', [SehatController::class, 'infoedit'])->name('info.edit');
         Route::put('/info/update/{id}', [SehatController::class, 'infoupdate'])->name('info.update');
+        Route::get('/info/show/{id}', [SehatController::class, 'infoshowAdmin'])->name('info.show');
         Route::delete('/info/destroy/{id}', [SehatController::class, 'infodestroy'])->name('info.destroy');
         Route::post('/upload-image', [SehatController::class, 'upload'])->name('info.upload.image');
     });
@@ -164,6 +172,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     Route::prefix('pajak')->name('pajak.')->group(function () {
         Route::resource('info', PajakController::class)->except(['show']);
         Route::post('info/upload-image', [PajakController::class, 'infoupload'])->name('info.upload.image');
+        Route::get('info/show/{id}', [PajakController::class, 'showDetail'])->name('info.show');
     });
 
     // ----------------- KERJA -----------------
@@ -172,9 +181,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('info', [KerjaController::class, 'infoindex'])->name('info.index');
         Route::get('info/create', [KerjaController::class, 'infocreate'])->name('info.create');
         Route::post('info', [KerjaController::class, 'infostore'])->name('info.store');
-        Route::get('info/{id}/edit', [KerjaController::class, 'infoedit'])->name('info.edit');
+        Route::get('info/edit/{id}', [KerjaController::class, 'infoedit'])->name('info.edit');
         Route::put('info/{id}', [KerjaController::class, 'infoupdate'])->name('info.update');
         Route::delete('info/{id}', [KerjaController::class, 'infodestroy'])->name('info.destroy');
+        Route::get('info/show/{id}', [KerjaController::class, 'infoshowdetail'])->name('info.show');
 
         // Upload image (ckeditor atau summernote)
         Route::post('info/upload-image', [KerjaController::class, 'upload'])->name('info.upload.image');
@@ -186,9 +196,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('info', [AdmindukController::class, 'infoindex'])->name('info.index');
         Route::get('info/create', [AdmindukController::class, 'infocreate'])->name('info.create');
         Route::post('info', [AdmindukController::class, 'infostore'])->name('info.store');
-        Route::get('info/{id}/edit', [AdmindukController::class, 'infoedit'])->name('info.edit');
+        Route::get('info/edit/{id}', [AdmindukController::class, 'infoedit'])->name('info.edit');
         Route::put('info/{id}', [AdmindukController::class, 'infoupdate'])->name('info.update');
         Route::delete('info/{id}', [AdmindukController::class, 'infodestroy'])->name('info.destroy');
+        Route::get('info/show/{id}', [AdmindukController::class, 'infoshowDetail'])->name('info.show');
 
         // Upload untuk CKEditor
         Route::post('info/upload-image', [AdmindukController::class, 'infoupload'])->name('info.upload.image');
@@ -200,17 +211,28 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('Renbang/Info', [RenbangController::class, 'infoIndex'])->name('info.index');
         Route::get('Renbang/Info/create', [RenbangController::class, 'infoCreate'])->name('info.create');
         Route::post('Renbang/Info', [RenbangController::class, 'infoStore'])->name('info.store');
-        Route::get('Renbang/Info/{id}/edit', [RenbangController::class, 'infoEdit'])->name('info.edit');
+        Route::get('Renbang/Info/edit/{id}', [RenbangController::class, 'infoEdit'])->name('info.edit');
         Route::put('Renbang/Info/{id}', [RenbangController::class, 'infoUpdate'])->name('info.update');
         Route::delete('Renbang/Info/{id}', [RenbangController::class, 'infoDestroy'])->name('info.destroy');
+        Route::get('Renbang/Info/show/{id}', [RenbangController::class, 'infoshowDetail'])->name('info.show');
 
         // Upload gambar (CKEditor)
         Route::post('Info/upload-image', [RenbangController::class, 'infoUpload'])->name('info.upload.image');
     });
 
+    // ajuan
+    Route::prefix('renbang/ajuan')->name('renbang.ajuan.')->group(function () {
+        Route::get('/', [RenbangController::class, 'index'])->name('index');
+        Route::get('/{id}', [RenbangController::class, 'show'])->name('show');
+        Route::put('/{id}', [RenbangController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RenbangController::class, 'destroy'])->name('destroy');
+    });
+
     // ----------------- DUMAS -----------------
     Route::prefix('dumas')->name('dumas.')->group(function () {
-        Route::resource('aduan', DumasController::class)->except(['show', 'create', 'store']);
+        Route::resource('aduan', DumasController::class)->except(['show', 'create', 'store',]);
+
+        Route::get('aduan/{id}', [DumasController::class, 'show'])->name('aduan.show');
     });
 
     // ----------------- IZIN -----------------
@@ -219,9 +241,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('info', [IzinController::class, 'infoindex'])->name('info.index');
         Route::get('info/create', [IzinController::class, 'infocreate'])->name('info.create');
         Route::post('info', [IzinController::class, 'infostore'])->name('info.store');
-        Route::get('info/{id}/edit', [IzinController::class, 'infoedit'])->name('info.edit');
+        Route::get('info/edit/{id}', [IzinController::class, 'infoedit'])->name('info.edit');
         Route::put('info/{id}', [IzinController::class, 'infoupdate'])->name('info.update');
         Route::delete('info/{id}', [IzinController::class, 'infodestroy'])->name('info.destroy');
+        Route::get('info/show/{id}', [IzinController::class, 'infoshowDetail'])->name('info.show');
 
         // Upload gambar (CKEditor)
         Route::post('info/upload-image', [IzinController::class, 'upload'])->name('info.upload.image');
@@ -265,8 +288,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('info', [SekolahController::class, 'infoindex'])->name('info.index');
         Route::get('info/create', [SekolahController::class, 'infocreate'])->name('info.create');
         Route::post('info', [SekolahController::class, 'infostore'])->name('info.store');
-        Route::get('info/{id}/edit', [SekolahController::class, 'infoedit'])->name('info.edit');
+        Route::get('info/edit/{id}', [SekolahController::class, 'infoedit'])->name('info.edit');
         Route::put('info/{id}', [SekolahController::class, 'infoupdate'])->name('info.update');
+        Route::get('info/show/{id}', [SekolahController::class, 'infoshowDetail'])->name('info.show');
         Route::delete('info/{id}', [SekolahController::class, 'infodestroy'])->name('info.destroy');
         Route::post('info/upload-image', [SekolahController::class, 'infoupload'])->name('info.upload.image');
     });
@@ -297,8 +321,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ----------------- NOTIFIKASI -----------------
     Route::get('notifikasi/baca/{id}', function ($id) {
-        $notifikasi = NotifikasiAktivitas::findOrFail($id);
-        $notifikasi->update(['dibaca' => true]);
-        return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
+        $user = auth('admin')->user();
+        $notifikasi = \App\Models\NotifikasiAktivitas::findOrFail($id);
+
+        // 🔒 Validasi akses
+        if (
+            $user->role === 'superadmin' ||
+            ($user->role === 'admindinas' && $notifikasi->id_instansi === $user->id_instansi)
+        ) {
+            $notifikasi->update(['dibaca' => true]);
+            return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
+        }
+
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     })->name('notifikasi.baca.satu');
 });

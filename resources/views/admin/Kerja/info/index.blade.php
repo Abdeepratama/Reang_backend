@@ -57,13 +57,14 @@
                                             <td>{{ $info->fitur }}</td>
                                             <td>{{ Str::limit($info->deskripsi, 50) }}</td>
                                             <td>
-                                                <a href="{{ route('admin.kerja.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                                <form action="{{ route('admin.kerja.info.destroy', $info->id) }}" method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" class="btn btn-danger btn-sm">Hapus</button>
-                                                </form>
-                                            </td>
+    <a href="{{ route('admin.kerja.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
+    <a href="{{ route('admin.kerja.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
+    <form action="{{ route('admin.kerja.info.destroy', $info->id) }}" method="POST" style="display:inline;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" class="btn btn-danger btn-sm">Hapus</button>
+    </form>
+</td>
                                         </tr>
                                         @empty
                                         <tr>

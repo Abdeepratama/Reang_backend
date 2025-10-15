@@ -99,6 +99,7 @@
                     </td>
                     <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 80) }}</td>
                     <td>
+                        <a href="{{ route('admin.dumas.aduan.show', $item->id) }}" class="btn btn-info btn-sm text-white">Detail</a>
                         <form action="{{ route('admin.dumas.aduan.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus?')">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-danger">Hapus</button>

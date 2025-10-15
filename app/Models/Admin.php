@@ -10,61 +10,40 @@ class Admin extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $fillable = ['name', 'password', 'role', 'id_instansi', 'id_dokter'];
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    public function instansi()
-    {
-        return $this->belongsTo(Instansi::class, 'id_instansi');
-    }
-
-    public function dokter()
-    {
-        return $this->belongsTo(Dokter::class, 'id_dokter', 'id');
-    }
+    protected $fillable = ['name', 'password', 'role'];
+    protected $hidden = ['password', 'remember_token'];
 
     public function userData()
     {
         return $this->hasOne(UserData::class, 'id_admin');
     }
 
-    public function hasAccess($module)
+    public function getIdInstansiAttribute()
     {
-        // Superadmin selalu boleh
-        if ($this->role === 'superadmin') {
-            return true;
-        }
+        return $this->userData->id_instansi ?? null;
+    }
 
-        // Kalau tidak punya instansi → tolak
-        if (!$this->instansi) {
-            return false;
-        }
 
-        // Mapping modul ke id_instansi
-        $map = [
-            'dumas'    => [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], // semua instansi
-            'sehat'    => [2], // hanya dinas kesehatan
-            'sekolah'  => [4], // hanya pendidikan
-            'pajak'    => [5], // hanya perpajakan
-            'pasar'    => [7], // hanya perdagangan
-            'kerja'    => [6], // hanya dinas kerja
-            'plesir'   => [8], // hanya pariwisata
-            'ibadah'   => [9], // hanya keagamaan
-            'adminduk' => [10], // hanya kependudukan
-            'renbang'  => [12], // hanya pembangunan
-            'izin'     => [13], // hanya perizinan
-            'wifi'     => [1], // misalnya informatika
+    public function hasAccess($fitur)
+    {
+        $instansi = strtolower($this->userData->instansi->nama ?? '');
+
+        $mapping = [
+            'kesehatan'   => ['sehat'],
+            'dinas pendidikan'  => ['sekolah'],
+            'dinas perdagangan' => ['pasar'],
+            'dinas pariwisata'  => ['plesir'],
+            'dinas keagamaan'   => ['ibadah'],
+            'dinas pekerjaan'   => ['kerja'],
+            'dinas perpajakan'  => ['pajak'],
         ];
 
-        // Kalau modul tidak ada → default tolak
-        if (!isset($map[$module])) {
-            return false;
+        foreach ($mapping as $namaInstansi => $fiturs) {
+            if ($instansi === $namaInstansi && in_array($fitur, $fiturs)) {
+                return true;
+            }
         }
 
-        // Cek apakah id_instansi user ada di list modul
-        return in_array($this->id_instansi, $map[$module]);
+        return false;
     }
 }

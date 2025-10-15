@@ -106,6 +106,13 @@ class AdmindukController extends Controller
             ->with('success', 'Info Adminduk berhasil dihapus.');
     }
 
+    public function infoshowDetail($id)
+{
+    $item = InfoAdminduk::findOrFail($id);
+
+    return view('admin.adminduk.info.show', compact('item'));
+}
+
     /**
      * SHOW / LIST INFO ADMIN DUK (API)
      */
@@ -204,29 +211,34 @@ class AdmindukController extends Controller
         );
     }
 
-    /**
-     * LOG AKTIVITAS
-     */
+    protected $aktivitasTipe = 'adminduk';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id'    => auth()->id(),
-                'tipe'       => 'adminduk',
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
-    /**
-     * LOG NOTIFIKASI
-     */
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca'     => false,
-            'url'        => route('admin.adminduk.info.index') // route yang valid
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.adminduk.info.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

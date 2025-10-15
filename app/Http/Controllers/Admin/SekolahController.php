@@ -104,18 +104,18 @@ class SekolahController extends Controller
     }
 
     public function destroyTempat($id)
-{
-    $item = TempatSekolah::findOrFail($id);
+    {
+        $item = TempatSekolah::findOrFail($id);
 
-    if ($item->foto && Storage::disk('public')->exists($item->foto)) {
-        Storage::disk('public')->delete($item->foto);
+        if ($item->foto && Storage::disk('public')->exists($item->foto)) {
+            Storage::disk('public')->delete($item->foto);
+        }
+
+        $item->delete();
+
+        return redirect()->route('admin.sekolah.tempat.index')
+            ->with('success', 'Tempat sekolah berhasil dihapus.');
     }
-
-    $item->delete();
-
-    return redirect()->route('admin.sekolah.tempat.index')
-        ->with('success', 'Tempat sekolah berhasil dihapus.');
-}
 
     /**
      * MAP TEMPAT SEKOLAH
@@ -359,6 +359,13 @@ class SekolahController extends Controller
         }
     }
 
+    public function infoshowDetail($id)
+    {
+        $info = InfoSekolah::findOrFail($id);
+
+        return view('admin.sekolah.info.show', compact('info'));
+    }
+
     /**
      * Helper: mengganti semua <img src="..."> di deskripsi
      * agar selalu pakai host/domain yang sedang digunakan
@@ -407,23 +414,34 @@ class SekolahController extends Controller
         return $foto;
     }
 
+    protected $aktivitasTipe = 'Sekolah';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => 'sekolah',
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index') // route yang valid
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.sekolah.tempat.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 }

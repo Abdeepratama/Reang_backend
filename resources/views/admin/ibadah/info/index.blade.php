@@ -45,13 +45,14 @@
                                                 <td><img src="{{ asset('storage/' . $info->foto) }}" width="100" alt="Foto"></td>
                                                 <td>{{ $info->judul }}</td>
                                                 <td>{{ $info->tanggal }}</td>
-                                                <td>{{ $info->waktu }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($info->waktu)->format('H:i') }}</td>
                                                 <td>{{ $info->lokasi }}</td>
                                                 <td>{{ $info->fitur }}</td>
                                                 <td>{{ Str::limit($info->deskripsi, 50) }}</td>
                                                 <td>{{ $info->latitude }}</td>
                                                 <td>{{ $info->longitude }}</td>
                                                 <td>
+                                                    <a href="{{ route('admin.ibadah.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                     <a href="{{ route('admin.ibadah.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                                     <form action="{{ route('admin.ibadah.info.destroy', $info->id) }}" method="POST" style="display:inline;">
                                                         @csrf

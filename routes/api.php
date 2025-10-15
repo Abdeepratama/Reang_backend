@@ -126,8 +126,19 @@ Route::get('/tempat-pasar/{id?}', [PasarController::class, 'show']);
 Route::get('/pasar/kategori', [PasarController::class, 'categories']);
 
 //renbang-yu
+//deskripsi
 Route::get('/renbang/fitur', [RenbangController::class, 'apiGetFitur']);
 Route::get('/renbang/{id?}', [RenbangController::class, 'apiShow']);
+
+//ajuan
+Route::get('renbang/ajuan/index', [RenbangController::class, 'apiIndex']);
+Route::get('renbang/ajuan/{id}', [RenbangController::class, 'apiajuanShow'])->where('id', '[0-9]+');
+
+// Hanya login user
+Route::prefix('renbang/ajuan')->middleware('auth:sanctum')->group(function () {
+    Route::post('/', [RenbangController::class, 'apiStore']);
+});
+
 
 // puskesmas
 Route::get('/puskesmas', [PuskesmasController::class, 'apiIndex']);

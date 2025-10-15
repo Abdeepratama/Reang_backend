@@ -41,23 +41,38 @@ class AdminAccountController extends Controller
             'no_hp'        => 'required|string|max:20',
         ]);
 
-        // Simpan akun admin
+        // 🔹 Simpan admin
         $admin = Admin::create([
-            'name'         => $validated['name'],
-            'password'     => Hash::make($validated['password']),
-            'role'         => $validated['role'],
-            'id_instansi'  => $validated['id_instansi'] ?? null,
-            'id_dokter'    => $validated['id_dokter'] ?? null,
+            'name'     => $validated['name'],
+            'password' => Hash::make($validated['password']),
+            'role'     => $validated['role'],
         ]);
 
-        // Simpan otomatis ke tabel user_data
-        UserData::create([
-            'id_admin'     => $admin->id,
-            'id_instansi'  => $admin->id_instansi,
-            'nama'         => $validated['name'],
-            'email'        => $validated['email'] ?? null,
-            'no_hp'        => $validated['no_hp'] ?? null,
-        ]);
+        // 🔹 Buat atau sambungkan relasi sesuai role
+        if ($validated['role'] === 'admindinas' && $request->filled('id_instansi')) {
+            UserData::create([
+                'id_admin'    => $admin->id,
+                'id_instansi' => $validated['id_instansi'],
+                'nama'        => $validated['name'],
+                'email'       => $validated['email'],
+                'no_hp'       => $validated['no_hp'],
+            ]);
+        } else {
+            // Untuk superadmin & dokter tetap disimpan user_data minimal
+            UserData::create([
+                'id_admin' => $admin->id,
+                'nama'     => $validated['name'],
+                'email'    => $validated['email'],
+                'no_hp'    => $validated['no_hp'],
+            ]);
+        }
+
+        // 🔹 Jika role dokter, update tabel dokter agar terkait
+        if ($validated['role'] === 'dokter' && $request->filled('id_dokter')) {
+            $dokter = Dokter::find($validated['id_dokter']);
+            $dokter->id_admin = $admin->id;
+            $dokter->save();
+        }
 
         return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil dibuat dan data user terhubung.');
     }
@@ -87,22 +102,26 @@ class AdminAccountController extends Controller
         ]);
 
         $account->update([
-            'name'        => $validated['name'],
-            'role'        => $validated['role'],
-            'id_instansi' => $validated['id_instansi'] ?? null,
-            'id_dokter'   => $validated['id_dokter'] ?? null,
-            'password'    => !empty($validated['password']) ? Hash::make($validated['password']) : $account->password,
+            'name'     => $validated['name'],
+            'role'     => $validated['role'],
+            'password' => !empty($validated['password']) ? Hash::make($validated['password']) : $account->password,
         ]);
 
-        // Update juga tabel user_data terkait admin ini
-        $userData = UserData::where('id_admin', $account->id)->first();
-        if ($userData) {
-            $userData->update([
-                'nama'        => $validated['name'],
-                'email'       => $validated['email'] ?? $userData->email,
-                'no_hp'       => $validated['no_hp'] ?? $userData->no_hp,
-                'id_instansi' => $validated['id_instansi'] ?? $userData->id_instansi,
-            ]);
+        // Update user_data
+        $userData = UserData::firstOrNew(['id_admin' => $account->id]);
+        $userData->fill([
+            'nama'        => $validated['name'],
+            'email'       => $validated['email'],
+            'no_hp'       => $validated['no_hp'],
+            'id_instansi' => $validated['id_instansi'] ?? null,
+        ]);
+        $userData->save();
+
+        // Jika role dokter, sambungkan ke tabel dokter
+        if ($validated['role'] === 'dokter' && $request->filled('id_dokter')) {
+            $dokter = Dokter::find($validated['id_dokter']);
+            $dokter->id_admin = $account->id;
+            $dokter->save();
         }
 
         return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil diperbarui.');

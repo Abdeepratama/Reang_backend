@@ -23,20 +23,24 @@
                 <select name="fitur" class="form-control" required>
                     <option value="">Pilih Kategori</option>
                     @foreach($kategoriRenbangs as $kategori)
-                        <option value="{{ $kategori->nama }}" {{ (old('fitur', $item->fitur) == $kategori->nama) ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
+                    <option value="{{ $kategori->nama }}" {{ (old('fitur', $item->fitur) == $kategori->nama) ? 'selected' : '' }}>
+                        {{ $kategori->nama }}
+                    </option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Foto -->
             <div class="form-group mb-3">
-                <label>Foto</label>
+                <label>Gambar</label>
                 <input type="file" name="gambar" class="form-control">
+
                 @if($item->gambar)
-                    <small>Foto saat ini:</small><br>
-                    <img src="{{ $item->gambar }}" alt="Foto" width="150" style="border-radius:8px; margin-top:5px;">
+                <small>Gambar saat ini:</small><br>
+                <img src="{{ asset('storage/' . $item->gambar) }}"
+                    alt="Gambar"
+                    width="150"
+                    style="border-radius:8px; margin-top:5px;">
                 @endif
             </div>
 
@@ -62,34 +66,34 @@
 {{-- CKEditor Script --}}
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
-let editor;
+    let editor;
 
-ClassicEditor
-.create(document.querySelector('#editor'), {
-    ckfinder: {
-        uploadUrl: "{{ route('admin.renbang.info.upload.image') }}?_token={{ csrf_token() }}"
-    }
-})
-.then(instance => {
-    editor = instance;
-})
-.catch(error => {
-    console.error(error);
-});
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: "{{ route('admin.renbang.info.upload.image') }}?_token={{ csrf_token() }}"
+            }
+        })
+        .then(instance => {
+            editor = instance;
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
-// Validasi manual sebelum submit
-document.getElementById('renbangForm').addEventListener('submit', function(e) {
-    if (editor && editor.getData().trim() === '') {
-        e.preventDefault();
-        alert('Deskripsi harus diisi');
-        return false;
-    }
+    // Validasi manual sebelum submit
+    document.getElementById('renbangForm').addEventListener('submit', function(e) {
+        if (editor && editor.getData().trim() === '') {
+            e.preventDefault();
+            alert('Deskripsi harus diisi');
+            return false;
+        }
 
-    if (editor) {
-        let content = editor.getData();
-        content = content.replace(/<table(?![^>]*border)/g, '<table border="1" cellpadding="8" cellspacing="0"');
-        document.querySelector('#editor').value = content;
-    }
-});
+        if (editor) {
+            let content = editor.getData();
+            content = content.replace(/<table(?![^>]*border)/g, '<table border="1" cellpadding="8" cellspacing="0"');
+            document.querySelector('#editor').value = content;
+        }
+    });
 </script>
 @endsection

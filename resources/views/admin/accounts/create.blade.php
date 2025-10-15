@@ -102,9 +102,9 @@
             <label for="id_instansi" class="form-label">Instansi</label>
             <select name="id_instansi" id="id_instansi" class="form-select @error('id_instansi') is-invalid @enderror">
                 <option value="">-- Pilih Instansi --</option>
-                @foreach ($instansis as $instansi)
-                <option value="{{ $instansi->id }}" {{ old('id_instansi') == $instansi->id ? 'selected' : '' }}>
-                    {{ $instansi->nama }}
+                @foreach ($instansi as $instansiItem)
+                <option value="{{ $instansiItem->id }}" {{ old('id_instansi') == $instansiItem->id ? 'selected' : '' }}>
+                    {{ $instansiItem->nama }}
                 </option>
                 @endforeach
             </select>

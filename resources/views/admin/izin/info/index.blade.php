@@ -15,7 +15,7 @@
                                 <a href="{{ route('admin.izin.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info Perizinan</a>
 
                                 @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                <div class="alert alert-success">{{ session('success') }}</div>
                                 @endif
 
                                 <table class="table datatables" id="infoTable">
@@ -35,15 +35,16 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 @if($info->foto)
-                                                    <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">
+                                                <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">
                                                 @else
-                                                    <span class="text-muted">-</span>
+                                                <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ $info->fitur }}</td>
                                             <td>{{ Str::limit($info->deskripsi, 50) }}</td>
                                             <td>
+                                                <a href="{{ route('admin.izin.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <a href="{{ route('admin.izin.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                                 <form action="{{ route('admin.izin.info.destroy', $info->id) }}" method="POST" style="display:inline;">
                                                     @csrf
@@ -66,7 +67,7 @@
                 </div> <!-- row -->
             </div> <!-- col-12 -->
         </div> <!-- row -->
-    </div> 
+    </div>
 </div>
 @endsection
 
@@ -79,7 +80,9 @@
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]
             ],
-            "order": [[0, "asc"]] // urut No dari kecil ke besar
+            "order": [
+                [0, "asc"]
+            ] // urut No dari kecil ke besar
         });
     });
 </script>

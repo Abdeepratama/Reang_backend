@@ -118,6 +118,12 @@ class KerjaController extends Controller
         return back()->with('success', 'Info kerja berhasil dihapus.');
     }
 
+    public function infoshowdetail($id)
+{
+    $info = InfoKerja::findOrFail($id);
+    return view('admin.kerja.info.show', compact('info'));
+}
+
     /**
      * Helper: apply smart search
      * - columns: columns on main table to search (no whereHas usage to avoid dependency on kategori_id)
@@ -483,23 +489,34 @@ class KerjaController extends Controller
         ], 400);
     }
 
+    protected $aktivitasTipe = 'kerja';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => 'kerja',
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.kerja.info.index')
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.kerja.info.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

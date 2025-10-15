@@ -159,6 +159,13 @@ class PajakController extends Controller
         }
     }
 
+    public function showDetail($id)
+    {
+        $info = InfoPajak::findOrFail($id);
+
+        return view('admin.pajak.info.show', compact('info'));
+    }
+
     private function replaceImageUrlsInHtml($content)
     {
         if (!$content) return $content;
@@ -199,33 +206,34 @@ class PajakController extends Controller
         }, $content);
     }
 
-    protected function logAktivitas($pesan, $itemId = null)
-    {
-        $user = auth()->guard('admin')->user();
+    protected $aktivitasTipe = 'pajak';
 
-        if ($user) {
+    protected function logAktivitas($pesan)
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'keterangan' => $pesan,
-                'tipe'       => 'info_pajak',
-                'url'        => route('admin.pajak.info.index'),
-                'item_id'    => $itemId,
-                'dibaca'     => 0,
-                'role'       => $user->role,
-                'dinas'      => $user->dinas,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
-    protected function logNotifikasi($pesan, $itemId = null)
+    protected function logNotifikasi($pesan)
     {
-        $user = auth()->guard('admin')->user();
+        $user = auth()->user();
 
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca'     => 0,
-            'url'        => route('admin.pajak.info.index'),
-            'role'       => $user->role,
-            'dinas'      => $user->dinas,
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.pajak.info.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

@@ -28,7 +28,7 @@
             </p>
 
             @if(!empty($admin->userData->instansi))
-                <p><strong>Instansi:</strong> {{ $admin->userData->instansi->nama }}</p>
+                <p><strong>Dinas:</strong> {{ $admin->userData->instansi->nama }}</p>
             @endif
         </div>
     </div>

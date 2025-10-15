@@ -13,6 +13,7 @@ class Dokter extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id_user',
         'id_puskesmas',
         'nama',
         'pendidikan',
@@ -34,7 +35,7 @@ class Dokter extends Model
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class, 'admin_id');
+        return $this->belongsTo(Admin::class, 'id_user');
     }
 
     public function messages()

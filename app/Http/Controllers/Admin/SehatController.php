@@ -261,7 +261,10 @@ class SehatController extends Controller
 
     public function infoindex()
     {
-        $infoItems = InfoKesehatan::with('kategori')->get();
+        $infoItems = InfoKesehatan::with('kategori')
+            ->orderBy('created_at', 'desc') // 🔥 urutkan dari yang terbaru
+            ->get();
+
         return view('admin.sehat.info.index', compact('infoItems'));
     }
 
@@ -399,6 +402,13 @@ class SehatController extends Controller
 
             return response()->json($data, 200);
         }
+    }
+
+    public function infoshowAdmin($id)
+    {
+        $info = InfoKesehatan::with('kategori')->findOrFail($id);
+
+        return view('admin.sehat.info.show', compact('info'));
     }
 
     // Upload endpoint (ckeditor) -> simpan file dan kembalikan URL dinamis

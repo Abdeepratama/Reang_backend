@@ -15,7 +15,7 @@
                                 <a href="{{ route('admin.renbang.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info</a>
 
                                 @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                <div class="alert alert-success">{{ session('success') }}</div>
                                 @endif
 
                                 <table class="table datatables" id="renbangTable">
@@ -36,9 +36,9 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 @if($item->gambar)
-                                                    <img src="{{ Storage::url($item->gambar) }}" width="100" alt="Foto" style="border-radius:8px;">
+                                                <img src="{{ Storage::url($item->gambar) }}" width="100" alt="Foto" style="border-radius:8px;">
                                                 @else
-                                                    <span class="text-muted">-</span>
+                                                <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                             <td>{{ $item->judul }}</td>
@@ -46,6 +46,7 @@
                                             <td>{{ $item->alamat }}</td>
                                             <td>{{ Str::limit(strip_tags($item->deskripsi), 50) }}</td>
                                             <td>
+                                                <a href="{{ route('admin.renbang.info.show', $item->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <a href="{{ route('admin.renbang.info.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                                 <form action="{{ route('admin.renbang.info.destroy', $item->id) }}" method="POST" style="display:inline;">
                                                     @csrf
@@ -68,7 +69,7 @@
                 </div> <!-- row -->
             </div> <!-- col-12 -->
         </div> <!-- row -->
-    </div> 
+    </div>
 </div>
 @endsection
 
@@ -81,7 +82,9 @@
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]
             ],
-            "order": [[0, "asc"]]
+            "order": [
+                [0, "asc"]
+            ]
         });
     });
 </script>

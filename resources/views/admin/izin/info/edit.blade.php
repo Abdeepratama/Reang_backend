@@ -23,9 +23,9 @@
                 <select name="fitur" class="form-control" required>
                     <option value="">Pilih Kategori</option>
                     @foreach($kategoriPerizinan as $kategori)
-                        <option value="{{ $kategori->nama }}" {{ (old('fitur', $info->fitur) == $kategori->nama) ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
+                    <option value="{{ $kategori->nama }}" {{ (old('fitur', $info->fitur) == $kategori->nama) ? 'selected' : '' }}>
+                        {{ $kategori->nama }}
+                    </option>
                     @endforeach
                 </select>
             </div>
@@ -34,9 +34,13 @@
             <div class="form-group mb-3">
                 <label>Foto</label>
                 <input type="file" name="foto" class="form-control">
+
                 @if($info->foto)
-                    <small>Foto saat ini:</small><br>
-                    <img src="{{ $info->foto }}" alt="Foto" width="150" style="border-radius:8px; margin-top:5px;">
+                <small>Foto saat ini:</small><br>
+                <img src="{{ asset('storage/' . $info->foto) }}"
+                    alt="Foto"
+                    width="150"
+                    style="border-radius:8px; margin-top:5px;">
                 @endif
             </div>
 
@@ -56,27 +60,27 @@
 {{-- CKEditor --}}
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
-let editor;
+    let editor;
 
-ClassicEditor
-.create(document.querySelector('#editor'), {
-    ckfinder: {
-        uploadUrl: "{{ route('admin.izin.info.upload.image') }}?_token={{ csrf_token() }}"
-    }
-})
-.then(instance => {
-    editor = instance;
-})
-.catch(error => {
-    console.error(error);
-});
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: "{{ route('admin.izin.info.upload.image') }}?_token={{ csrf_token() }}"
+            }
+        })
+        .then(instance => {
+            editor = instance;
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
-document.getElementById('infoForm').addEventListener('submit', function(e) {
-    if (editor && editor.getData().trim() === '') {
-        e.preventDefault();
-        alert('Deskripsi harus diisi');
-        return false;
-    }
-});
+    document.getElementById('infoForm').addEventListener('submit', function(e) {
+        if (editor && editor.getData().trim() === '') {
+            e.preventDefault();
+            alert('Deskripsi harus diisi');
+            return false;
+        }
+    });
 </script>
 @endsection

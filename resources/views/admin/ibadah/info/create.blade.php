@@ -22,10 +22,66 @@
                     <input type="date" name="tanggal" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label>Waktu</label>
-                    <input type="time" name="waktu" class="form-control" required>
+                <div class="form-group mb-3 position-relative">
+    <label>Waktu</label>
+    <input type="text" id="waktu" name="waktu" class="form-control" placeholder="Klik untuk pilih waktu" readonly required>
+
+    <div id="jam-popup"
+        style="display:none; position:absolute; background:white; border-radius:12px;
+        padding:20px; top:100%; left:0; z-index:9999; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+
+        <div id="clock-jam" class="clock-simple position-relative"
+            style="width:250px; height:250px; border:3px solid #aaa; border-radius:50%;
+            background:white; margin:auto;">
+            
+            @for ($i = 1; $i <= 24; $i++)
+                @php
+                    $angle = deg2rad(($i * 15) - 90);
+                    $radius = 95;
+                    $x = cos($angle) * $radius;
+                    $y = sin($angle) * $radius;
+                @endphp
+                <div class="jam-item" data-hour="{{ sprintf('%02d', $i) }}"
+                    style="position:absolute; width:30px; height:30px; line-height:30px;
+                        text-align:center; border-radius:50%; font-size:13px;
+                        background:#f9f9f9; border:1px solid #ccc; cursor:pointer;
+                        left:calc(50% + {{ $x }}px - 15px); top:calc(50% + {{ $y }}px - 15px);
+                        transition:0.2s;">
+                    {{ $i }}
                 </div>
+            @endfor
+
+            <div style="position:absolute; width:10px; height:10px; background:#333; border-radius:50%;
+                top:50%; left:50%; transform:translate(-50%,-50%);"></div>
+        </div>
+
+        <!-- Lingkaran menit -->
+        <div id="clock-menit" class="clock-simple position-relative"
+            style="width:250px; height:250px; border:3px solid #aaa; border-radius:50%;
+            background:white; margin:auto; display:none;">
+            
+            @for ($i = 0; $i < 60; $i += 5)
+                @php
+                    $angle = deg2rad(($i * 6) - 90); // 360/60 = 6 derajat per menit
+                    $radius = 95;
+                    $x = cos($angle) * $radius;
+                    $y = sin($angle) * $radius;
+                @endphp
+                <div class="menit-item" data-minute="{{ sprintf('%02d', $i) }}"
+                    style="position:absolute; width:32px; height:32px; line-height:32px;
+                        text-align:center; border-radius:50%; font-size:13px;
+                        background:#f9f9f9; border:1px solid #ccc; cursor:pointer;
+                        left:calc(50% + {{ $x }}px - 16px); top:calc(50% + {{ $y }}px - 16px);
+                        transition:0.2s;">
+                    {{ sprintf('%02d', $i) }}
+                </div>
+            @endfor
+
+            <div style="position:absolute; width:10px; height:10px; background:#333; border-radius:50%;
+                top:50%; left:50%; transform:translate(-50%,-50%);"></div>
+        </div>
+    </div>
+</div>
 
                 <div class="form-group mb-3">
                     <label>Latitude</label>
@@ -80,6 +136,46 @@
         </div>
     </form>
 </div>
+
+<script>
+    const waktuInput = document.getElementById('waktu');
+    const popup = document.getElementById('jam-popup');
+    const jamCircle = document.getElementById('clock-jam');
+    const menitCircle = document.getElementById('clock-menit');
+    let selectedHour = null;
+
+    // Klik input → tampilkan popup
+    waktuInput.addEventListener('click', () => {
+        popup.style.display = 'block';
+        jamCircle.style.display = 'block';
+        menitCircle.style.display = 'none';
+    });
+
+    // Klik di luar → tutup popup
+    document.addEventListener('click', function(e) {
+        if (!popup.contains(e.target) && e.target !== waktuInput) {
+            popup.style.display = 'none';
+        }
+    });
+
+    // Pilih jam
+    document.querySelectorAll('.jam-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectedHour = this.dataset.hour;
+            jamCircle.style.display = 'none';
+            menitCircle.style.display = 'block';
+        });
+    });
+
+    // Pilih menit
+    document.querySelectorAll('.menit-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const minute = this.dataset.minute;
+            waktuInput.value = `${selectedHour}:${minute}`;
+            popup.style.display = 'none';
+        });
+    });
+</script>
 
 <script>
     // Inisialisasi peta

@@ -46,13 +46,17 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label>Foto</label>
-                    <input type="file" name="foto" class="form-control">
-                    @if($info->foto)
-                    <small>Foto saat ini:</small><br>
-                    <img src="{{ $info->foto }}" alt="Foto" width="150" style="border-radius:8px; margin-top:5px;">
-                    @endif
-                </div>
+                <label>Foto</label>
+                <input type="file" name="foto" class="form-control">
+
+                @if($info->foto)
+                <small>Foto saat ini:</small><br>
+                <img src="{{ asset('storage/' . $info->foto) }}"
+                    alt="Foto"
+                    width="150"
+                    style="border-radius:8px; margin-top:5px;">
+                @endif
+            </div>
 
                 <div class="mb-3">
                     <label for="deskripsi" class="form-label">Deskripsi</label>

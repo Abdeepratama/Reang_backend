@@ -10,6 +10,7 @@ if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'sup
 $cards = [
 ['title' => 'Total Pengguna', 'value' => $stats['total_users'], 'color' => 'primary', 'icon' => 'fe fe-32 fe-users'],
 ['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_lokasi_ibadah'] > 0 ? $stats['jumlah_lokasi_ibadah'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
+['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_info_keagamaan'] > 0 ? $stats['jumlah_info_keagamaan'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
 ['title' => 'Jumlah Rumah Sakit', 'value' => $stats['jumlah_sehat'] > 0 ? $stats['jumlah_sehat'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-briefcase'],
 ['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_lokasi_pasar'] > 0 ? $stats['jumlah_lokasi_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
 ['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_lokasi_plesir'] > 0 ? $stats['jumlah_lokasi_plesir'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
@@ -105,6 +106,7 @@ $cards = [
                 </div>
             </div>
         </div>
+
         <!-- Jumlah Puskesmas -->
         <div class="col-md-6 col-xl-3 mb-4">
             <div class="card shadow border-0">
@@ -172,8 +174,8 @@ $cards = [
 
 
     <div class="row my-4">
+
         <!-- Jumlah Wifi -->
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -189,10 +191,8 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Jumlah Tempat Ibadah -->
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -209,10 +209,26 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
+
+        <!--Info Keagamaan-->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Info Keagamaan</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_keagamaan'] }}</span>
+                            <span class="small text-muted">info</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-crosshair"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Jumlah Pasar -->
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -229,10 +245,8 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Jumlah Sekolah -->
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -249,10 +263,44 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
+
+        <!-- Pajak -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Info Perpajakan</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_pajak'] }}</span>
+                            <span class="small text-muted">info</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-briefcase"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Berita sekolah-->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Berita Sekolah</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_sekolah'] }}</span>
+                            <span class="small text-muted">berita</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-book"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Jumlah Wisata -->
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -269,9 +317,8 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
 
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
+        <!--Info Pekerjaan-->
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -288,8 +335,6 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
-
     </div>
 
 
@@ -387,56 +432,65 @@ $cards = [
                         $moduls = [
                         ['route' => 'admin.sekolah.tempat.index', 'icon' => 'bi bi-mortarboard', 'label' => 'Lokasi Sekolah'],
                         ['route' => 'admin.sekolah.info.index', 'icon' => 'bi bi-journal-text', 'label' => 'Berita Sekolah'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 4: // 💰 Perpajakan
+                        case 6: // 💰 Perpajakan
                         $moduls = [
                         ['route' => 'admin.pajak.info.index', 'icon' => 'bi bi-receipt', 'label' => 'Info Pajak'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 1: // 🛒 Perdagangan
+                        case 7: // 🛒 Perdagangan
                         $moduls = [
                         ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-cart', 'label' => 'Lokasi Pasar'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 7: // 👷 Tenaga Kerja
+                        case 8: // 👷 Tenaga Kerja
                         $moduls = [
                         ['route' => 'admin.kerja.info.index', 'icon' => 'bi bi-person-badge', 'label' => 'Info Kerja'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 4: // 🏖️ Pariwisata
+                        case 9: // 🏖️ Pariwisata
                         $moduls = [
                         ['route' => 'admin.plesir.tempat.index', 'icon' => 'bi bi-geo-alt', 'label' => 'Lokasi Pariwisata'],
                         ['route' => 'admin.plesir.info.index', 'icon' => 'bi bi-newspaper', 'label' => 'Info Pariwisata'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 5: // 🕌 Keagamaan
+                        case 10: // 🕌 Keagamaan
                         $moduls = [
                         ['route' => 'admin.ibadah.tempat.index', 'icon' => 'fas fa-mosque', 'label' => 'Lokasi Tempat Ibadah'],
                         ['route' => 'admin.ibadah.info.index', 'icon' => 'bi bi-book', 'label' => 'Info Keagamaan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 8: // 🧍 Kependudukan
+                        case 11: // 🧍 Kependudukan
                         $moduls = [
                         ['route' => 'admin.adminduk.info.index', 'icon' => 'bi bi-card-list', 'label' => 'Info Kependudukan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 9: // 🏗️ Pembangunan
+                        case 12: // 🏗️ Pembangunan
                         $moduls = [
                         ['route' => 'admin.renbang.info.index', 'icon' => 'bi bi-building', 'label' => 'Info Pembangunan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 
-                        case 10: // 📜 Perizinan
+                        case 13: // 📜 Perizinan
                         $moduls = [
                         ['route' => 'admin.izin.info.index', 'icon' => 'bi bi-file-earmark-text', 'label' => 'Info Perizinan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
                         break;
 

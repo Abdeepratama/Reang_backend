@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Storage;
 
 class IzinController extends Controller
 {
-    protected $aktivitasTipe = 'Info Perizinan';
-
     public function infoindex()
     {
         $infoItems = InfoPerizinan::with('kategori')->get();
@@ -111,6 +109,12 @@ class IzinController extends Controller
         return back()->with('success', 'Info perizinan berhasil dihapus.');
     }
 
+    public function infoshowDetail($id)
+    {
+        $info = InfoPerizinan::findOrFail($id);
+        return view('admin.izin.info.show', compact('info'));
+    }
+
     public function infoshow($id = null)
     {
         if ($id) {
@@ -163,23 +167,34 @@ class IzinController extends Controller
     }
 
     // === Utility methods (copied dari versi Kesehatan) ===
+    protected $aktivitasTipe = 'kerja';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => $this->aktivitasTipe,
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.izin.info.index')
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.izin.info.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 
