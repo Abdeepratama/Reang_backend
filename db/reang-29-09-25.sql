@@ -1582,7 +1582,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `no_ktp`, `email_verified_a
 
 CREATE TABLE `user_data` (
   `id` int NOT NULL,
-  `id_admins` int NOT NULL,
+  `id_admin` int NOT NULL,
   `id_instansi` int NOT NULL,
   `nama` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -1593,7 +1593,7 @@ CREATE TABLE `user_data` (
 -- Dumping data for table `user_data`
 --
 
-INSERT INTO `user_data` (`id`, `id_admins`, `id_instansi`, `nama`, `email`, `no_hp`) VALUES
+INSERT INTO `user_data` (`id`, `id_admin`, `id_instansi`, `nama`, `email`, `no_hp`) VALUES
 (1, 2, 2, 'kebersihan', 'kebersihan', 'kebersihan'),
 (2, 3, 2, 'Kesehatan', 'kesehatan@gmail.com', '08337878783');
 

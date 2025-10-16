@@ -17,7 +17,7 @@
                                 </a>
 
                                 @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                <div class="alert alert-success">{{ session('success') }}</div>
                                 @endif
 
                                 <table class="table datatables" id="infoTable">
@@ -38,14 +38,16 @@
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ Str::limit(strip_tags($info->deskripsi), 50) }}</td>
                                             <td>
-                                                <a href="{{ route('admin.adminduk.info.edit', $info->id) }}" 
-                                                   class="btn btn-warning btn-sm">Edit</a>
-                                                <form action="{{ route('admin.adminduk.info.destroy', $info->id) }}" 
-                                                      method="POST" style="display:inline;">
+                                                <a href="{{ route('admin.adminduk.info.show', $info->id) }}"
+                                                    class="btn btn-info btn-sm">Detail</a>
+                                                <a href="{{ route('admin.adminduk.info.edit', $info->id) }}"
+                                                    class="btn btn-warning btn-sm">Edit</a>
+                                                <form action="{{ route('admin.adminduk.info.destroy', $info->id) }}"
+                                                    method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" 
-                                                            class="btn btn-danger btn-sm">Hapus</button>
+                                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus?')"
+                                                        class="btn btn-danger btn-sm">Hapus</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -63,7 +65,7 @@
                 </div> <!-- row -->
             </div> <!-- col-12 -->
         </div> <!-- row -->
-    </div> 
+    </div>
 </div>
 @endsection
 

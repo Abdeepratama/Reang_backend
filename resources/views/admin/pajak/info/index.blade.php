@@ -15,7 +15,7 @@
                                 <a href="{{ route('admin.pajak.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info Pajak</a>
 
                                 @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                <div class="alert alert-success">{{ session('success') }}</div>
                                 @endif
 
                                 <table class="table datatables" id="infoTable">
@@ -34,14 +34,15 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 @if($info->foto)
-                                                    <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">
+                                                <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">
                                                 @else
-                                                    <span class="text-muted">-</span>
+                                                <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ Str::limit($info->deskripsi, 50) }}</td>
                                             <td>
+                                                <a href="{{ route('admin.pajak.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <a href="{{ route('admin.pajak.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                                 <form action="{{ route('admin.pajak.info.destroy', $info->id) }}" method="POST" style="display:inline;">
                                                     @csrf
@@ -64,7 +65,7 @@
                 </div> <!-- row -->
             </div> <!-- col-12 -->
         </div> <!-- row -->
-    </div> 
+    </div>
 </div>
 @endsection
 

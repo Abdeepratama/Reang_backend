@@ -57,7 +57,7 @@ class DumasController extends Controller
 
         // Ambil ulasan pertama (dan satu-satunya) yang ada untuk laporan ini.
         $rating = $dumas->ratings->first();
-        
+
         // Selalu sertakan data ulasan dalam respons jika ada
         $data['user_rating'] = $rating ? $rating->rating : null;
         $data['user_comment'] = $rating ? $rating->comment : null;
@@ -77,6 +77,14 @@ class DumasController extends Controller
         return response()->json($kategori, 200);
     }
 
+    public function show($id)
+    {
+        // Ambil data dengan relasi kategori & ratings
+        $item = Dumas::with(['kategori', 'ratings'])->findOrFail($id);
+
+        return view('admin.dumas.aduan.show', compact('item'));
+    }
+
     // =======================================================================
     // ADMIN PANEL & API STORE (LOGIKA BARU ANDA)
     // =======================================================================
@@ -90,7 +98,7 @@ class DumasController extends Controller
             $items = Dumas::with(['kategori.instansi', 'ratings'])->get();
         } else {
             // Admin dinas, ambil id_instansi dari user_data
-            $userData = UserData::where('id_admins', $user->id)->first();
+            $userData = UserData::where('id_admin', $user->id)->first();
             $idInstansi = $userData?->id_instansi;
 
             $items = Dumas::with(['kategori.instansi', 'ratings'])

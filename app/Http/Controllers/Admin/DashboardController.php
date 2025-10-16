@@ -14,6 +14,7 @@ use App\Models\Sehat;
 use App\Models\Pasar;
 use App\Models\Plesir;
 use App\Models\Aktivitas;
+use App\Models\Dokter;
 use App\Models\Dumas;
 use App\Models\TempatSekolah;
 use App\Models\Renbang;
@@ -26,6 +27,7 @@ use App\Models\InfoKerja;
 use App\Models\InfoPerizinan;
 use App\Models\InfoPlesir;
 use App\Models\NotifikasiAktivitas;
+use App\Models\Puskesmas;
 use App\Models\TempatOlahraga;
 
 class DashboardController extends Controller
@@ -50,6 +52,8 @@ class DashboardController extends Controller
             'jumlah_info_kependudukan' => InfoAdminduk::count(),
             'jumlah_info_pembangunan' => Renbang::count(),
             'jumlah_info_perizinan' => InfoPerizinan::count(),
+            'jumlah_puskesmas' => Puskesmas::count(),
+            'jumlah_dokter' => Dokter::count(),
         ];
 
         $user = auth()->guard('admin')->user();
@@ -58,7 +62,7 @@ class DashboardController extends Controller
         $aktivitas = Aktivitas::query()
             ->when($user->role === 'admindinas', function ($q) use ($user) {
                 $q->where('role', 'admindinas')
-                    ->where('dinas', $user->dinas);
+                    ->where('id_instansi', $user->id_instansi);
             })
             ->latest()
             ->take(10)
@@ -69,7 +73,7 @@ class DashboardController extends Controller
             ->unread()
             ->when($user->role === 'admindinas', function ($q) use ($user) {
                 $q->where('role', 'admindinas')
-                    ->where('dinas', $user->dinas);
+                    ->where('id_instansi', $user->id_instansi);
             })
             ->latest()
             ->take(10)
@@ -79,7 +83,7 @@ class DashboardController extends Controller
             ->unread()
             ->when($user->role === 'admindinas', function ($q) use ($user) {
                 $q->where('role', 'admindinas')
-                    ->where('dinas', $user->dinas);
+                    ->where('id_instansi', $user->id_instansi);
             })
             ->count();
 

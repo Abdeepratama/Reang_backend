@@ -14,23 +14,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PasarController extends Controller
 {
-    use CRUDHelper;
-
-    public function __construct()
-    {
-        $this->model = Pasar::class;
-        $this->routePrefix = 'pasar';
-        $this->viewPrefix = 'pasar.tempat';
-        $this->aktivitasTipe = 'Lokasi pasar';
-        $this->aktivitasCreateMessage = 'Lokasi Pasar baru ditambahkan';
-        $this->validationRules = [
-            'name' => 'required|string',
-            'address' => 'nullable|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'fitur' => 'required|string',
-        ];
-    }
 
     public function create()
     {
@@ -620,23 +603,34 @@ class PasarController extends Controller
         return response()->json($paginator, 200);
     }
 
+    protected $aktivitasTipe = 'pasar';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => $this->aktivitasTipe,
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index')
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.pasar.tempat.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

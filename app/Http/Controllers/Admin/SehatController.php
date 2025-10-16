@@ -261,7 +261,10 @@ class SehatController extends Controller
 
     public function infoindex()
     {
-        $infoItems = InfoKesehatan::with('kategori')->get();
+        $infoItems = InfoKesehatan::with('kategori')
+            ->orderBy('created_at', 'desc') // 🔥 urutkan dari yang terbaru
+            ->get();
+
         return view('admin.sehat.info.index', compact('infoItems'));
     }
 
@@ -399,6 +402,13 @@ class SehatController extends Controller
 
             return response()->json($data, 200);
         }
+    }
+
+    public function infoshowAdmin($id)
+    {
+        $info = InfoKesehatan::with('kategori')->findOrFail($id);
+
+        return view('admin.sehat.info.show', compact('info'));
     }
 
     // Upload endpoint (ckeditor) -> simpan file dan kembalikan URL dinamis
@@ -621,11 +631,11 @@ class SehatController extends Controller
 
             // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id'    => $user->id,
-                'tipe'       => $this->aktivitasTipe,
-                'keterangan' => $pesan,
-                'role'       => $user->role,
-                'dinas'      => $user->dinas,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
@@ -635,11 +645,11 @@ class SehatController extends Controller
         $user = auth()->user();
 
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca'     => false,
-            'url'        => route('admin.sehat.tempat.index'),
-            'role'       => $user->role,
-            'dinas'      => $user->dinas,
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.sehat.tempat.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 

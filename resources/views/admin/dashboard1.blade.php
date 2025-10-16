@@ -10,6 +10,7 @@ if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'sup
 $cards = [
 ['title' => 'Total Pengguna', 'value' => $stats['total_users'], 'color' => 'primary', 'icon' => 'fe fe-32 fe-users'],
 ['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_lokasi_ibadah'] > 0 ? $stats['jumlah_lokasi_ibadah'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
+['title' => 'Jumlah Tempat Ibadah', 'value' => $stats['jumlah_info_keagamaan'] > 0 ? $stats['jumlah_info_keagamaan'] : 'Belum ada', 'color' => 'success', 'icon' => 'fe fe-32 fas fe-home'],
 ['title' => 'Jumlah Rumah Sakit', 'value' => $stats['jumlah_sehat'] > 0 ? $stats['jumlah_sehat'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-briefcase'],
 ['title' => 'Jumlah Lokasi Pasar', 'value' => $stats['jumlah_lokasi_pasar'] > 0 ? $stats['jumlah_lokasi_pasar'] : 'Belum ada', 'color' => 'warning', 'icon' => 'fe fe-32 fe-shopping-cart'],
 ['title' => 'Jumlah Lokasi Plesir', 'value' => $stats['jumlah_lokasi_plesir'] > 0 ? $stats['jumlah_lokasi_plesir'] : 'Belum ada', 'color' => 'info', 'icon' => 'fe fe-32 fe-map-pin'],
@@ -105,6 +106,7 @@ $cards = [
                 </div>
             </div>
         </div>
+
         <!-- Jumlah Puskesmas -->
         <div class="col-md-6 col-xl-3 mb-4">
             <div class="card shadow border-0">
@@ -117,7 +119,8 @@ $cards = [
                         </div>
                         <div class="col pr-0">
                             <p class="small text-muted mb-0">Jumlah Puskesmas</p>
-                            <span class="h3 mb-0">49</span>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_puskesmas'] }}</span>
+                            <span class="small text-muted"> puskesmas</span>
                         </div>
                     </div>
                 </div>
@@ -156,8 +159,8 @@ $cards = [
                         </div>
                         <div class="col">
                             <p class="small text-muted mb-0">Jumlah Dokter</p>
-                            <span class="h3 mb-0">121</span>
-                            <span class="small text-success">Dokter</span>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_dokter'] }}</span>
+                            <span class="small text-muted"> dokter</span>
                         </div>
                     </div>
                 </div>
@@ -169,17 +172,17 @@ $cards = [
 
     <!-- =========================================================================================================================== -->
 
-    
+
     <div class="row my-4">
+
         <!-- Jumlah Wifi -->
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
                             <small class="text-muted mb-1">Jumlah Wifi</small>
-                            <h3 class="card-title mb-0">46</h3>
+                            <h3 class="card-title mb-0">15</h3>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-wifi"></span>
@@ -188,10 +191,8 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Jumlah Tempat Ibadah -->
-         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -208,10 +209,26 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
+
+        <!--Info Keagamaan-->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Info Keagamaan</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_keagamaan'] }}</span>
+                            <span class="small text-muted">info</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-crosshair"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Jumlah Pasar -->
-         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -228,10 +245,8 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Jumlah Sekolah -->
-         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -248,10 +263,44 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
+
+        <!-- Pajak -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Info Perpajakan</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_pajak'] }}</span>
+                            <span class="small text-muted">info</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-briefcase"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Berita sekolah-->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Berita Sekolah</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_sekolah'] }}</span>
+                            <span class="small text-muted">berita</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="sparkline fe fe-32 fe-book"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Jumlah Wisata -->
-         @if (Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -268,9 +317,8 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
 
-        @if (Auth::guard('admin')->user()->role === 'superadmin')
+        <!--Info Pekerjaan-->
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
@@ -287,8 +335,6 @@ $cards = [
                 </div>
             </div>
         </div>
-        @endif
-
     </div>
 
 
@@ -352,10 +398,10 @@ $cards = [
                     <div class="row g-3">
 
                         @php
+                        use Illuminate\Support\Facades\Auth;
                         $user = Auth::guard('admin')->user();
                         @endphp
 
-                        {{-- Superadmin lihat semua modul --}}
                         @if($user->role === 'superadmin')
                         @php
                         $moduls = [
@@ -368,70 +414,114 @@ $cards = [
                         ];
                         @endphp
 
-                        {{-- Admin Dinas hanya melihat modul sesuai dinas --}}
                         @elseif($user->role === 'admindinas')
                         @php
                         $moduls = [];
-                        if($user->dinas === 'kesehatan'){
-                        $moduls[] = ['route' => 'admin.sehat.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Kesehatan'];
-                        $moduls[] = ['route' => 'admin.sehat.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Kesehatan'];
-                        $moduls[] = ['route' => 'admin.sehat.olahraga.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Olahraga'];
-                        $moduls[] = ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Aduan Masyarakat'];
-                        }
-                        if($user->dinas === 'pendidikan'){
-                        $moduls[] = ['route' => 'admin.sekolah.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Sekolah'];
-                        $moduls[] = ['route' => 'admin.sekolah.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Berita Sekolah'];
-                        }
-                        if($user->dinas === 'perpajakan'){
-                        $moduls[] = ['route' => 'admin.pajak.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pajak'];
-                        }
-                        if($user->dinas === 'perdagangan'){
-                        $moduls[] = ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Pasar'];
-                        }
-                        if($user->dinas === 'kerja'){
-                        $moduls[] = ['route' => 'admin.kerja.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Kerja'];
-                        }
-                        if($user->dinas === 'pariwisata'){
-                        $moduls[] = ['route' => 'admin.plesir.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Pariwisata'];
-                        $moduls[] = ['route' => 'admin.plesir.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pariwisata'];
-                        }
-                        if($user->dinas === 'keagamaan'){
-                        $moduls[] = ['route' => 'admin.ibadah.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Tempat Ibadah'];
-                        $moduls[] = ['route' => 'admin.ibadah.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Keagamaan'];
-                        }
-                        if($user->dinas === 'kependudukan'){
-                        $moduls[] = ['route' => 'admin.adminduk.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Kepedendudukan'];
-                        }
-                        if($user->dinas === 'pembangunan'){
-                        $moduls[] = ['route' => 'admin.renbang.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Pembangunan'];
-                        }
-                        if($user->dinas === 'perizinan'){
-                        $moduls[] = ['route' => 'admin.izin.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Info Perizinan'];
+
+                        switch ($user->id_instansi) {
+                        case 2: // 🏥 Kesehatan
+                        $moduls = [
+                        ['route' => 'admin.sehat.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Kesehatan'],
+                        ['route' => 'admin.sehat.info.index', 'icon' => 'bi bi-info-circle', 'label' => 'Info Kesehatan'],
+                        ['route' => 'admin.sehat.olahraga.index', 'icon' => 'bi bi-bicycle', 'label' => 'Lokasi Olahraga'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 3: // 🎓 Pendidikan
+                        $moduls = [
+                        ['route' => 'admin.sekolah.tempat.index', 'icon' => 'bi bi-mortarboard', 'label' => 'Lokasi Sekolah'],
+                        ['route' => 'admin.sekolah.info.index', 'icon' => 'bi bi-journal-text', 'label' => 'Berita Sekolah'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 6: // 💰 Perpajakan
+                        $moduls = [
+                        ['route' => 'admin.pajak.info.index', 'icon' => 'bi bi-receipt', 'label' => 'Info Pajak'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 7: // 🛒 Perdagangan
+                        $moduls = [
+                        ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-cart', 'label' => 'Lokasi Pasar'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 8: // 👷 Tenaga Kerja
+                        $moduls = [
+                        ['route' => 'admin.kerja.info.index', 'icon' => 'bi bi-person-badge', 'label' => 'Info Kerja'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 9: // 🏖️ Pariwisata
+                        $moduls = [
+                        ['route' => 'admin.plesir.tempat.index', 'icon' => 'bi bi-geo-alt', 'label' => 'Lokasi Pariwisata'],
+                        ['route' => 'admin.plesir.info.index', 'icon' => 'bi bi-newspaper', 'label' => 'Info Pariwisata'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 10: // 🕌 Keagamaan
+                        $moduls = [
+                        ['route' => 'admin.ibadah.tempat.index', 'icon' => 'fas fa-mosque', 'label' => 'Lokasi Tempat Ibadah'],
+                        ['route' => 'admin.ibadah.info.index', 'icon' => 'bi bi-book', 'label' => 'Info Keagamaan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 11: // 🧍 Kependudukan
+                        $moduls = [
+                        ['route' => 'admin.adminduk.info.index', 'icon' => 'bi bi-card-list', 'label' => 'Info Kependudukan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 12: // 🏗️ Pembangunan
+                        $moduls = [
+                        ['route' => 'admin.renbang.info.index', 'icon' => 'bi bi-building', 'label' => 'Info Pembangunan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        case 13: // 📜 Perizinan
+                        $moduls = [
+                        ['route' => 'admin.izin.info.index', 'icon' => 'bi bi-file-earmark-text', 'label' => 'Info Perizinan'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
+                        ];
+                        break;
+
+                        default:
+                        $moduls = [];
+                        break;
                         }
                         @endphp
-
                         @else
                         @php $moduls = []; @endphp
                         @endif
 
                         {{-- Render modul --}}
-                        @foreach($moduls as $mod)
-                        <div class="col-6">
-                            <a href="{{ route($mod['route']) }}" class="text-decoration-none">
-                                <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
-                                    <i class="{{ $mod['icon'] }} fs-3 text-primary"></i>
-                                    <p class="mb-0 mt-2 fw-semibold text-primary">{{ $mod['label'] }}</p>
-                                </div>
-                            </a>
-                        </div>
-                        @endforeach
+                        <div class="row">
+                            @foreach($moduls as $mod)
+                            <div class="col-6">
+                                <a href="{{ route($mod['route']) }}" class="text-decoration-none">
+                                    <div class="p-3 border rounded text-center hover-shadow d-flex flex-column align-items-center justify-content-center" style="height: 120px;">
+                                        <i class="{{ $mod['icon'] }} fs-3 text-primary"></i>
+                                        <p class="mb-0 mt-2 fw-semibold text-primary">{{ $mod['label'] }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                            @endforeach
 
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
     </div>
-
-</div>
-@endsection
+    @endsection

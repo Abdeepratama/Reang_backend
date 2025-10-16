@@ -9,31 +9,38 @@ class UserData extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_data'; // nama tabel
+    protected $table = 'user_data';
+    public $timestamps = false; // 🟢 Tambahkan baris ini
 
-    protected $primaryKey = 'id'; // primary key
-
-    // Kolom yang bisa diisi massal (fillable)
     protected $fillable = [
-        'id_admins',
+        'id_admin',
         'id_instansi',
         'nama',
         'email',
         'no_hp',
     ];
 
-    // Relasi ke Admin
+
+    /**
+     * Relasi ke model Admin
+     * Satu user_data dimiliki oleh satu admin
+     */
     public function admin()
     {
-        return $this->belongsTo(Admin::class, 'id_admins');
+        return $this->belongsTo(Admin::class, 'id_admin');
     }
 
+    /**
+     * Relasi ke laporan DUMAS (jika ada)
+     */
     public function dumas()
     {
         return $this->hasMany(Dumas::class, 'user_id', 'id');
     }
 
-    // Relasi ke Instansi (jika ada tabel instansi)
+    /**
+     * Relasi ke tabel Instansi (jika ada)
+     */
     public function instansi()
     {
         return $this->belongsTo(Instansi::class, 'id_instansi');

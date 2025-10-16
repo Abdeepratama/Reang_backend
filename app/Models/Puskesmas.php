@@ -7,14 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Puskesmas extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    protected $table = 'puskesmas';
-    protected $fillable = ['nama', 'alamat', 'jam'];
-    public $timestamps = false; // ✅ ini WAJIB kalau tidak mau pakai timestamps
-      public function dokter()
-    {
-        // 'id_puskesmas' adalah nama kolom foreign key di tabel 'dokter' Anda
-        return $this->hasMany(Dokter::class, 'id_puskesmas');
-    }
+  protected $table = 'puskesmas';
+
+  protected $fillable = ['nama', 'alamat', 'jam'];
+
+  public $timestamps = false;
+
+  public function dokter()
+  {
+    return $this->hasMany(Dokter::class, 'id_puskesmas');
+  }
+
+  public function instansi()
+  {
+    return $this->belongsTo(Instansi::class, 'id_instansi');
+  }
 }

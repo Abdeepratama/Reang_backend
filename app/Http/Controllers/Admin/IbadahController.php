@@ -15,25 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class IbadahController extends Controller
 {
-    use CRUDHelper;
 
-    public function __construct()
-    {
-        $this->model = Ibadah::class;
-        $this->routePrefix = 'ibadah';
-        $this->viewPrefix = 'ibadah';
-        $this->viewSubfolder = 'tempat';
-        $this->aktivitasTipe = 'Tempat ibadah';
-        $this->aktivitasCreateMessage = 'Tempat ibadah baru ditambahkan';
-        $this->validationRules = [
-            'name' => 'required|string',
-            'address' => 'nullable|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'fitur' => 'required|exists:kategoris,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
-        ];
-    }
 
     public function index()
     {
@@ -135,20 +117,20 @@ class IbadahController extends Controller
     }
 
     public function mapTempat()
-{
-    $lokasi = Ibadah::all()->map(function ($loc) {
-        return [
-            'name'      => $loc->name,
-            'address'   => $loc->address,
-            'latitude'  => $loc->latitude,
-            'longitude' => $loc->longitude,
-            'foto'      => $loc->foto ? asset('storage/' . $loc->foto) : null,
-            'fitur'     => $loc->fitur,
-        ];
-    });
+    {
+        $lokasi = Ibadah::all()->map(function ($loc) {
+            return [
+                'name'      => $loc->name,
+                'address'   => $loc->address,
+                'latitude'  => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'foto'      => $loc->foto ? asset('storage/' . $loc->foto) : null,
+                'fitur'     => $loc->fitur,
+            ];
+        });
 
-    return view('admin.ibadah.tempat.map', compact('lokasi'));
-}
+        return view('admin.ibadah.tempat.map', compact('lokasi'));
+    }
 
     /* ========================
        API TEMPAT
@@ -162,7 +144,15 @@ class IbadahController extends Controller
     private function requestHasFilter(Request $request): bool
     {
         $filterKeys = [
-            'fitur', 'jenis', 'search', 'q', 'kategori', 'judul', 'tanggal', 'lokasi', 'alamat'
+            'fitur',
+            'jenis',
+            'search',
+            'q',
+            'kategori',
+            'judul',
+            'tanggal',
+            'lokasi',
+            'alamat'
         ];
 
         foreach ($filterKeys as $k) {
@@ -324,7 +314,7 @@ class IbadahController extends Controller
         if ($filter !== null && $filter !== '') {
             if (is_numeric($filter)) {
                 $query->where('fitur', $filter)
-                      ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+                    ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
                 // robust non-numeric handling: try match kategori.nama (find ids) or fitur text
                 $textFilter = strtolower($filter);
@@ -345,7 +335,7 @@ class IbadahController extends Controller
             if ($request->filled('search') || $request->filled('q')) {
                 $text = $request->query('search', $request->query('q'));
                 // apply smart search across name, address, fitur, and kategori.nama
-                $this->applySmartSearch($query, $text, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+                $this->applySmartSearch($query, $text, ['name', 'address', 'fitur'], [['created_at', 'asc']], ['kategori' => 'nama']);
                 // paginate
                 $paginator = $query->paginate(10);
             } else {
@@ -375,7 +365,7 @@ class IbadahController extends Controller
             $searchQuery = Ibadah::with('kategori');
 
             // apply smart search on name, address, fitur and kategori.nama; secondary order by created_at asc
-            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+            $this->applySmartSearch($searchQuery, $text, ['name', 'address', 'fitur'], [['created_at', 'asc']], ['kategori' => 'nama']);
 
             $paginator = $searchQuery->paginate(10);
 
@@ -448,7 +438,7 @@ class IbadahController extends Controller
         if ($filter !== null && $filter !== '') {
             if (is_numeric($filter)) {
                 $query->where('fitur', $filter)
-                      ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+                    ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
                 $text = strtolower($filter);
                 // robust: find kategori ids that match nama, use them, also attempt matching fitur as text
@@ -466,7 +456,7 @@ class IbadahController extends Controller
             // If search/q present, apply smart search within filtered results
             if ($request->filled('search') || $request->filled('q')) {
                 $textSearch = $request->query('search', $request->query('q'));
-                $this->applySmartSearch($query, $textSearch, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+                $this->applySmartSearch($query, $textSearch, ['name', 'address', 'fitur'], [['created_at', 'asc']], ['kategori' => 'nama']);
                 $data = $query->get()->map(fn($item) => [
                     'id'         => $item->id,
                     'name'       => $item->name,
@@ -502,7 +492,7 @@ class IbadahController extends Controller
             $text = $request->query('search', $request->query('q'));
             $searchQuery = Ibadah::with('kategori');
 
-            $this->applySmartSearch($searchQuery, $text, ['name','address','fitur'], [['created_at','asc']], ['kategori' => 'nama']);
+            $this->applySmartSearch($searchQuery, $text, ['name', 'address', 'fitur'], [['created_at', 'asc']], ['kategori' => 'nama']);
 
             $data = $searchQuery->get()->map(fn($item) => [
                 'id'         => $item->id,
@@ -681,6 +671,12 @@ class IbadahController extends Controller
         return back()->with('success', 'Info Keagamaan berhasil dihapus');
     }
 
+    public function infoshowDetail($id)
+    {
+        $info = InfoKeagamaan::findOrFail($id);
+        return view('admin.ibadah.info.show', compact('info'));
+    }
+
     public function infomap()
     {
         $lokasi = InfoKeagamaan::all()->map(function ($loc) {
@@ -755,19 +751,19 @@ class IbadahController extends Controller
         if ($filter !== null && $filter !== '') {
             if (is_numeric($filter)) {
                 $query->where('fitur', $filter)
-                      ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
+                    ->orWhereHas('kategori', fn($q) => $q->where('id', $filter));
             } else {
                 $textFilter = strtolower($filter);
                 $query->where(function ($q) use ($textFilter) {
                     $q->whereRaw('LOWER(fitur) LIKE ?', ["%$textFilter%"])
-                      ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$textFilter%"]));
+                        ->orWhereHas('kategori', fn($q2) => $q2->whereRaw('LOWER(nama) LIKE ?', ["%$textFilter%"]));
                 });
             }
 
             // if search/q present too, apply smart search on top of category filter
             if ($request->filled('search') || $request->filled('q')) {
                 $text = $request->query('search', $request->query('q'));
-                $this->applySmartSearch($query, $text, ['judul','lokasi','alamat','fitur'], [['tanggal','desc']], ['kategori' => 'nama']);
+                $this->applySmartSearch($query, $text, ['judul', 'lokasi', 'alamat', 'fitur'], [['tanggal', 'desc']], ['kategori' => 'nama']);
                 $paginator = $query->paginate(10);
             } else {
                 $paginator = $query->orderByDesc('tanggal')->paginate(10);
@@ -803,7 +799,7 @@ class IbadahController extends Controller
             $searchQuery = InfoKeagamaan::with('kategori');
 
             // smart search across judul, lokasi, alamat, fitur; secondary order by tanggal desc
-            $this->applySmartSearch($searchQuery, $text, ['judul','lokasi','alamat','fitur'], [['tanggal','desc']], ['kategori' => 'nama']);
+            $this->applySmartSearch($searchQuery, $text, ['judul', 'lokasi', 'alamat', 'fitur'], [['tanggal', 'desc']], ['kategori' => 'nama']);
 
             $paginator = $searchQuery->paginate(10);
 
@@ -885,23 +881,34 @@ class IbadahController extends Controller
         return response()->json($paginator, 200);
     }
 
+    protected $aktivitasTipe = 'ibadah';
+
     protected function logAktivitas($pesan)
     {
         if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id' => auth()->id(),
-                'tipe' => $this->aktivitasTipe,
-                'keterangan' => $pesan,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
     protected function logNotifikasi($pesan)
     {
+        $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan' => $pesan,
-            'dibaca' => false,
-            'url' => route('admin.ibadah.tempat.index')
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.ibadah.tempat.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 
