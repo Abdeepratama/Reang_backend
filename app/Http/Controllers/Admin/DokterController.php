@@ -213,4 +213,13 @@ class DokterController extends Controller
             return $m[0];
         }, $content);
     }
+    // DokterController.php
+public function apiShowByAdmin($adminId)
+{
+    $dokter = Dokter::with('puskesmas')->where('admin_id', $adminId)->first();
+    if (!$dokter) {
+        return response()->json(['message' => 'Dokter tidak ditemukan'], 404);
+    }
+    return response()->json($dokter);
+}
 }
