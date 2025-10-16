@@ -153,9 +153,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::get('/', [PuskesmasController::class, 'index'])->name('index');
         Route::get('/create', [PuskesmasController::class, 'create'])->name('create');
         Route::post('/store', [PuskesmasController::class, 'store'])->name('store');
-        Route::get('/edit/{puskesma}', [PuskesmasController::class, 'edit'])->name('edit');
-        Route::put('/update/{puskesma}', [PuskesmasController::class, 'update'])->name('update');
-        Route::delete('/delete/{puskesma}', [PuskesmasController::class, 'destroy'])->name('destroy');
+        Route::get('/edit/{puskesmas}', [PuskesmasController::class, 'edit'])->name('edit');
+        Route::put('/update/{puskesmas}', [PuskesmasController::class, 'update'])->name('update');
+        Route::delete('/delete/{puskesmas}', [PuskesmasController::class, 'destroy'])->name('destroy');
     });
 
     //------------------Dokter----------------------

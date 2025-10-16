@@ -62,7 +62,14 @@
             @endphp
 
             {{-- Sehat-Yu --}}
-            @if ($user && ($user->role === 'superadmin' || ($user->userData && $user->userData->instansi && $user->userData->instansi->nama === 'kesehatan')))
+            @if (
+            $user &&
+            (
+            $user->role === 'superadmin' ||
+            $user->role === 'puskesmas' ||
+            ($user->userData && $user->userData->instansi && $user->userData->instansi->nama === 'kesehatan')
+            )
+            )
             <li class="nav-item dropdown">
                 <a class="dropdown-toggle nav-link {{ request()->routeIs('admin.sehat.*') ? 'active bg-light' : '' }}"
                     href="#submenu-sehat"
@@ -71,11 +78,41 @@
                     <i class="fe fe-activity fe-16"></i>
                     <span class="ml-2 item-text">Sehat-Yu</span>
                 </a>
+
                 <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.sehat.*') ? 'show' : '' }}" id="submenu-sehat">
-                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.tempat.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.tempat.index') }}">Lokasi Rumah Sakit</a></li>
-                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.info.index') }}">Info Sehat</a></li>
-                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.olahraga.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.olahraga.index') }}">Lokasi Olahraga</a></li>
-                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sehat.puskesmas.index') }}">Puskesmas</a></li>
+                    {{-- Jika bukan puskesmas, tampilkan semua menu utama --}}
+                    @if ($user->role !== 'puskesmas')
+                    <li>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.tempat.index') ? 'text-primary bg-light' : '' }}"
+                            href="{{ route('admin.sehat.tempat.index') }}">
+                            Lokasi Rumah Sakit
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.index') ? 'text-primary bg-light' : '' }}"
+                            href="{{ route('admin.sehat.info.index') }}">
+                            Info Sehat
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.olahraga.index') ? 'text-primary bg-light' : '' }}"
+                            href="{{ route('admin.sehat.olahraga.index') }}">
+                            Lokasi Olahraga
+                        </a>
+                    </li>
+                    @endif
+
+                    {{-- Menu khusus untuk superadmin & puskesmas --}}
+                    @if ($user->role === 'superadmin' || $user->role === 'puskesmas')
+                    <li>
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.index') ? 'text-primary bg-light' : '' }}"
+                            href="{{ route('admin.sehat.puskesmas.index') }}">
+                            Puskesmas
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </li>
             @endif
@@ -181,7 +218,7 @@
                 <span>Pariwisata & Keagamaan</span>
             </p>
             <ul class="navbar-nav flex-fill w-100 mb-2">
-            @endif
+                @endif
 
 
                 {{-- Plesir-Yu --}}
@@ -287,7 +324,7 @@
                             </a>
                         </li>
                     </ul>
-                    
+
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.renbang.*') ? 'show' : '' }}" id="submenu-renbang">
                         <li class="nav-item">
                             <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.ajuan.index') ? 'text-primary bg-light' : '' }}"

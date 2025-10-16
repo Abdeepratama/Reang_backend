@@ -23,29 +23,9 @@ class CheckAdminDinas
             return $next($request);
         }
 
-        // Dokter hanya boleh ke modul dokter dan chat
-        if ($user->role === 'dokter') {
-            $allowedRoutes = [
-                'admin.dashboard',
-                'admin.sehat.dokter.*',
-                'admin.chat.*',
-                'admin.accounts.profile',
-            ];
-
-            $routeName = $request->route()->getName();
-
-            foreach ($allowedRoutes as $pattern) {
-                if (Str::is($pattern, $routeName)) {
-                    return $next($request);
-                }
-            }
-
-            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }
-
         // Admin Dinas → cek akses berdasar id_instansi
         if ($user->role === 'admindinas') {
-            $user->load('userData.instansi');
+            $user->loadMissing('userData.instansi');
 
             $idInstansi = optional($user->userData->instansi)->id;
 
@@ -54,12 +34,31 @@ class CheckAdminDinas
             }
 
             $allowedRoutesByInstansi = $this->getAllowedRoutesByInstansi($idInstansi);
-
-            $allowedRoutesByInstansi = $this->getAllowedRoutesByInstansi($user->id_instansi);
-
             $routeName = $request->route()->getName();
 
             foreach ($allowedRoutesByInstansi as $pattern) {
+                if (Str::is($pattern, $routeName)) {
+                    return $next($request);
+                }
+            }
+
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
+        // 🏥 Role Puskesmas
+        if ($user->role === 'puskesmas') {
+            $user->loadMissing('userData.puskesmas');
+
+            $idPuskesmas = optional($user->userData->puskesmas)->id;
+
+            if (empty($idPuskesmas)) {
+                abort(403, 'Akun Anda belum terhubung dengan puskesmas manapun');
+            }
+
+            $allowedRoutesByPuskesmas = $this->getAllowedRoutesByPuskesmas($idPuskesmas);
+            $routeName = $request->route()->getName();
+
+            foreach ($allowedRoutesByPuskesmas as $pattern) {
                 if (Str::is($pattern, $routeName)) {
                     return $next($request);
                 }
@@ -186,6 +185,40 @@ class CheckAdminDinas
 
             default:
                 return ['admin.dashboard']; // Default minimal akses
+        }
+    }
+
+    private function getAllowedRoutesByPuskesmas($id_puskesmas)
+    {
+        switch ($id_puskesmas) {
+            case 1:
+                return [
+                    'admin.dashboard',
+                    'admin.sehat.tempat.*',
+                    'admin.sehat.info.*',
+                    'admin.sehat.olahraga.*',
+                    'admin.sehat.puskesmas.*',
+                    'admin.kategori.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
+                    'admin.sehat.dokter.*'
+                ];
+
+            case 3:
+                return [
+                    'admin.dashboard',
+                    'admin.sekolah.tempat.*',
+                    'admin.sekolah.info.*',
+                    'admin.kategori.*',
+                    'admin.accounts.profile',
+                    'admin.dumas.aduan.*',
+                    'admin.setting.*',
+                ];
+
+            default:
+                // jika tidak cocok, tetap return array kosong agar tidak error
+                return ['admin.dashboard'];
         }
     }
 

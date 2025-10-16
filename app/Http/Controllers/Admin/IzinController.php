@@ -14,7 +14,10 @@ class IzinController extends Controller
 {
     public function infoindex()
     {
-        $infoItems = InfoPerizinan::with('kategori')->get();
+        $infoItems = InfoPerizinan::with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('admin.izin.info.index', compact('infoItems'));
     }
 

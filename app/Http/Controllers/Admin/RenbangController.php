@@ -201,10 +201,10 @@ class RenbangController extends Controller
     }
 
     public function show($id)
-    {
-        $item = RenbangAjuan::with('user')->findOrFail($id);
-        return view('admin.renbang.ajuan.show', compact('ajuan'));
-    }
+{
+    $ajuan = RenbangAjuan::with('user')->findOrFail($id);
+    return view('admin.renbang.ajuan.show', compact('ajuan'));
+}
 
     public function update(Request $request, $id)
     {

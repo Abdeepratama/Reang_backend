@@ -19,7 +19,7 @@
                 <th style="width: 60px;">No</th>
                 <th>Nama</th>
                 <th>Role</th>
-                <th>Dinas / Dokter</th>
+                <th>Dinas / Puskesmas</th>
                 <th width="180">Aksi</th>
             </tr>
         </thead>
@@ -33,19 +33,17 @@
                         <span class="badge bg-success">Super Admin</span>
                     @elseif($admin->role === 'admindinas')
                         <span class="badge bg-info">Admin Dinas</span>
-                    @elseif($admin->role === 'dokter')
-                        <span class="badge bg-danger">Dokter</span>
+                    @elseif($admin->role === 'puskesmas')
+                        <span class="badge bg-danger">Puskesmas</span>
                     @endif
                 </td>
                 <td>
-                    {{-- tampilkan nama instansi atau nama dokter tergantung role --}}
+                    {{-- tampilkan nama instansi atau nama puskesmas tergantung role --}}
                     @if($admin->role === 'admindinas')
                         {{ $admin->instansi->nama ?? '-' }}
-                    @elseif($admin->role === 'dokter')
-                        {{ $admin->dokter->fitur ?? '-' }}
+                    @elseif($admin->role === 'puskesmas')
+                        {{ $admin->puskesmas->nama ?? '-' }}
                     @else
-                        -
-                    @endif
                 </td>
                 <td>
                     <a href="{{ route('admin.accounts.edit', $admin->id) }}" class="btn btn-sm btn-warning">

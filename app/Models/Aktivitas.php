@@ -18,6 +18,7 @@ class Aktivitas extends Model
         'item_id',
         'dibaca',
         'role',
-        'id_instansi'
+        'id_instansi',
+        'id_puskesmas'
     ];
 }

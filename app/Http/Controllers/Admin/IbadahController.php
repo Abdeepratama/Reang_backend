@@ -558,7 +558,10 @@ class IbadahController extends Controller
 
     public function infoIndex()
     {
-        $infoItems = InfoKeagamaan::all();
+        $infoItems = InfoKeagamaan::with('kategori')
+            ->orderBy('created_at', 'desc') 
+            ->get();
+
         return view('admin.ibadah.info.index', compact('infoItems'));
     }
 

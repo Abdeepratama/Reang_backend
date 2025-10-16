@@ -1,63 +1,48 @@
 @extends('admin.partials.app')
 
-@section('title', 'Edit Data Sehat')
+@section('title', 'Edit Puskesmas')
 
 @section('content')
-<div class="container-fluid px-4">
-    <h4 class="mt-4 mb-4">Edit Data Sehat</h4>
+<div class="container mt-4">
+    <h3 class="mb-4">✏️ Edit Puskesmas</h3>
 
-    <form action="{{ route('admin.sehat.tempat.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <strong>Terjadi kesalahan:</strong>
+            <ul class="mb-0 mt-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.sehat.puskesmas.update', $puskesmas->id) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <div class="row">
-            <div class="col-md-6">
-                <!-- Nama -->
-                <div class="mb-3">
-                    <label for="name" class="form-label">Nama Tempat Sehat</label>
-                    <input type="text" name="name" id="name" class="form-control"
-                           value="{{ old('name', $item->name) }}" required>
-                </div>
+        <div class="mb-3">
+            <label for="nama" class="form-label">Nama Puskesmas</label>
+            <input type="text" name="nama" class="form-control" value="{{ old('nama', $puskesmas->nama) }}" required>
+        </div>
 
-                <!-- Alamat -->
-                <div class="mb-3">
-                    <label for="address" class="form-label">Alamat</label>
-                    <input type="text" id="address" name="address" class="form-control"
-                           value="{{ old('address', $item->address ?? '') }}" required>
-                </div>
+        <div class="mb-3">
+            <label for="alamat" class="form-label">Alamat</label>
+            <textarea name="alamat" class="form-control" required>{{ old('alamat', $puskesmas->alamat) }}</textarea>
+        </div>
 
-                <!-- Kategori -->
-                <div class="mb-3">
-                    <label for="fitur" class="form-label">Kategori</label>
-                    <select name="fitur" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoriSehat as $kategori)
-                        <option value="{{ $kategori->nama }}" {{ $item->fitur == $kategori->nama ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
+        <div class="mb-3">
+            <label for="jam" class="form-label">Jam Operasional</label>
+            <input type="text" name="jam" class="form-control" value="{{ old('jam', $puskesmas->jam) }}" placeholder="08:00 - 16:00" required>
+        </div>
 
-                <!-- Foto -->
-                <div class="mb-3">
-                    <label for="foto" class="form-label">Foto</label>
-                    <div class="mb-2">
-                        @if($item->foto)
-                            <img id="currentPreview" src="{{ Storage::url($item->foto) }}" 
-                                 alt="Foto {{ $item->name }}" 
-                                 style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
-                        @else
-                            <img id="currentPreview" src="{{ asset('images/default-sehat.jpg') }}" 
-                                 alt="Default" 
-                                 style="max-width:150px; height:auto; border:1px solid #ddd; padding:4px;">
-                        @endif
-                    </div>
-                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Update Data</button>
-            </div>
+        <div class="d-flex justify-content-between">
+            <a href="{{ route('admin.sehat.puskesmas.index') }}" class="btn btn-secondary">← Kembali</a>
+            <button type="submit" class="btn btn-primary">💾 Update</button>
         </div>
     </form>
 </div>

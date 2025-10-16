@@ -12,6 +12,7 @@ class NotifikasiAktivitas extends Model
         'url',
         'role',
         'id_instansi',
+        'id_puskesmas'
     ];
 
     public function scopeUnread($query)

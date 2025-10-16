@@ -64,9 +64,14 @@ class DashboardController extends Controller
                 $q->where('role', 'admindinas')
                     ->where('id_instansi', $user->id_instansi);
             })
+            ->when($user->role === 'puskesmas', function ($q) use ($user) {
+                $q->where('role', 'puskesmas')
+                    ->where('id_puskesmas', $user->id_puskesmas);
+            })
             ->latest()
             ->take(10)
             ->get();
+
 
         // 🔹 Filter notifikasi
         $notifications = NotifikasiAktivitas::query()
@@ -75,15 +80,25 @@ class DashboardController extends Controller
                 $q->where('role', 'admindinas')
                     ->where('id_instansi', $user->id_instansi);
             })
+            ->when($user->role === 'puskesmas', function ($q) use ($user) {
+                $q->where('role', 'puskesmas')
+                    ->where('id_puskesmas', $user->id_puskesmas);
+            })
             ->latest()
             ->take(10)
             ->get();
 
+
+        // 🔹 Hitung jumlah notifikasi belum dibaca
         $jumlahNotifikasi = NotifikasiAktivitas::query()
             ->unread()
             ->when($user->role === 'admindinas', function ($q) use ($user) {
                 $q->where('role', 'admindinas')
                     ->where('id_instansi', $user->id_instansi);
+            })
+            ->when($user->role === 'puskesmas', function ($q) use ($user) {
+                $q->where('role', 'puskesmas')
+                    ->where('id_puskesmas', $user->id_puskesmas);
             })
             ->count();
 

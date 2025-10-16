@@ -13,7 +13,7 @@ class AdmindukController extends Controller
 {
     public function infoindex()
     {
-        $infoItems = InfoAdminduk::all();
+        $infoItems = InfoAdminduk::latest()->get();
         return view('admin.adminduk.info.index', compact('infoItems'));
     }
 

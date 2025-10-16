@@ -262,7 +262,7 @@ class SehatController extends Controller
     public function infoindex()
     {
         $infoItems = InfoKesehatan::with('kategori')
-            ->orderBy('created_at', 'desc') // 🔥 urutkan dari yang terbaru
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('admin.sehat.info.index', compact('infoItems'));

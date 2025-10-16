@@ -213,7 +213,10 @@ class PlesirController extends Controller
 
     public function info()
     {
-        $infoItems = InfoPlesir::with('kategori')->get();
+        $infoItems = InfoPlesir::with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
         return view('admin.plesir.info.index', compact('infoItems'));
     }
 

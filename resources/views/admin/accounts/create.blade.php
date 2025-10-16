@@ -90,14 +90,14 @@
                 <option value="">-- Pilih Role --</option>
                 <option value="superadmin" {{ old('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                 <option value="admindinas" {{ old('role') == 'admindinas' ? 'selected' : '' }}>Admin Dinas</option>
-                <option value="dokter" {{ old('role') == 'dokter' ? 'selected' : '' }}>Dokter</option>
+                <option value="puskesmas" {{ old('role') == 'puskesmas' ? 'selected' : '' }}>Puskesmas</option>
             </select>
             @error('role')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
-        {{-- Instansi (hanya jika role = admindinas) --}}
+        {{-- Instansi (khusus admindinas) --}}
         <div class="mb-3" id="instansi-wrapper" style="display: none;">
             <label for="id_instansi" class="form-label">Instansi</label>
             <select name="id_instansi" id="id_instansi" class="form-select @error('id_instansi') is-invalid @enderror">
@@ -113,18 +113,18 @@
             @enderror
         </div>
 
-        {{-- Dokter (hanya jika role = dokter) --}}
-        <div class="mb-3" id="dokter-wrapper" style="display: none;">
-            <label for="id_dokter" class="form-label">Pilih Dokter</label>
-            <select name="id_dokter" id="id_dokter" class="form-select @error('id_dokter') is-invalid @enderror">
-                <option value="">-- Pilih Dokter --</option>
-                @foreach ($dokters as $dokter)
-                <option value="{{ $dokter->id }}" {{ old('id_dokter') == $dokter->id ? 'selected' : '' }}>
-                    {{ $dokter->nama }}
+        {{-- Puskesmas (khusus role puskesmas) --}}
+        <div class="mb-3" id="puskesmas-wrapper" style="display: none;">
+            <label for="id_puskesmas" class="form-label">Pilih Puskesmas</label>
+            <select name="id_puskesmas" id="id_puskesmas" class="form-select @error('id_puskesmas') is-invalid @enderror">
+                <option value="">-- Pilih Puskesmas --</option>
+                @foreach ($puskesmas as $item)
+                <option value="{{ $item->id }}" {{ old('id_puskesmas') == $item->id ? 'selected' : '' }}>
+                    {{ $item->nama }}
                 </option>
                 @endforeach
             </select>
-            @error('id_dokter')
+            @error('id_puskesmas')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
@@ -146,11 +146,12 @@
 
     const roleSelect = document.getElementById('role');
     const instansiWrapper = document.getElementById('instansi-wrapper');
-    const dokterWrapper = document.getElementById('dokter-wrapper');
+    const puskesmasWrapper = document.getElementById('puskesmas-wrapper');
 
     function toggleFields() {
-        instansiWrapper.style.display = roleSelect.value === 'admindinas' ? 'block' : 'none';
-        dokterWrapper.style.display = roleSelect.value === 'dokter' ? 'block' : 'none';
+        const role = roleSelect.value;
+        instansiWrapper.style.display = role === 'admindinas' ? 'block' : 'none';
+        puskesmasWrapper.style.display = role === 'puskesmas' ? 'block' : 'none';
     }
 
     roleSelect.addEventListener('change', toggleFields);

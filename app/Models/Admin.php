@@ -23,6 +23,10 @@ class Admin extends Authenticatable
         return $this->userData->id_instansi ?? null;
     }
 
+    public function getIdPuskesmasAttribute()
+    {
+        return $this->userData->id_puskesmas ?? null;
+    }
 
     public function hasAccess($fitur)
     {

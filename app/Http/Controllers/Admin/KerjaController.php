@@ -17,7 +17,9 @@ class KerjaController extends Controller
 {
     public function infoindex()
     {
-        $infoItems = InfoKerja::with('kategori')->get();
+        $infoItems = InfoKerja::with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('admin.kerja.info.index', compact('infoItems'));
     }

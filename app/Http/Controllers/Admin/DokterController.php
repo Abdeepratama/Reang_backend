@@ -8,13 +8,45 @@ use App\Models\Puskesmas;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class DokterController extends Controller
 {
     // --- Bagian Admin Panel (TIDAK DIUBAH) ---
     public function index()
     {
-        $dokter = Dokter::with(['puskesmas', 'kategori'])->orderBy('id', 'desc')->get();
+        $user = Auth::guard('admin')->user();
+
+        // Superadmin: lihat semua
+        if ($user->role === 'superadmin') {
+            $dokter = Dokter::with(['puskesmas', 'kategori'])
+                ->orderBy('id', 'desc')
+                ->get();
+        }
+        // Role puskesmas: lihat hanya dokter dari puskesmas-nya
+        elseif ($user->role === 'puskesmas') {
+            $idPuskesmas = optional($user->userData)->id_puskesmas;
+
+            if (!$idPuskesmas) {
+                abort(403, 'Akun Anda belum terhubung dengan data puskesmas.');
+            }
+
+            $dokter = Dokter::with(['puskesmas', 'kategori'])
+                ->where('id_puskesmas', $idPuskesmas)
+                ->orderBy('id', 'desc')
+                ->get();
+        }
+        // Admin Dinas Kesehatan juga bisa lihat semua dokter (opsional)
+        elseif ($user->role === 'admindinas' && optional($user->userData->instansi)->nama === 'kesehatan') {
+            $dokter = Dokter::with(['puskesmas', 'kategori'])
+                ->orderBy('id', 'desc')
+                ->get();
+        }
+        // Role lain ditolak
+        else {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         return view('admin.sehat.dokter.index', compact('dokter'));
     }
 
@@ -175,7 +207,7 @@ class DokterController extends Controller
     private function replaceImageUrlsInHtml($content)
     {
         if (!$content) return $content;
-        return preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
+        return preg_replace_callback('/(<img\b[^>]\bsrc\s=\s*[\'"])([^\'"]+)([\'"][^>]*>)/i', function ($m) {
             $prefix = $m[1];
             $src = $m[2];
             $suffix = $m[3];
@@ -212,5 +244,14 @@ class DokterController extends Controller
             }
             return $m[0];
         }, $content);
+    }
+    // DokterController.php
+    public function apiShowByAdmin($adminId)
+    {
+        $dokter = Dokter::with('puskesmas')->where('admin_id', $adminId)->first();
+        if (!$dokter) {
+            return response()->json(['message' => 'Dokter tidak ditemukan'], 404);
+        }
+        return response()->json($dokter);
     }
 }

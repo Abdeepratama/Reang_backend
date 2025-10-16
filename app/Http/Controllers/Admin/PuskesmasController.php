@@ -5,13 +5,34 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Puskesmas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PuskesmasController extends Controller
 {
     // --- Bagian Admin Panel (TIDAK DIUBAH) ---
     public function index()
     {
-        $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
+        $user = Auth::guard('admin')->user();
+
+        // Superadmin: tampilkan semua
+        if ($user->role === 'superadmin') {
+            $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
+        }
+        // Role puskesmas: tampilkan hanya puskesmas miliknya
+        elseif ($user->role === 'puskesmas') {
+            $idPuskesmas = optional($user->userData)->id_puskesmas;
+
+            if (!$idPuskesmas) {
+                abort(403, 'Akun Anda belum terhubung dengan data puskesmas.');
+            }
+
+            $puskesmas = Puskesmas::where('id', $idPuskesmas)->get();
+        }
+        // Role lain (misal admindinas) tidak punya akses
+        else {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         return view('admin.sehat.puskesmas.index', compact('puskesmas'));
     }
 
@@ -34,12 +55,12 @@ class PuskesmasController extends Controller
             ->with('success', 'Data puskesmas berhasil ditambahkan');
     }
 
-    public function edit(Puskesmas $puskesma)
+    public function edit(Puskesmas $puskesmas)
     {
-        return view('admin.sehat.puskesmas.edit', compact('puskesma'));
+        return view('admin.sehat.puskesmas.edit', compact('puskesmas'));
     }
 
-    public function update(Request $request, Puskesmas $puskesma)
+    public function update(Request $request, Puskesmas $puskesmas)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
@@ -47,14 +68,14 @@ class PuskesmasController extends Controller
             'jam' => 'required|string',
         ]);
 
-        $puskesma->update($request->all());
+        $puskesmas->update($request->all());
 
         return redirect()->route('admin.sehat.puskesmas.index')->with('success', 'Data berhasil diperbarui');
     }
 
-    public function destroy(Puskesmas $puskesma)
+    public function destroy(Puskesmas $puskesmas)
     {
-        $puskesma->delete();
+        $puskesmas->delete();
         return redirect()->route('admin.sehat.puskesmas.index')->with('success', 'Data berhasil dihapus');
     }
 
@@ -65,8 +86,8 @@ class PuskesmasController extends Controller
     {
         // --- DIPERBARUI ---
         $puskesmas = Puskesmas::withCount('dokter as dokter_tersedia')
-                              ->orderBy('id', 'desc')
-                              ->paginate(10);
+            ->orderBy('id', 'desc')
+            ->paginate(10);
         return response()->json($puskesmas);
     }
 
@@ -96,8 +117,8 @@ class PuskesmasController extends Controller
 
         if ($keyword) {
             $query->where('nama', 'like', "%{$keyword}%")
-                  ->orWhere('alamat', 'like', "%{$keyword}%")
-                  ->orWhere('jam', 'like', "%{$keyword}%");
+                ->orWhere('alamat', 'like', "%{$keyword}%")
+                ->orWhere('jam', 'like', "%{$keyword}%");
         }
 
         $result = $query->orderBy('id', 'desc')->paginate(10);

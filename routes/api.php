@@ -17,7 +17,8 @@ use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RatingDumasController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
-use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\ChatImageController;
+use App\Http\Controllers\Api\FirebaseController;
 use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Admin\PuskesmasController;
 use App\Http\Controllers\Admin\DokterController;
@@ -147,19 +148,17 @@ Route::get('/puskesmas/{id}', [PuskesmasController::class, 'apiShow']);
 
 //dokter
 Route::get('/dokter', [DokterController::class, 'apiIndex']);
-Route::get('/dokter/{id?}', [DokterController::class, 'apiShow']);
+Route::get('/dokter/{id}', [DokterController::class, 'apiShow'])->where('id', '[0-9]+');
+Route::get('/dokter/by-admin/{adminId}', [DokterController::class, 'apiShowByAdmin']);
 
-//chat
-//mengirim pesan
+
+
+// BAGIAN 3: Rute API untuk Aksi Chat
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
-    Route::get('/chat/{user_id}', [ChatController::class, 'getMessages']);
+    ///storage chat image
+    Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
 });
+Route::middleware('auth:sanctum')->post('/firebase/token', [FirebaseController::class, 'createCustomToken']);
 
-//dokter melihat chat yang masuk
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/chat', [ChatController::class, 'index']);
-});
-
-// untuk user login (lihat chat dengan dokter tertentu)
-Route::middleware('auth:sanctum')->get('/chat/{dokter_id}', [ChatController::class, 'getMessages']);
+///storage chat image
+Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);

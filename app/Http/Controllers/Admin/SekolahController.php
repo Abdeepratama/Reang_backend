@@ -200,10 +200,10 @@ class SekolahController extends Controller
 
     // info sekolah
     public function infoindex()
-    {
-        $infoItems = InfoSekolah::oldest()->get();
-        return view('admin.sekolah.info.index', compact('infoItems'));
-    }
+{
+    $infoItems = InfoSekolah::latest()->get();
+    return view('admin.sekolah.info.index', compact('infoItems'));
+}
 
     public function infocreate()
     {
