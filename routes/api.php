@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Admin\PuskesmasController;
 use App\Http\Controllers\Admin\DokterController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\FirebaseController;
+use App\Http\Controllers\Api\ChatImageController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {

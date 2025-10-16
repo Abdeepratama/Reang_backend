@@ -66,4 +66,8 @@ class ChatImageController extends Controller
             ], 500);
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 774cbd84412084287091e1688369775593dc9ac3
