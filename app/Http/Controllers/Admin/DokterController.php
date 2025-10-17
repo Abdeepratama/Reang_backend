@@ -246,7 +246,6 @@ class DokterController extends Controller
         }, $content);
     }
     // DokterController.php
-<<<<<<< HEAD
     public function apiShowByAdmin($adminId)
     {
         $dokter = Dokter::with('puskesmas')->where('admin_id', $adminId)->first();
@@ -256,14 +255,3 @@ class DokterController extends Controller
         return response()->json($dokter);
     }
 }
-=======
-public function apiShowByAdmin($adminId)
-{
-    $dokter = Dokter::with('puskesmas')->where('admin_id', $adminId)->first();
-    if (!$dokter) {
-        return response()->json(['message' => 'Dokter tidak ditemukan'], 404);
-    }
-    return response()->json($dokter);
-}
-}
->>>>>>> 774cbd84412084287091e1688369775593dc9ac3

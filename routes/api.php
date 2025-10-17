@@ -23,8 +23,6 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Admin\PuskesmasController;
 use App\Http\Controllers\Admin\DokterController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Api\FirebaseController;
-use App\Http\Controllers\Api\ChatImageController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -140,6 +138,8 @@ Route::get('renbang/ajuan/{id}', [RenbangController::class, 'apiajuanShow'])->wh
 // Hanya login user
 Route::prefix('renbang/ajuan')->middleware('auth:sanctum')->group(function () {
     Route::post('/', [RenbangController::class, 'apiStore']);
+    Route::post('like/{id}', [RenbangController::class, 'apiToggleLike']);
+    Route::get('likes/{id}', [RenbangController::class, 'apiLikes']);
 });
 
 

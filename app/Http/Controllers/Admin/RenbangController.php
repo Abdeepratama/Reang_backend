@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Renbang;
 use App\Models\RenbangAjuan;
+use App\Models\RenbangLike;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use App\Models\Kategori;
@@ -184,11 +185,13 @@ class RenbangController extends Controller
 
         if ($user->role === 'superadmin') {
             $items = RenbangAjuan::with('user')
+                ->withCount('likes') // 👈 Tambah ini untuk hitung jumlah like
                 ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
                 ->latest()
                 ->get();
         } else {
             $items = RenbangAjuan::with('user')
+                ->withCount('likes') // 👈 Tambah juga di sini
                 ->whereHas('user.userData', function ($q) use ($user) {
                     $q->where('id_admin', $user->id);
                 })
@@ -201,10 +204,10 @@ class RenbangController extends Controller
     }
 
     public function show($id)
-{
-    $ajuan = RenbangAjuan::with('user')->findOrFail($id);
-    return view('admin.renbang.ajuan.show', compact('ajuan'));
-}
+    {
+        $ajuan = RenbangAjuan::with('user')->findOrFail($id);
+        return view('admin.renbang.ajuan.show', compact('ajuan'));
+    }
 
     public function update(Request $request, $id)
     {
@@ -280,6 +283,46 @@ class RenbangController extends Controller
         }
 
         return response()->json(['success' => true, 'data' => $ajuan]);
+    }
+
+    public function apiToggleLike($id)
+    {
+        $user = Auth::user();
+
+        // cek apakah user sudah like
+        $existing = RenbangLike::where('id_user', $user->id)
+            ->where('id_renbang', $id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $status = 'unliked';
+        } else {
+            RenbangLike::create([
+                'id_user' => $user->id,
+                'id_renbang' => $id,
+            ]);
+            $status = 'liked';
+        }
+
+        $count = RenbangLike::where('id_renbang', $id)->count();
+
+        return response()->json([
+            'status' => $status,
+            'likes_count' => $count,
+        ]);
+    }
+
+    // 🔹 GET /api/renbang/likes/{id}
+    public function apiLikes($id)
+    {
+        $user = Auth::user();
+        $count = RenbangLike::where('id_renbang', $id)->count();
+
+        return response()->json([
+            'likes_count' => $count,
+            'liked' => $user ? RenbangLike::where('id_user', $user->id)->where('id_renbang', $id)->exists() : false,
+        ]);
     }
 
     /**

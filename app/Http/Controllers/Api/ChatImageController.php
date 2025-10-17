@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+
 
 class ChatImageController extends Controller
 {
@@ -58,7 +60,7 @@ class ChatImageController extends Controller
                 'url'     => $publicUrl,
             ], 201);
         } catch (\Exception $e) {
-            \Log::error('Chat image upload error: ' . $e->getMessage());
+            Log::error('Chat image upload error: ' . $e->getMessage());
 
             return response()->json([
                 'message' => 'Gagal mengunggah gambar',
@@ -66,8 +68,4 @@ class ChatImageController extends Controller
             ], 500);
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 774cbd84412084287091e1688369775593dc9ac3

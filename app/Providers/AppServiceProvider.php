@@ -30,9 +30,13 @@ class AppServiceProvider extends ServiceProvider
 
                 // 🔔 Ambil notifikasi aktivitas
                 $notifikasiAktivitas = NotifikasiAktivitas::query()
+                    ->where('dibaca', 0) // hanya yang belum dibaca
                     ->when($admin->role !== 'superadmin', function ($q) use ($admin) {
-                        $q->where('role', $admin->role)
-                          ->where('id_instansi', $admin->id_instansi);
+                        if ($admin->role === 'admindinas') {
+                            $q->where('id_instansi', $admin->id_instansi);
+                        } elseif ($admin->role === 'adminpuskesmas') {
+                            $q->where('id_puskesmas', $admin->id_puskesmas);
+                        }
                     })
                     ->latest()
                     ->take(10)

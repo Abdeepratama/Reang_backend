@@ -327,7 +327,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         // 🔒 Validasi akses
         if (
             $user->role === 'superadmin' ||
-            ($user->role === 'admindinas' && $notifikasi->id_instansi === $user->id_instansi)
+            ($user->role === 'admindinas' && $notifikasi->id_instansi === $user->id_instansi) ||
+            ($user->role === 'adminpuskesmas' && $notifikasi->id_puskesmas === $user->id_puskesmas)
         ) {
             $notifikasi->update(['dibaca' => true]);
             return redirect()->to($notifikasi->url ?? route('admin.dashboard'));

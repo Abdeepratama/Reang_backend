@@ -9,7 +9,7 @@
 
     {{-- Notifikasi sukses --}}
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <div class="table-responsive">
@@ -23,6 +23,7 @@
                     <th>Status</th>
                     <th>Tanggapan</th>
                     <th>Deskripsi</th>
+                    <th>like</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -66,13 +67,19 @@
 
                     <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 60) }}</td>
 
+                    <td>
+                        <span class="text-bg-primary rounded px-2">
+                            {{ $item->likes_count ?? 0 }}
+                        </span>
+                    </td>
+
                     {{-- Tombol aksi --}}
                     <td>
                         <a href="{{ route('admin.renbang.ajuan.show', $item->id) }}" class="btn btn-sm btn-info text-white">Detail</a>
                         <form action="{{ route('admin.renbang.ajuan.destroy', $item->id) }}"
-                              method="POST"
-                              style="display:inline;"
-                              onsubmit="return confirm('Yakin ingin menghapus ajuan ini?')">
+                            method="POST"
+                            style="display:inline;"
+                            onsubmit="return confirm('Yakin ingin menghapus ajuan ini?')">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-sm btn-danger text-white">Hapus</button>
@@ -91,14 +98,20 @@
     $(document).ready(function() {
         $('#renbangTable').DataTable({
             autoWidth: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "Semua"]
+            ],
             "language": {
                 "lengthMenu": "Tampilkan _MENU_ data per halaman",
                 "zeroRecords": "Tidak ditemukan data",
                 "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                 "infoEmpty": "Tidak ada data tersedia",
                 "search": "Cari:",
-                "paginate": { "next": "Berikutnya", "previous": "Sebelumnya" }
+                "paginate": {
+                    "next": "Berikutnya",
+                    "previous": "Sebelumnya"
+                }
             }
         });
     });
