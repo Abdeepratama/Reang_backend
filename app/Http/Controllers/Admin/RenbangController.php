@@ -244,7 +244,11 @@ class RenbangController extends Controller
     // =======================
     public function apiIndex()
     {
-        $data = RenbangAjuan::with('user')->latest()->get();
+        $data = RenbangAjuan::with(['user'])
+            ->withCount('likes') // Tambah jumlah like otomatis
+            ->latest()
+            ->get();
+
         return response()->json(['success' => true, 'data' => $data]);
     }
 
@@ -259,14 +263,14 @@ class RenbangController extends Controller
 
         $user = auth('sanctum')->user();
 
-        $ajuan = new RenbangAjuan();
-        $ajuan->judul     = $request->judul;
-        $ajuan->kategori  = $request->kategori;
-        $ajuan->lokasi    = $request->lokasi;
-        $ajuan->deskripsi = $request->deskripsi;
-        $ajuan->status    = 'menunggu';
-        $ajuan->user_id   = $user?->id;
-        $ajuan->save();
+        $ajuan = RenbangAjuan::create([
+            'judul'     => $request->judul,
+            'kategori'  => $request->kategori,
+            'lokasi'    => $request->lokasi,
+            'deskripsi' => $request->deskripsi,
+            'status'    => 'menunggu',
+            'user_id'   => $user?->id,
+        ]);
 
         return response()->json([
             'message' => 'Ajuan berhasil dikirim',
@@ -276,20 +280,38 @@ class RenbangController extends Controller
 
     public function apiajuanShow($id)
     {
-        $ajuan = RenbangAjuan::with('user')->find($id);
+        $user = auth('sanctum')->user();
+
+        $ajuan = RenbangAjuan::with('user')
+            ->withCount('likes')
+            ->find($id);
 
         if (!$ajuan) {
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
 
-        return response()->json(['success' => true, 'data' => $ajuan]);
+        $liked = $user
+            ? RenbangLike::where('id_user', $user->id)
+            ->where('id_renbang', $id)
+            ->exists()
+            : false;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                ...$ajuan->toArray(),
+                'liked_by_user' => $liked
+            ]
+        ]);
     }
 
     public function apiToggleLike($id)
     {
-        $user = Auth::user();
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-        // cek apakah user sudah like
         $existing = RenbangLike::where('id_user', $user->id)
             ->where('id_renbang', $id)
             ->first();
@@ -313,15 +335,18 @@ class RenbangController extends Controller
         ]);
     }
 
-    // 🔹 GET /api/renbang/likes/{id}
     public function apiLikes($id)
     {
-        $user = Auth::user();
+        $user = auth('sanctum')->user();
+
         $count = RenbangLike::where('id_renbang', $id)->count();
+        $liked = $user
+            ? RenbangLike::where('id_user', $user->id)->where('id_renbang', $id)->exists()
+            : false;
 
         return response()->json([
             'likes_count' => $count,
-            'liked' => $user ? RenbangLike::where('id_user', $user->id)->where('id_renbang', $id)->exists() : false,
+            'liked' => $liked,
         ]);
     }
 
