@@ -46,6 +46,19 @@ class IbadahController extends Controller
             'longitude' => 'required|numeric',
             'fitur'     => 'required|string',
             'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ], [
+            'name.required'      => 'Nama tempat wajib diisi.',
+            'address.required'   => 'Alamat wajib diisi.',
+            'latitude.required'  => 'Latitude wajib diisi.',
+            'latitude.numeric'   => 'Latitude harus berupa angka.',
+            'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
+            'longitude.required' => 'Longitude wajib diisi.',
+            'longitude.numeric'  => 'Longitude harus berupa angka.',
+            'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
+            'foto.image'         => 'File harus berupa gambar.',
+            'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
+            'foto.max'           => 'Ukuran gambar maksimal 2MB.',
+            'fitur.required'     => 'Kategori wajib dipilih.',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -596,6 +609,18 @@ class IbadahController extends Controller
             'fitur' => 'required|string',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
+        ], [
+            'alamat.required'   => 'Alamat wajib diisi.',
+            'latitude.required'  => 'Latitude wajib diisi.',
+            'latitude.numeric'   => 'Latitude harus berupa angka.',
+            'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
+            'longitude.required' => 'Longitude wajib diisi.',
+            'longitude.numeric'  => 'Longitude harus berupa angka.',
+            'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
+            'foto.image'         => 'File harus berupa gambar.',
+            'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
+            'foto.max'           => 'Ukuran gambar maksimal 2MB.',
+            'fitur.required'     => 'Kategori wajib dipilih.',
         ]);
 
         if ($request->hasFile('foto')) {

@@ -172,7 +172,14 @@ Route::middleware('auth:sanctum')->group(function () {
     ///storage chat image
     Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
 });
-Route::middleware('auth:sanctum')->post('/firebase/token', [FirebaseController::class, 'createCustomToken']);
+
+// token dari firebase
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/firebase/token', [FirebaseController::class, 'createCustomToken']);
+    Route::post('/save-fcm-token', [FirebaseController::class, 'saveFcmToken']);
+    Route::post('/chat/send-notification', [FirebaseController::class, 'sendChatNotification']);
+    Route::post('/delete-fcm-token', [FirebaseController::class, 'deleteFcmToken']);
+});
 
 ///storage chat image
 Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);

@@ -23,118 +23,133 @@
                 </div>
 
                 <div class="form-group mb-3 position-relative">
-    <label>Waktu</label>
-    <input type="text" id="waktu" name="waktu" class="form-control" placeholder="Klik untuk pilih waktu" readonly required>
+                    <label>Waktu</label>
+                    <input type="text" id="waktu" name="waktu" class="form-control" placeholder="Klik untuk pilih waktu" readonly required>
 
-    <div id="jam-popup"
-        style="display:none; position:absolute; background:white; border-radius:12px;
+                    <div id="jam-popup"
+                        style="display:none; position:absolute; background:white; border-radius:12px;
         padding:20px; top:100%; left:0; z-index:9999; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
 
-        <div id="clock-jam" class="clock-simple position-relative"
-            style="width:250px; height:250px; border:3px solid #aaa; border-radius:50%;
+                        <div id="clock-jam" class="clock-simple position-relative"
+                            style="width:250px; height:250px; border:3px solid #aaa; border-radius:50%;
             background:white; margin:auto;">
-            
-            @for ($i = 1; $i <= 24; $i++)
-                @php
-                    $angle = deg2rad(($i * 15) - 90);
-                    $radius = 95;
-                    $x = cos($angle) * $radius;
-                    $y = sin($angle) * $radius;
-                @endphp
-                <div class="jam-item" data-hour="{{ sprintf('%02d', $i) }}"
-                    style="position:absolute; width:30px; height:30px; line-height:30px;
+
+                            @for ($i = 1; $i <= 24; $i++)
+                                @php
+                                $angle=deg2rad(($i * 15) - 90);
+                                $radius=95;
+                                $x=cos($angle) * $radius;
+                                $y=sin($angle) * $radius;
+                                @endphp
+                                <div class="jam-item" data-hour="{{ sprintf('%02d', $i) }}"
+                                style="position:absolute; width:30px; height:30px; line-height:30px;
                         text-align:center; border-radius:50%; font-size:13px;
                         background:#f9f9f9; border:1px solid #ccc; cursor:pointer;
                         left:calc(50% + {{ $x }}px - 15px); top:calc(50% + {{ $y }}px - 15px);
                         transition:0.2s;">
-                    {{ $i }}
-                </div>
-            @endfor
+                                {{ $i }}
+                        </div>
+                        @endfor
 
-            <div style="position:absolute; width:10px; height:10px; background:#333; border-radius:50%;
+                        <div style="position:absolute; width:10px; height:10px; background:#333; border-radius:50%;
                 top:50%; left:50%; transform:translate(-50%,-50%);"></div>
-        </div>
+                    </div>
 
-        <!-- Lingkaran menit -->
-        <div id="clock-menit" class="clock-simple position-relative"
-            style="width:250px; height:250px; border:3px solid #aaa; border-radius:50%;
+                    <!-- Lingkaran menit -->
+                    <div id="clock-menit" class="clock-simple position-relative"
+                        style="width:250px; height:250px; border:3px solid #aaa; border-radius:50%;
             background:white; margin:auto; display:none;">
-            
-            @for ($i = 0; $i < 60; $i += 5)
-                @php
-                    $angle = deg2rad(($i * 6) - 90); // 360/60 = 6 derajat per menit
-                    $radius = 95;
-                    $x = cos($angle) * $radius;
-                    $y = sin($angle) * $radius;
-                @endphp
-                <div class="menit-item" data-minute="{{ sprintf('%02d', $i) }}"
-                    style="position:absolute; width:32px; height:32px; line-height:32px;
+
+                        @for ($i = 0; $i < 60; $i +=5)
+                            @php
+                            $angle=deg2rad(($i * 6) - 90); // 360/60=6 derajat per menit
+                            $radius=95;
+                            $x=cos($angle) * $radius;
+                            $y=sin($angle) * $radius;
+                            @endphp
+                            <div class="menit-item" data-minute="{{ sprintf('%02d', $i) }}"
+                            style="position:absolute; width:32px; height:32px; line-height:32px;
                         text-align:center; border-radius:50%; font-size:13px;
                         background:#f9f9f9; border:1px solid #ccc; cursor:pointer;
                         left:calc(50% + {{ $x }}px - 16px); top:calc(50% + {{ $y }}px - 16px);
                         transition:0.2s;">
-                    {{ sprintf('%02d', $i) }}
-                </div>
-            @endfor
+                            {{ sprintf('%02d', $i) }}
+                    </div>
+                    @endfor
 
-            <div style="position:absolute; width:10px; height:10px; background:#333; border-radius:50%;
+                    <div style="position:absolute; width:10px; height:10px; background:#333; border-radius:50%;
                 top:50%; left:50%; transform:translate(-50%,-50%);"></div>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div class="form-group mb-3">
+            <label>Latitude</label>
+            <input type="text" id="latitude" name="latitude"
+                class="form-control @error('latitude') is-invalid @enderror"
+                value="{{ old('latitude', $latitude ?? '') }}" required>
+            @error('latitude')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Longitude</label>
+            <input type="text" id="longitude" name="longitude"
+                class="form-control @error('longitude') is-invalid @enderror"
+                value="{{ old('longitude', $longitude ?? '') }}" required>
+            @error('longitude')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Alamat</label>
+            <input type="text" id="alamat" name="alamat"
+                        class="form-control @error('alamat') is-invalid @enderror"
+                        value="{{ old('alamat', $alamat ?? '') }}" required>
+                    @error('alamat')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Lokasi</label>
+            <input type="text" name="lokasi" class="form-control" placeholder="Masukkan lokasi" required>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Kategori</label>
+            <select name="fitur" class="form-control" required>
+                <option value="">Pilih Kategori</option>
+                @foreach($kategoriInfoIbadah as $kategori)
+                <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                    {{ $kategori->nama }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Foto</label>
+            <input type="file" name="foto" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="deskripsi" class="form-label">Deskripsi</label>
+            <textarea name="deskripsi" id="editor">{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>
 </div>
 
-                <div class="form-group mb-3">
-                    <label>Latitude</label>
-                    <input type="text" name="latitude" id="latitude" class="form-control" required>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Longitude</label>
-                    <input type="text" name="longitude" id="longitude" class="form-control" required>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Alamat</label>
-                    <input type="text" name="alamat" id="alamat" class="form-control" required>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Lokasi</label>
-                    <input type="text" name="lokasi" class="form-control" placeholder="Masukkan lokasi" required>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Kategori</label>
-                    <select name="fitur" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoriInfoIbadah as $kategori)
-                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Foto</label>
-                    <input type="file" name="foto" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="deskripsi" class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" id="editor">{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
-                </div>
-
-                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>
-            </div>
-
-            <!-- Bagian Peta -->
-            <div style="flex: 1; min-width: 400px;">
-                <label class="form-label mb-2">Klik pada Peta atau isi manual Latitude & Longitude</label>
-                <div id="peta" style="height: 400px; border-radius: 10px; border: 1px solid #ccc;"></div>
-            </div>
-        </div>
-    </form>
+<!-- Bagian Peta -->
+<div style="flex: 1; min-width: 400px;">
+    <label class="form-label mb-2">Klik pada Peta atau isi manual Latitude & Longitude</label>
+    <div id="peta" style="height: 400px; border-radius: 10px; border: 1px solid #ccc;"></div>
+</div>
+</div>
+</form>
 </div>
 
 <script>
@@ -276,42 +291,42 @@
 
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
-// Inisialisasi CKEditor
-let editor;
+    // Inisialisasi CKEditor
+    let editor;
 
-ClassicEditor
-.create(document.querySelector('#editor'), {
-    ckfinder: {
-        uploadUrl: "{{ route('admin.sehat.info.upload.image') }}?_token={{ csrf_token() }}"
-    }
-})
-.then(instance => {
-    editor = instance;
-})
-.catch(error => {
-    console.error(error);
-});
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: "{{ route('admin.sehat.info.upload.image') }}?_token={{ csrf_token() }}"
+            }
+        })
+        .then(instance => {
+            editor = instance;
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
-// Validasi manual sebelum submit
-document.getElementById('infoForm').addEventListener('submit', function(e) {
-    // Validasi CKEditor content
-    if (editor && editor.getData().trim() === '') {
-        e.preventDefault();
-        alert('Deskripsi harus diisi');
-        return false;
-    }
-    
-    // Validasi file type
-    const fileInput = document.querySelector('input[name="foto"]');
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        if (!validTypes.includes(file.type)) {
+    // Validasi manual sebelum submit
+    document.getElementById('infoForm').addEventListener('submit', function(e) {
+        // Validasi CKEditor content
+        if (editor && editor.getData().trim() === '') {
             e.preventDefault();
-            alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
+            alert('Deskripsi harus diisi');
             return false;
         }
-    }
-});
+
+        // Validasi file type
+        const fileInput = document.querySelector('input[name="foto"]');
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                e.preventDefault();
+                alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
+                return false;
+            }
+        }
+    });
 </script>
 @endsection
