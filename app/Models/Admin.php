@@ -50,4 +50,33 @@ class Admin extends Authenticatable
 
         return false;
     }
+
+    public function instansi()
+    {
+        return $this->hasOneThrough(
+            Instansi::class,     // model tujuan akhir
+            UserData::class,     // model perantara
+            'id_admin',          // foreign key di user_data
+            'id',                // foreign key di instansi
+            'id',                // local key di admin
+            'id_instansi'        // foreign key di user_data yg menunjuk ke instansi
+        );
+    }
+
+    public function puskesmas()
+    {
+        return $this->hasOneThrough(
+            Puskesmas::class,
+            UserData::class,
+            'id_admin',
+            'id',
+            'id',
+            'id_puskesmas'
+        );
+    }
+
+    public function dokter()
+    {
+        return $this->hasOne(Dokter::class, 'id_admin');
+    }
 }

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2><i class="bi bi-image"></i> Tambah Banner</h2>
+    <h2><i class="bi bi-image"></i>Tambah Banner</h2>
 
     <form id="bannerForm" action="{{ route('admin.banner.store') }}" method="POST" enctype="multipart/form-data">
         @csrf

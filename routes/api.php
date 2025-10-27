@@ -16,13 +16,19 @@ use App\Http\Controllers\Admin\RenbangController;
 use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RatingDumasController;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\Admin\OwnerController;
 use App\Http\Controllers\Api\ChatImageController;
 use App\Http\Controllers\Api\FirebaseController;
 use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Admin\PuskesmasController;
 use App\Http\Controllers\Admin\DokterController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\UmkmController;
+use App\Http\Controllers\Api\ProdukController;
+use App\Http\Controllers\Api\KeranjangController;
+use App\Http\Controllers\Api\TransaksiController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\CheckoutController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -142,11 +148,17 @@ Route::prefix('renbang/ajuan')->middleware('auth:sanctum')->group(function () {
     Route::get('likes/{id}', [RenbangController::class, 'apiLikes']);
 });
 
+//puskesmas
+Route::prefix('puskesmas')->group(function () {
+    Route::post('/login', [PuskesmasController::class, 'apiLogin']);
+    Route::middleware('auth:sanctum')->get('/profile', [PuskesmasController::class, 'apiProfile']);
+    Route::middleware('auth:sanctum')->post('/logout', [PuskesmasController::class, 'apiLogout']);
+});
 
-// puskesmas
 Route::get('/puskesmas', [PuskesmasController::class, 'apiIndex']);
 Route::get('/puskesmas/search', [PuskesmasController::class, 'apiSearch']);
 Route::get('/puskesmas/{id}', [PuskesmasController::class, 'apiShow']);
+Route::get('/puskesmas/by-admin/{adminId}', [PuskesmasController::class, 'apiShowByAdmin']);
 
 //dokter
 Route::get('/dokter', [DokterController::class, 'apiIndex']);
@@ -164,3 +176,51 @@ Route::middleware('auth:sanctum')->post('/firebase/token', [FirebaseController::
 
 ///storage chat image
 Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
+
+//Umkm
+Route::prefix('umkm')->group(function () {
+    Route::get('/', [UmkmController::class, 'index']);
+    Route::post('/', [UmkmController::class, 'store']);
+    Route::get('/{id}', [UmkmController::class, 'show']);
+    Route::put('/{id}', [UmkmController::class, 'update']);
+    Route::delete('/{id}', [UmkmController::class, 'destroy']);
+});
+
+//Produk
+Route::prefix('produk')->group(function () {
+    Route::get('/', [ProdukController::class, 'index']);       // GET semua produk
+    Route::get('/{id}', [ProdukController::class, 'show']);    // GET 1 produk
+    Route::post('/', [ProdukController::class, 'store']);      // POST tambah produk
+    Route::put('/{id}', [ProdukController::class, 'update']);  // PUT edit produk
+    Route::delete('/{id}', [ProdukController::class, 'destroy']); // DELETE produk
+});
+
+//Keranjang
+Route::prefix('keranjang')->group(function () {
+    Route::post('/create', [KeranjangController::class, 'tambah']);
+    Route::get('/{id_user}', [KeranjangController::class, 'lihat']);
+});
+
+//Transaksi
+Route::prefix('transaksi')->group(function () {
+    Route::get('/user/{userId}', [TransaksiController::class, 'index']);
+    Route::post('/', [TransaksiController::class, 'store']);
+    Route::put('/{id}', [TransaksiController::class, 'update']);
+    Route::get('/transaksi/{id_user}', [TransaksiController::class, 'riwayat']);
+});
+
+//Payment
+Route::prefix('payment')->group(function () {
+    Route::post('/', [PaymentController::class, 'store']);
+    Route::get('/{noTransaksi}', [PaymentController::class, 'show']);
+    Route::get('/user/{id_user}', [PaymentController::class, 'riwayat']);
+});
+
+//owner
+Route::get('owner', [OwnerController::class, 'apiIndex']);
+Route::get('owner/{id?}', [OwnerController::class, 'apiShow']);
+Route::get('owner/umkm/{umkmId}', [OwnerController::class, 'apiShowByUmkm']);
+
+Route::prefix('checkout')->group(function () {
+    Route::post('/', [CheckoutController::class, 'checkout']);
+});

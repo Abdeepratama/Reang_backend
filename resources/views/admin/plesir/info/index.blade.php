@@ -12,8 +12,8 @@
                     <div class="col-md-12">
                         <div class="card shadow">
                             <div class="card-body">
-                                <a href="{{ route('admin.plesir.info.map') }}">🗺️ Lihat Peta</a>
-                                <a href="{{ route('admin.plesir.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info Plesir</a>
+                                <a href="{{ route('admin.plesir.info.map') }}" class="btn btn-primary mb-3">Lihat Peta</a>
+                                <a href="{{ route('admin.plesir.info.create') }}" class="btn btn-primary mb-3">Tambah Info Plesir</a>
 
                                 @if(session('success'))
                                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -55,8 +55,8 @@
                                                 <td>{{ $info->rating }}</td>
                                                 <td>{{ $info->deskripsi }}</td>
                                                 <td>
-                                                    <a href="{{ route('admin.plesir.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                     <a href="{{ route('admin.plesir.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                    <a href="{{ route('admin.plesir.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                     <form action="{{ route('admin.plesir.info.destroy', $info->id) }}" method="POST" style="display:inline;">
                                                         @csrf
                                                         @method('DELETE')

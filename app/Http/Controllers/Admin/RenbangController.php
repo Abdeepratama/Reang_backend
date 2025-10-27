@@ -100,12 +100,10 @@ class RenbangController extends Controller
     {
         $item = Renbang::findOrFail($id);
 
-        // Hapus gambar kalau ada
         if ($item->gambar && Storage::disk('public')->exists($item->gambar)) {
             Storage::disk('public')->delete($item->gambar);
         }
 
-        // Hapus data dari DB
         $item->delete();
 
         $this->logAktivitas("Info Renbang telah dihapus");
@@ -121,7 +119,6 @@ class RenbangController extends Controller
         return view('admin.renbang.info.show', compact('item'));
     }
 
-    // Metode ini tetap dipertahankan jika masih digunakan oleh bagian lain
     public function infoShow($id = null)
     {
         if ($id) {
@@ -185,13 +182,13 @@ class RenbangController extends Controller
 
         if ($user->role === 'superadmin') {
             $items = RenbangAjuan::with('user')
-                ->withCount('likes') // 👈 Tambah ini untuk hitung jumlah like
+                ->withCount('likes')
                 ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
                 ->latest()
                 ->get();
         } else {
             $items = RenbangAjuan::with('user')
-                ->withCount('likes') // 👈 Tambah juga di sini
+                ->withCount('likes')
                 ->whereHas('user.userData', function ($q) use ($user) {
                     $q->where('id_admin', $user->id);
                 })
@@ -242,14 +239,38 @@ class RenbangController extends Controller
     // =======================
     // 🔹 BAGIAN API (Flutter)
     // =======================
-    public function apiIndex()
+    
+    // --- PERUBAHAN UTAMA DI FUNGSI INI ---
+    public function apiIndex(Request $request)
     {
-        $data = RenbangAjuan::with(['user'])
-            ->withCount('likes') // Tambah jumlah like otomatis
-            ->latest()
-            ->get();
+        $perPage = 10;
+        $user = auth('sanctum')->user();
 
-        return response()->json(['success' => true, 'data' => $data]);
+        // 1. Ambil data usulan seperti biasa dengan paginasi
+        $data = RenbangAjuan::with(['user'])
+            ->withCount('likes')
+            ->latest()
+            ->paginate($perPage);
+
+        // 2. Jika user login, cari tahu usulan mana saja yang sudah di-like
+        $likedAjuanIds = collect(); // Defaultnya koleksi kosong
+        if ($user) {
+            $ajuanIdsOnPage = $data->pluck('id'); // Ambil semua ID usulan di halaman ini
+            if ($ajuanIdsOnPage->isNotEmpty()) {
+                // Cari di tabel 'renbang_likes' hanya untuk ID user dan ID usulan yang ada di halaman ini
+                $likedAjuanIds = RenbangLike::where('id_user', $user->id)
+                    ->whereIn('id_renbang', $ajuanIdsOnPage)
+                    ->pluck('id_renbang');
+            }
+        }
+        
+        // 3. Tambahkan properti 'is_liked_by_user' ke setiap item
+        $data->getCollection()->transform(function ($ajuan) use ($likedAjuanIds) {
+            $ajuan->is_liked_by_user = $likedAjuanIds->contains($ajuan->id);
+            return $ajuan;
+        });
+
+        return response()->json(['success' => true, 'data' => $data], 200);
     }
 
     public function apiStore(Request $request)
@@ -295,13 +316,13 @@ class RenbangController extends Controller
             ->where('id_renbang', $id)
             ->exists()
             : false;
+        
+        // Menambahkan properti 'is_liked_by_user' ke objek ajuan
+        $ajuan->is_liked_by_user = $liked;
 
         return response()->json([
             'success' => true,
-            'data' => [
-                ...$ajuan->toArray(),
-                'liked_by_user' => $liked
-            ]
+            'data' => $ajuan
         ]);
     }
 
@@ -355,14 +376,8 @@ class RenbangController extends Controller
      * BAGIAN INI UNTUK API (YANG DIPERBARUI)
      * ==================================================================================================
      */
-
-    /**
-     * API: Mengambil daftar semua fitur/kategori renbang.
-     * Endpoint ini digunakan untuk mengisi pilihan filter di Flutter.
-     */
     public function apiGetFitur()
     {
-        // PERUBAHAN: Ambil nama fitur yang unik dan urutkan berdasarkan kemunculan pertamanya (terlama -> terbaru)
         $fitur = Renbang::select('fitur')
             ->groupBy('fitur')
             ->orderByRaw('MIN(created_at) asc')
@@ -371,21 +386,13 @@ class RenbangController extends Controller
         return response()->json($fitur, 200);
     }
 
-    /**
-     * API: Mengambil data Renbang dengan paginasi dan filter
-     * Metode ini menggantikan deskripsiShow untuk API publik.
-     */
     public function apiShow(Request $request, $id = null)
     {
-        // 1. Jika ada ID, ambil satu data spesifik (tidak ada paginasi)
         if ($id) {
             $data = Renbang::with('kategori')->find($id);
-
             if (!$data) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
-
-            // Format data tunggal seperti sebelumnya
             $formattedData = [
                 'id'        => $data->id,
                 'judul'     => $data->judul,
@@ -399,25 +406,19 @@ class RenbangController extends Controller
             return response()->json($formattedData, 200);
         }
 
-        // 2. Jika tidak ada ID, ambil daftar data dengan paginasi dan filter
         $query = Renbang::with('kategori')->latest();
 
-        // Terapkan filter berdasarkan query parameter 'fitur'
         if ($request->has('fitur') && $request->fitur != '') {
             $query->where('fitur', $request->fitur);
         }
 
-        // Terapkan paginasi, 10 item per halaman
         $paginatedData = $query->paginate(10);
 
-        // Ubah setiap item dalam koleksi paginasi
         $paginatedData->getCollection()->transform(function ($item) {
             return [
                 'id'        => $item->id,
                 'judul'     => $item->judul,
-                // Deskripsi bisa dikosongkan di daftar list untuk meringankan payload
-                // 'deskripsi' => $this->replaceImageUrlsInHtml($item->deskripsi),
-                'deskripsi' => strip_tags($item->deskripsi), // Tampilkan teks saja
+                'deskripsi' => strip_tags($item->deskripsi),
                 'fitur'     => $item->kategori->nama ?? ($item->fitur ?? null),
                 'gambar'    => $item->gambar ? $this->buildFotoUrl($item->gambar) : null,
                 'alamat'    => $item->alamat,
@@ -437,7 +438,6 @@ class RenbangController extends Controller
     private function replaceImageUrlsInHtml($html)
     {
         if (!$html) return $html;
-
         return preg_replace_callback(
             '/<img[^>]+src=["\']([^"\'>]+)["\']/i',
             function ($matches) {
@@ -469,14 +469,12 @@ class RenbangController extends Controller
     {
         if (auth()->check()) {
             $user = auth()->user();
-
-            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id'      => $user->id,
-                'tipe'         => $this->aktivitasTipe,
-                'keterangan'   => $pesan,
-                'role'         => $user->role,
-                'id_instansi'  => $user->id_instansi,
+                'user_id'     => $user->id,
+                'tipe'        => $this->aktivitasTipe,
+                'keterangan'  => $pesan,
+                'role'        => $user->role,
+                'id_instansi' => $user->id_instansi,
             ]);
         }
     }
@@ -484,13 +482,12 @@ class RenbangController extends Controller
     protected function logNotifikasi($pesan)
     {
         $user = auth()->user();
-
         NotifikasiAktivitas::create([
-            'keterangan'   => $pesan,
-            'dibaca'       => false,
-            'url'          => route('admin.renbang.info.index'),
-            'role'         => $user->role,
-            'id_instansi'  => $user->id_instansi,
+            'keterangan'  => $pesan,
+            'dibaca'      => false,
+            'url'         => route('admin.renbang.info.index'),
+            'role'        => $user->role,
+            'id_instansi' => $user->id_instansi,
         ]);
     }
 }

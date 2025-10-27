@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\PajakController;
 use App\Http\Controllers\Admin\KerjaController;
 use App\Http\Controllers\Admin\AdmindukController;
 use App\Http\Controllers\Admin\RenbangController;
-use App\Http\Controllers\RenbangAjuanController;
+use App\Http\Controllers\Admin\OwnerController;
 use App\Http\Controllers\Admin\IzinController;
 use App\Http\Controllers\Admin\WifiController;
 use App\Http\Controllers\Admin\WebController;
@@ -25,7 +25,6 @@ use App\Http\Controllers\Admin\KategoriDumasController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CaptchaController;
 use App\Http\Controllers\Admin\AdminAccountController;
-use App\Models\NotifikasiAktivitas;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // ----------------- HALAMAN DEPAN -----------------
@@ -321,19 +320,29 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ----------------- NOTIFIKASI -----------------
     Route::get('notifikasi/baca/{id}', function ($id) {
-        $user = auth('admin')->user();
-        $notifikasi = \App\Models\NotifikasiAktivitas::findOrFail($id);
+    $user = auth('admin')->user();
+    $userData = $user->userData; // ambil relasi ke user_data
+    $notifikasi = \App\Models\NotifikasiAktivitas::findOrFail($id);
 
-        // 🔒 Validasi akses
-        if (
-            $user->role === 'superadmin' ||
-            ($user->role === 'admindinas' && $notifikasi->id_instansi === $user->id_instansi) ||
-            ($user->role === 'adminpuskesmas' && $notifikasi->id_puskesmas === $user->id_puskesmas)
-        ) {
-            $notifikasi->update(['dibaca' => true]);
-            return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
-        }
+    // 🔒 Validasi akses
+    if (
+        $user->role === 'superadmin' ||
+        ($user->role === 'admindinas' && $notifikasi->id_instansi == $userData?->id_instansi) ||
+        ($user->role === 'adminpuskesmas' && $notifikasi->id_puskesmas == $userData?->id_puskesmas)
+    ) {
+        $notifikasi->update(['dibaca' => true]);
+        return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
+    }
 
-        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-    })->name('notifikasi.baca.satu');
+    abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+})->name('notifikasi.baca.satu');
+});
+
+Route::prefix('admin/pasar/umkm/owner')->name('admin.pasar.umkm.owner.')->middleware('auth:admin')->group(function () {
+    Route::get('/', [OwnerController::class, 'index'])->name('index');
+    Route::get('/create', [OwnerController::class, 'create'])->name('create');
+    Route::post('/', [OwnerController::class, 'store'])->name('store');
+    Route::get('/{owner}/edit', [OwnerController::class, 'edit'])->name('edit');
+    Route::put('/{owner}', [OwnerController::class, 'update'])->name('update');
+    Route::delete('/{owner}', [OwnerController::class, 'destroy'])->name('destroy');
 });

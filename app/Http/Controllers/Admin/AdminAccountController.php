@@ -6,124 +6,126 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Instansi;
 use App\Models\Puskesmas;
+use App\Models\Umkm;
 use App\Models\UserData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AdminAccountController extends Controller
 {
-    // LIST SEMUA ADMIN
+    // 🔹 LIST SEMUA ADMIN
     public function index()
-{
-    $admins = Admin::with(['userData.instansi', 'userData.puskesmas'])->get();
-    return view('admin.accounts.index', compact('admins'));
-}
+    {
+        $admins = Admin::with(['userData.instansi', 'userData.puskesmas', 'userData.umkm'])->get();
+        return view('admin.accounts.index', compact('admins'));
+    }
 
-// FORM TAMBAH AKUN
-public function create()
-{
-    $instansi = Instansi::orderBy('nama')->get();
-    $puskesmas = Puskesmas::orderBy('nama')->get();
+    // 🔹 FORM TAMBAH AKUN
+    public function create()
+    {
+        $instansi = Instansi::orderBy('nama')->get();
+        $puskesmas = Puskesmas::orderBy('nama')->get();
+        $umkm = Umkm::orderBy('nama')->get();
 
-    return view('admin.accounts.create', compact('instansi', 'puskesmas'));
-}
+        return view('admin.accounts.create', compact('instansi', 'puskesmas', 'umkm'));
+    }
 
-// SIMPAN AKUN BARU
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name'         => 'required|string|max:255',
-        'password'     => 'required|string|min:6|confirmed',
-        'role'         => 'required|in:superadmin,admindinas,puskesmas',
-        'id_instansi'  => 'nullable|exists:instansi,id',
-        'id_puskesmas' => 'nullable|exists:puskesmas,id',
-        'email'        => 'required|email|max:255',
-        'no_hp'        => 'required|string|max:20',
-    ]);
-
-    $admin = Admin::create([
-        'name'     => $validated['name'],
-        'password' => Hash::make($validated['password']),
-        'role'     => $validated['role'],
-    ]);
-
-    if ($validated['role'] === 'admindinas' && $request->filled('id_instansi')) {
-        UserData::create([
-            'id_admin'    => $admin->id,
-            'id_instansi' => $validated['id_instansi'],
-            'nama'        => $validated['name'],
-            'email'       => $validated['email'],
-            'no_hp'       => $validated['no_hp'],
+    // 🔹 SIMPAN AKUN BARU
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'password'     => 'required|string|min:6|confirmed',
+            'role'         => 'required|in:superadmin,admindinas,puskesmas,dokter,umkm',
+            'id_instansi'  => 'nullable|exists:instansi,id',
+            'id_puskesmas' => 'nullable|exists:puskesmas,id',
+            'id_umkm'      => 'nullable|exists:umkm,id',
+            'email'        => 'required|email|max:255',
+            'no_hp'        => 'required|string|max:20',
+            'alamat'       => 'nullable|string|max:255',
         ]);
-    } elseif ($validated['role'] === 'puskesmas' && $request->filled('id_puskesmas')) {
+
+        // Simpan ke tabel admin
+        $admin = Admin::create([
+            'name'     => $validated['name'],
+            'password' => Hash::make($validated['password']),
+            'role'     => $validated['role'],
+        ]);
+
+        // Simpan ke tabel user_data
         UserData::create([
             'id_admin'     => $admin->id,
-            'id_puskesmas' => $validated['id_puskesmas'],
+            'id_instansi'  => $validated['id_instansi'] ?? null,
+            'id_puskesmas' => $validated['id_puskesmas'] ?? null,
+            'id_umkm'      => $validated['id_umkm'] ?? null,
             'nama'         => $validated['name'],
             'email'        => $validated['email'],
             'no_hp'        => $validated['no_hp'],
+            'alamat'       => $validated['alamat'] ?? null,
         ]);
-    } else {
-        UserData::create([
-            'id_admin' => $admin->id,
-            'nama'     => $validated['name'],
-            'email'    => $validated['email'],
-            'no_hp'    => $validated['no_hp'],
-        ]);
+
+        return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil dibuat.');
     }
 
-    return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil dibuat dan data user terhubung.');
-}
+    // 🔹 FORM EDIT
+    public function edit(Admin $account)
+    {
+        $instansi = Instansi::orderBy('nama')->get();
+        $puskesmas = Puskesmas::orderBy('nama')->get();
+        $umkm = Umkm::orderBy('nama')->get();
 
-// FORM EDIT
-public function edit(Admin $account)
-{
-    $instansi = Instansi::orderBy('nama')->get();
-    $puskesmas = Puskesmas::orderBy('nama')->get();
+        return view('admin.accounts.edit', compact('account', 'instansi', 'puskesmas', 'umkm'));
+    }
 
-    return view('admin.accounts.edit', compact('account', 'instansi', 'puskesmas'));
-}
+    // 🔹 UPDATE AKUN
+    public function update(Request $request, $id)
+    {
+        $account = Admin::findOrFail($id);
 
-// UPDATE
-public function update(Request $request, $id)
-{
-    $account = Admin::findOrFail($id);
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'password'     => 'nullable|string|min:6|confirmed',
+            'role'         => 'required|in:superadmin,admindinas,puskesmas,dokter,umkm',
+            'id_instansi'  => 'nullable|exists:instansi,id',
+            'id_puskesmas' => 'nullable|exists:puskesmas,id',
+            'id_umkm'      => 'nullable|exists:umkm,id',
+            'email'        => 'required|email|max:255',
+            'no_hp'        => 'required|string|max:20',
+            'alamat'       => 'nullable|string|max:255',
+        ]);
 
-    $validated = $request->validate([
-        'name'         => 'required|string|max:255',
-        'password'     => 'nullable|string|min:6|confirmed',
-        'role'         => 'required|in:superadmin,admindinas,puskesmas',
-        'id_instansi'  => 'nullable|exists:instansi,id',
-        'id_puskesmas' => 'nullable|exists:puskesmas,id',
-        'email'        => 'required|email|max:255',
-        'no_hp'        => 'required|string|max:20',
-    ]);
+        // Update tabel admin
+        $account->update([
+            'name'     => $validated['name'],
+            'role'     => $validated['role'],
+            'password' => $validated['password']
+                ? Hash::make($validated['password'])
+                : $account->password,
+        ]);
 
-    $account->update([
-        'name'     => $validated['name'],
-        'role'     => $validated['role'],
-        'password' => !empty($validated['password']) ? Hash::make($validated['password']) : $account->password,
-    ]);
+        // Update atau buat data user_data
+        UserData::updateOrCreate(
+            ['id_admin' => $account->id],
+            [
+                'id_instansi'  => $validated['id_instansi'] ?? null,
+                'id_puskesmas' => $validated['id_puskesmas'] ?? null,
+                'id_umkm'      => $validated['id_umkm'] ?? null,
+                'nama'         => $validated['name'],
+                'email'        => $validated['email'],
+                'no_hp'        => $validated['no_hp'],
+                'alamat'       => $validated['alamat'] ?? null,
+            ]
+        );
 
-    $userData = UserData::firstOrNew(['id_admin' => $account->id]);
-    $userData->fill([
-        'nama'        => $validated['name'],
-        'email'       => $validated['email'],
-        'no_hp'       => $validated['no_hp'],
-        'id_instansi' => $validated['id_instansi'] ?? null,
-        'id_puskesmas' => $validated['id_puskesmas'] ?? null,
-    ]);
-    $userData->save();
+        return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil diperbarui.');
+    }
 
-    return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil diperbarui.');
-}
+    // 🔹 HAPUS AKUN
+    public function destroy(Admin $account)
+    {
+        UserData::where('id_admin', $account->id)->delete();
+        $account->delete();
 
-// HAPUS AKUN
-public function destroy(Admin $account)
-{
-    UserData::where('id_admin', $account->id)->delete();
-    $account->delete();
-
-    return redirect()->route('admin.accounts.index')->with('success', 'Akun dan data user berhasil dihapus.');
-}
+        return redirect()->route('admin.accounts.index')->with('success', 'Akun berhasil dihapus.');
+    }
 }

@@ -13,7 +13,7 @@
                         <div class="card shadow">
                             <div class="card-body">
                                 <a href="{{ route('admin.adminduk.info.create') }}" class="btn btn-primary mb-3">
-                                    + Tambah Info Adminduk
+                                Tambah Info Adminduk
                                 </a>
 
                                 @if(session('success'))
@@ -38,10 +38,10 @@
                                             <td>{{ $info->judul }}</td>
                                             <td>{{ Str::limit(strip_tags($info->deskripsi), 50) }}</td>
                                             <td>
-                                                <a href="{{ route('admin.adminduk.info.show', $info->id) }}"
-                                                    class="btn btn-info btn-sm">Detail</a>
                                                 <a href="{{ route('admin.adminduk.info.edit', $info->id) }}"
                                                     class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="{{ route('admin.adminduk.info.show', $info->id) }}"
+                                                    class="btn btn-info btn-sm">Detail</a>
                                                 <form action="{{ route('admin.adminduk.info.destroy', $info->id) }}"
                                                     method="POST" style="display:inline;">
                                                     @csrf

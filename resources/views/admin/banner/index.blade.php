@@ -12,7 +12,7 @@
     @endif
 
     <a href="{{ route('admin.banner.create') }}" class="btn btn-primary mb-3">
-        <i class="bi bi-plus-circle"></i> Tambah Banner
+        <i class="bi bi-plus-circle"></i>Tambah Banner
     </a>
 
     

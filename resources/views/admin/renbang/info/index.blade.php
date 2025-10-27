@@ -12,7 +12,7 @@
                     <div class="col-md-12">
                         <div class="card shadow">
                             <div class="card-body">
-                                <a href="{{ route('admin.renbang.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info</a>
+                                <a href="{{ route('admin.renbang.info.create') }}" class="btn btn-primary mb-3">Tambah Info</a>
 
                                 @if(session('success'))
                                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -46,8 +46,8 @@
                                             <td>{{ $item->alamat }}</td>
                                             <td>{{ Str::limit(strip_tags($item->deskripsi), 50) }}</td>
                                             <td>
-                                                <a href="{{ route('admin.renbang.info.show', $item->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <a href="{{ route('admin.renbang.info.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="{{ route('admin.renbang.info.show', $item->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <form action="{{ route('admin.renbang.info.destroy', $item->id) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')

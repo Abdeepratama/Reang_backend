@@ -45,7 +45,20 @@ class SekolahController extends Controller
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
             'foto'      => 'nullable|image|max:2048',
-            'fitur' => 'required|string',
+            'fitur'     => 'required|string',
+        ], [
+            'name.required'      => 'Nama tempat wajib diisi.',
+            'address.required'   => 'Alamat wajib diisi.',
+            'latitude.required'  => 'Latitude wajib diisi.',
+            'latitude.numeric'   => 'Latitude harus berupa angka.',
+            'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
+            'longitude.required' => 'Longitude wajib diisi.',
+            'longitude.numeric'  => 'Longitude harus berupa angka.',
+            'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
+            'foto.image'         => 'File harus berupa gambar.',
+            'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
+            'foto.max'           => 'Ukuran gambar maksimal 2MB.',
+            'fitur.required'     => 'Kategori wajib dipilih.',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -163,10 +176,20 @@ class SekolahController extends Controller
             // Build query dan apply filter 'fitur' jika ada
             $query = TempatSekolah::with('kategori');
 
+            // --- PERBAIKAN LOGIKA FILTER ---
+            // Logika ini sekarang bisa menerima beberapa nilai fitur yang dipisahkan koma
             if ($request->has('fitur') && !empty($request->query('fitur'))) {
-                $fitur = $request->query('fitur');
-                $query->where('fitur', $fitur);
+                // Ambil string dari URL, misal: "sekolah dasar,sd"
+                $fiturString = $request->query('fitur');
+                
+                // Pecah string menjadi array berdasarkan koma
+                // Hasilnya: ['sekolah dasar', 'sd']
+                $fiturArray = explode(',', $fiturString);
+
+                // Gunakan whereIn untuk mencari data yang 'fitur'-nya ada di dalam array
+                $query->whereIn('fitur', $fiturArray);
             }
+            // --- AKHIR PERBAIKAN ---
 
             $data = $query->get()->map(function ($item) {
                 return [
@@ -200,10 +223,10 @@ class SekolahController extends Controller
 
     // info sekolah
     public function infoindex()
-{
-    $infoItems = InfoSekolah::latest()->get();
-    return view('admin.sekolah.info.index', compact('infoItems'));
-}
+    {
+        $infoItems = InfoSekolah::latest()->get();
+        return view('admin.sekolah.info.index', compact('infoItems'));
+    }
 
     public function infocreate()
     {
@@ -423,11 +446,11 @@ class SekolahController extends Controller
 
             // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id'      => $user->id,
-                'tipe'         => $this->aktivitasTipe,
-                'keterangan'   => $pesan,
-                'role'         => $user->role,
-                'id_instansi'  => $user->id_instansi,
+                'user_id'     => $user->id,
+                'tipe'        => $this->aktivitasTipe,
+                'keterangan'  => $pesan,
+                'role'        => $user->role,
+                'id_instansi' => $user->id_instansi,
             ]);
         }
     }
@@ -437,11 +460,11 @@ class SekolahController extends Controller
         $user = auth()->user();
 
         NotifikasiAktivitas::create([
-            'keterangan'   => $pesan,
-            'dibaca'       => false,
-            'url'          => route('admin.sekolah.tempat.index'),
-            'role'         => $user->role,
-            'id_instansi'  => $user->id_instansi,
+            'keterangan'  => $pesan,
+            'dibaca'      => false,
+            'url'         => route('admin.sekolah.tempat.index'),
+            'role'        => $user->role,
+            'id_instansi' => $user->id_instansi,
         ]);
     }
 }

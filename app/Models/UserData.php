@@ -10,13 +10,14 @@ class UserData extends Model
     use HasFactory;
 
     protected $table = 'user_data';
-    
-    public $timestamps = false; 
+
+    public $timestamps = false;
 
     protected $fillable = [
         'id_admin',
         'id_instansi',
         'id_puskesmas',
+        'id_umkm',
         'nama',
         'email',
         'no_hp',
@@ -40,5 +41,10 @@ class UserData extends Model
     public function puskesmas()
     {
         return $this->belongsTo(Puskesmas::class, 'id_puskesmas');
+    }
+
+    public function umkm()
+    {
+        return $this->belongsTo(\App\Models\Umkm::class, 'id_umkm');
     }
 }

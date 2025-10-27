@@ -83,21 +83,21 @@
                     {{-- Jika bukan puskesmas, tampilkan semua menu utama --}}
                     @if ($user->role !== 'puskesmas')
                     <li>
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.tempat.index') ? 'text-primary bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.tempat.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.tempat.index') }}">
                             Lokasi Rumah Sakit
                         </a>
                     </li>
 
                     <li>
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.index') ? 'text-primary bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.info.index') }}">
                             Info Sehat
                         </a>
                     </li>
 
                     <li>
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.olahraga.index') ? 'text-primary bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.olahraga.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.olahraga.index') }}">
                             Lokasi Olahraga
                         </a>
@@ -107,7 +107,7 @@
                     {{-- Menu khusus untuk superadmin & puskesmas --}}
                     @if ($user->role === 'superadmin' || $user->role === 'puskesmas')
                     <li>
-                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.index') ? 'text-primary bg-light' : '' }}"
+                        <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.puskesmas.index') }}">
                             Puskesmas
                         </a>
@@ -128,8 +128,8 @@
                     <span class="ml-2 item-text">Sekolah-Yu</span>
                 </a>
                 <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.sekolah.*') ? 'show' : '' }}" id="submenu-sekolah">
-                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.tempat.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sekolah.tempat.index') }}">Lokasi Sekolah</a></li>
-                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.info.index') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sekolah.info.index') }}">Berita Pendidikan</a></li>
+                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.tempat.*') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sekolah.tempat.index') }}">Lokasi Sekolah</a></li>
+                    <li><a class="nav-link pl-3 {{ request()->routeIs('admin.sekolah.info.*') ? 'text-primary bg-light' : '' }}" href="{{ route('admin.sekolah.info.index') }}">Berita Pendidikan</a></li>
                 </ul>
             </li>
             @endif
@@ -157,7 +157,7 @@
                         </a>
                         <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.pajak.*') ? 'show' : '' }}" id="submenu-pajak">
                             <li class="nav-item">
-                                <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.info.index') ? 'text-primary bg-light' : '' }}"
+                                <a class="nav-link pl-3 {{ request()->routeIs('admin.pajak.info.*') ? 'text-primary bg-light' : '' }}"
                                     href="{{ route('admin.pajak.info.index') }}">
                                     Info Perpajakan
                                 </a>
@@ -179,7 +179,7 @@
                     </a>
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.pasar.*') ? 'show' : '' }}" id="submenu-pasar">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.tempat.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.tempat.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.pasar.tempat.index') }}">
                                 Lokasi Pasar
                             </a>
@@ -200,7 +200,7 @@
                     </a>
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.kerja.*') ? 'show' : '' }}" id="submenu-kerja">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.info.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.kerja.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.kerja.info.index') }}">
                                 Info Pekerjaan
                             </a>
@@ -233,13 +233,13 @@
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.plesir.*') ? 'show' : '' }}" id="submenu-plesir">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.tempat.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.tempat.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.plesir.tempat.index') }}">
                                 Lokasi Plesir
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.info.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.plesir.info.index') }}">
                                 Info Plesir
                             </a>
@@ -260,13 +260,13 @@
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.ibadah.*') ? 'show' : '' }}" id="submenu-ibadah">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.tempat.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.tempat.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.ibadah.tempat.index') }}">
                                 Lokasi Tempat Ibadah
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.info.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.ibadah.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.ibadah.info.index') }}">
                                 Info Keagamaan
                             </a>
@@ -296,7 +296,7 @@
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.adminduk.*') ? 'show' : '' }}" id="submenu-adminduk">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.info.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.adminduk.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.adminduk.info.index') }}">
                                 Info Adminduk
                             </a>
@@ -318,7 +318,7 @@
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.renbang.*') ? 'show' : '' }}" id="submenu-renbang">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.info.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.renbang.info.index') }}">
                                 Info Renbang
                             </a>
@@ -327,7 +327,7 @@
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.renbang.*') ? 'show' : '' }}" id="submenu-renbang">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.ajuan.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.renbang.ajuan.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.renbang.ajuan.index') }}">
                                 Ajuan Renbang
                             </a>
@@ -349,7 +349,7 @@
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.izin.*') ? 'show' : '' }}" id="submenu-izin">
                         <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.info.index') ? 'text-primary bg-light' : '' }}"
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.izin.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.izin.info.index') }}">
                                 Info Perizinan
                             </a>

@@ -6,9 +6,9 @@
 <div class="container mt-4">
     <h2>Daftar Tempat Plesir</h2>
 
-    <a href="{{ route('admin.plesir.tempat.map') }}">🗺️ Lihat Peta</a>
+    <a href="{{ route('admin.plesir.tempat.map') }}" class="btn btn-primary mb-3">Lihat Peta</a>
 
-    <a href="{{ route('admin.plesir.tempat.create') }}" class="btn btn-primary mb-3">+ Tambah Tempat Plesir</a>
+    <a href="{{ route('admin.plesir.tempat.create') }}" class="btn btn-primary mb-3">Tambah Tempat Plesir</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

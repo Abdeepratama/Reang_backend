@@ -8,11 +8,11 @@
 
     {{-- Flash message --}}
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+    <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <div class="row">
@@ -27,7 +27,7 @@
                         class="form-control @error('name') is-invalid @enderror"
                         value="{{ old('name') }}" required>
                     @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -37,7 +37,7 @@
                         class="form-control @error('latitude') is-invalid @enderror"
                         value="{{ old('latitude', $latitude ?? '') }}" required>
                     @error('latitude')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -47,7 +47,7 @@
                         class="form-control @error('longitude') is-invalid @enderror"
                         value="{{ old('longitude', $longitude ?? '') }}" required>
                     @error('longitude')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -57,7 +57,7 @@
                         class="form-control @error('address') is-invalid @enderror"
                         value="{{ old('address', $address ?? '') }}" required>
                     @error('address')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -67,25 +67,25 @@
                         class="form-control @error('fitur') is-invalid @enderror" required>
                         <option value="">-- Pilih Kategori --</option>
                         @foreach($kategoriSehat as $kategori)
-                            <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
-                                {{ $kategori->nama }}
-                            </option>
+                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
                         @endforeach
                     </select>
                     @error('fitur')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="mb-3">
-    <label for="foto">Foto</label>
-    <input type="file" name="foto" id="fotoInput"
-        class="form-control @error('foto') is-invalid @enderror"
-        accept="image/*"> {{-- filter hanya foto --}}
-    @error('foto')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-</div>
+                    <label for="foto">Foto</label>
+                    <input type="file" name="foto" id="fotoInput"
+                        class="form-control @error('foto') is-invalid @enderror"
+                        accept="image/*"> {{-- filter hanya foto --}}
+                    @error('foto')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 <button type="submit" class="btn btn-success w-100">💾 Simpan Data</button>
             </form>
@@ -124,7 +124,9 @@
     });
 
     locations.forEach(loc => {
-        const marker = L.marker([loc.latitude, loc.longitude], { icon: sehatIcon }).addTo(map);
+        const marker = L.marker([loc.latitude, loc.longitude], {
+            icon: sehatIcon
+        }).addTo(map);
         marker.bindPopup(`
             <strong>${loc.name}</strong><br>
             <em>${loc.address}</em><br>
@@ -154,12 +156,14 @@
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], { icon: sehatIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], {
+                icon: sehatIcon
+            }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         // otomatis buka file explorer/galeri begitu halaman dibuka
         const fotoInput = document.getElementById("fotoInput");
         if (fotoInput) {

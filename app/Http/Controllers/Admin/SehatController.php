@@ -464,6 +464,19 @@ class SehatController extends Controller
             'longitude' => 'required|numeric',
             'foto'      => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
             'fitur'     => 'required|string'
+        ], [
+            'name.required'      => 'Nama tempat wajib diisi.',
+            'address.required'   => 'Alamat wajib diisi.',
+            'latitude.required'  => 'Latitude wajib diisi.',
+            'latitude.numeric'   => 'Latitude harus berupa angka.',
+            'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',
+            'longitude.required' => 'Longitude wajib diisi.',
+            'longitude.numeric'  => 'Longitude harus berupa angka.',
+            'longitude.between'  => 'Longitude harus di antara -180 sampai 180.',
+            'foto.image'         => 'File harus berupa gambar.',
+            'foto.mimes'         => 'Format gambar hanya boleh jpeg, png, jpg, gif.',
+            'foto.max'           => 'Ukuran gambar maksimal 2MB.',
+            'fitur.required'     => 'Kategori wajib dipilih.',
         ]);
 
         if ($request->hasFile('foto')) {

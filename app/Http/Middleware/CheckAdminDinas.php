@@ -88,6 +88,8 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
+                    'admin.accounts.index',
                 ];
 
             case 3: // 🎓 Dinas Pendidikan
@@ -99,6 +101,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 7: // 🛒 Dinas Perdagangan
@@ -109,6 +112,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 9: // 🏖️ Dinas Pariwisata
@@ -120,6 +124,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 10: // 🕌 Dinas Keagamaan
@@ -131,6 +136,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 6: // 🧾 Dinas Perpajakan
@@ -141,6 +147,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 8: // 👷 Dinas Tenaga Kerja
@@ -151,6 +158,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 11: // 🧍 Dinas Kependudukan
@@ -161,6 +169,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 12: // 🏗️ Dinas Pembangunan
@@ -171,6 +180,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             case 13: // 📜 Dinas Perizinan
@@ -181,6 +191,7 @@ class CheckAdminDinas
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
+                    'admin.notifikasi.*',
                 ];
 
             default:
@@ -190,36 +201,20 @@ class CheckAdminDinas
 
     private function getAllowedRoutesByPuskesmas($id_puskesmas)
     {
-        switch ($id_puskesmas) {
-            case 1:
-                return [
-                    'admin.dashboard',
-                    'admin.sehat.tempat.*',
-                    'admin.sehat.info.*',
-                    'admin.sehat.olahraga.*',
-                    'admin.sehat.puskesmas.*',
-                    'admin.kategori.*',
-                    'admin.accounts.profile',
-                    'admin.dumas.aduan.*',
-                    'admin.setting.*',
-                    'admin.sehat.dokter.*'
-                ];
-
-            case 3:
-                return [
-                    'admin.dashboard',
-                    'admin.sekolah.tempat.*',
-                    'admin.sekolah.info.*',
-                    'admin.kategori.*',
-                    'admin.accounts.profile',
-                    'admin.dumas.aduan.*',
-                    'admin.setting.*',
-                ];
-
-            default:
-                // jika tidak cocok, tetap return array kosong agar tidak error
-                return ['admin.dashboard'];
-        }
+        // default akses untuk semua puskesmas
+        return [
+            'admin.dashboard',
+            'admin.sehat.tempat.*',
+            'admin.sehat.info.*',
+            'admin.sehat.olahraga.*',
+            'admin.sehat.puskesmas.*',
+            'admin.accounts.profile',
+            'admin.dumas.aduan.*',
+            'admin.setting.*',
+            'admin.sehat.dokter.*',
+            'admin.notifikasi.*',
+            'admin.accounts.index',
+        ];
     }
 
     public function sidebar()

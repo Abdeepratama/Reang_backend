@@ -6,14 +6,13 @@
 <div class="container mt-4">
     <h2>Daftar Puskesmas</h2>
 
-    <a href="{{ route('admin.sehat.puskesmas.create') }}" class="btn btn-primary mb-3">+ Tambah Puskesmas</a>
-    <a href="{{ route('admin.sehat.dokter.index') }}" class="btn btn-primary mb-3">+ Tambah Dokter</a>
+    <a href="{{ route('admin.sehat.puskesmas.create') }}" class="btn btn-primary mb-3">Tambah Puskesmas</a>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table datatables" id="puskesmasTable">
+    <table class="table datatables" id="infoTable">
         <thead class="table-dark">
             <tr>
                 <th>No</th>
@@ -49,16 +48,3 @@
 </div>
 @endsection
 
-@section('scripts')
-<script>
-    $(document).ready(function() {
-        $('#puskesmasTable').DataTable({
-            autoWidth: true,
-            "lengthMenu": [
-                [10, 25, 50, -1],
-                [10, 25, 50, "All"]
-            ]
-        });
-    });
-</script>
-@endsection

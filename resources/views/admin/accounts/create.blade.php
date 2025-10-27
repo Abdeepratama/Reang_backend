@@ -74,13 +74,43 @@
         {{-- Email --}}
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}">
+            <input type="email"
+                name="email"
+                id="email"
+                class="form-control @error('email') is-invalid @enderror"
+                value="{{ old('email') }}"
+                placeholder="Masukkan email admin">
+            @error('email')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         {{-- Nomor HP --}}
         <div class="mb-3">
             <label for="no_hp" class="form-label">Nomor HP</label>
-            <input type="text" name="no_hp" id="no_hp" class="form-control" value="{{ old('no_hp') }}">
+            <input type="text"
+                name="no_hp"
+                id="no_hp"
+                class="form-control @error('no_hp') is-invalid @enderror"
+                value="{{ old('no_hp') }}"
+                placeholder="Masukkan nomor HP">
+            @error('no_hp')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Alamat --}}
+        <div class="mb-3">
+            <label for="alamat" class="form-label">Alamat</label>
+            <input type="text"
+                name="alamat"
+                id="alamat"
+                class="form-control @error('alamat') is-invalid @enderror"
+                value="{{ old('alamat') }}"
+                placeholder="Masukkan alamat admin">
+            @error('alamat')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         {{-- Role --}}
@@ -90,21 +120,23 @@
                 <option value="">-- Pilih Role --</option>
                 <option value="superadmin" {{ old('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                 <option value="admindinas" {{ old('role') == 'admindinas' ? 'selected' : '' }}>Admin Dinas</option>
-                <option value="puskesmas" {{ old('role') == 'puskesmas' ? 'selected' : '' }}>Puskesmas</option>
+                <option value="puskesmas" {{ old('role') == 'puskesmas' ? 'selected' : '' }}>Admin Puskesmas</option>
+                <option value="dokter" {{ old('role') == 'dokter' ? 'selected' : '' }}>Dokter</option>
+                <option value="umkm" {{ old('role') == 'umkm' ? 'selected' : '' }}>UMKM</option>
             </select>
             @error('role')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
-        {{-- Instansi (khusus admindinas) --}}
+        {{-- Instansi (Admin Dinas) --}}
         <div class="mb-3" id="instansi-wrapper" style="display: none;">
-            <label for="id_instansi" class="form-label">Instansi</label>
+            <label for="id_instansi" class="form-label">Pilih Instansi</label>
             <select name="id_instansi" id="id_instansi" class="form-select @error('id_instansi') is-invalid @enderror">
                 <option value="">-- Pilih Instansi --</option>
-                @foreach ($instansi as $instansiItem)
-                <option value="{{ $instansiItem->id }}" {{ old('id_instansi') == $instansiItem->id ? 'selected' : '' }}>
-                    {{ $instansiItem->nama }}
+                @foreach ($instansi as $item)
+                <option value="{{ $item->id }}" {{ old('id_instansi') == $item->id ? 'selected' : '' }}>
+                    {{ $item->nama }}
                 </option>
                 @endforeach
             </select>
@@ -113,7 +145,7 @@
             @enderror
         </div>
 
-        {{-- Puskesmas (khusus role puskesmas) --}}
+        {{-- Puskesmas (Admin Puskesmas / Dokter) --}}
         <div class="mb-3" id="puskesmas-wrapper" style="display: none;">
             <label for="id_puskesmas" class="form-label">Pilih Puskesmas</label>
             <select name="id_puskesmas" id="id_puskesmas" class="form-select @error('id_puskesmas') is-invalid @enderror">
@@ -125,6 +157,22 @@
                 @endforeach
             </select>
             @error('id_puskesmas')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- UMKM (khusus role umkm) --}}
+        <div class="mb-3" id="umkm-wrapper" style="display: none;">
+            <label for="id_umkm" class="form-label">Pilih UMKM</label>
+            <select name="id_umkm" id="id_umkm" class="form-select @error('id_umkm') is-invalid @enderror">
+                <option value="">-- Pilih UMKM --</option>
+                @foreach ($umkm as $item)
+                <option value="{{ $item->id }}" {{ old('id_umkm') == $item->id ? 'selected' : '' }}>
+                    {{ $item->nama }}
+                </option>
+                @endforeach
+            </select>
+            @error('id_umkm')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
@@ -144,17 +192,42 @@
         input.type = input.type === "password" ? "text" : "password";
     }
 
-    const roleSelect = document.getElementById('role');
-    const instansiWrapper = document.getElementById('instansi-wrapper');
-    const puskesmasWrapper = document.getElementById('puskesmas-wrapper');
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.getElementById('role');
+        const instansiWrapper = document.getElementById('instansi-wrapper');
+        const puskesmasWrapper = document.getElementById('puskesmas-wrapper');
+        const umkmWrapper = document.getElementById('umkm-wrapper');
 
-    function toggleFields() {
-        const role = roleSelect.value;
-        instansiWrapper.style.display = role === 'admindinas' ? 'block' : 'none';
-        puskesmasWrapper.style.display = role === 'puskesmas' ? 'block' : 'none';
-    }
+        const idInstansi = document.getElementById('id_instansi');
+        const idPuskesmas = document.getElementById('id_puskesmas');
+        const idUmkm = document.getElementById('id_umkm');
 
-    roleSelect.addEventListener('change', toggleFields);
-    window.addEventListener('DOMContentLoaded', toggleFields);
+        function toggleFields() {
+            const role = roleSelect.value;
+
+            // SEMUA DIHIDDEN & DISABLE DULU
+            instansiWrapper.style.display = 'none';
+            puskesmasWrapper.style.display = 'none';
+            umkmWrapper.style.display = 'none';
+            idInstansi.disabled = true;
+            idPuskesmas.disabled = true;
+            idUmkm.disabled = true;
+
+            // TAMPILKAN DAN AKTIFKAN SESUAI ROLE
+            if (role === 'admindinas') {
+                instansiWrapper.style.display = 'block';
+                idInstansi.disabled = false;
+            } else if (role === 'puskesmas' || role === 'dokter') {
+                puskesmasWrapper.style.display = 'block';
+                idPuskesmas.disabled = false;
+            } else if (role === 'umkm') {
+                umkmWrapper.style.display = 'block';
+                idUmkm.disabled = false;
+            }
+        }
+
+        roleSelect.addEventListener('change', toggleFields);
+        toggleFields(); // jalankan saat halaman pertama kali dimuat
+    });
 </script>
 @endsection

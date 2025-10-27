@@ -12,7 +12,7 @@
                     <div class="col-md-12">
                         <div class="card shadow">
                             <div class="card-body">
-                                <a href="{{ route('admin.izin.info.create') }}" class="btn btn-primary mb-3">+ Tambah Info Perizinan</a>
+                                <a href="{{ route('admin.izin.info.create') }}" class="btn btn-primary mb-3">Tambah Info Perizinan</a>
 
                                 @if(session('success'))
                                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -44,8 +44,8 @@
                                             <td>{{ $info->fitur }}</td>
                                             <td>{{ Str::limit($info->deskripsi, 50) }}</td>
                                             <td>
-                                                <a href="{{ route('admin.izin.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <a href="{{ route('admin.izin.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="{{ route('admin.izin.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
                                                 <form action="{{ route('admin.izin.info.destroy', $info->id) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')

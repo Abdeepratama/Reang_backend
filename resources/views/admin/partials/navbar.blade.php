@@ -61,7 +61,9 @@
         <a class="dropdown-item" href="{{ route('admin.accounts.index') }}">Akun</a>
         @endif
 
+        @if(Auth::guard('admin')->user()->role !== 'puskesmas')
         <a class="dropdown-item" href="{{ route('admin.setting.index') }}">Settings</a>
+        @endif
 
         <a class="dropdown-item" href="#"
           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

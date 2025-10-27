@@ -14,31 +14,52 @@
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Tempat</label>
-                    <input type="text" name="name" id="name" class="form-control"
+                    <input type="text" name="name" id="name"
+                        class="form-control @error('name') is-invalid @enderror"
                         value="{{ old('name') }}" required>
+                    @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" id="latitude" name="latitude" class="form-control"
+                    <input type="text" id="latitude" name="latitude"
+                        class="form-control @error('latitude') is-invalid @enderror"
                         value="{{ old('latitude', $latitude ?? '') }}" required>
+                    @error('latitude')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" id="longitude" name="longitude" class="form-control"
+                    <input type="text" id="longitude" name="longitude"
+                        class="form-control @error('longitude') is-invalid @enderror"
                         value="{{ old('longitude', $longitude ?? '') }}" required>
+                    @error('longitude')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Alamat</label>
-                    <input type="text" id="address" name="address" class="form-control"
+                    <input type="text" id="address" name="address"
+                        class="form-control @error('address') is-invalid @enderror"
                         value="{{ old('address', $address ?? '') }}" required>
+                    @error('address')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="foto">Foto</label>
-                    <input type="file" name="foto" id="fotoInput" class="form-control" accept="image/*">
+                    <input type="file" name="foto" id="fotoInput"
+                        class="form-control @error('foto') is-invalid @enderror"
+                        accept="image/*"> {{-- filter hanya foto --}}
+                    @error('foto')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
@@ -47,13 +68,13 @@
                         class="form-control @error('fitur') is-invalid @enderror" required>
                         <option value="">-- Pilih Kategori --</option>
                         @foreach($kategoriOlahraga as $kategori)
-                            <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
-                                {{ $kategori->nama }}
-                            </option>
+                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
                         @endforeach
                     </select>
                     @error('fitur')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -126,7 +147,9 @@
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], { icon: olahragaIcon }).addTo(map)
+        clickMarker = L.marker([lat, lng], {
+                icon: olahragaIcon
+            }).addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
