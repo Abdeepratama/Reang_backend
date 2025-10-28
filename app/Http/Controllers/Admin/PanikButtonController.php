@@ -24,12 +24,16 @@ class PanikButtonController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'nomer' => 'required|string|max:20',
+            'kategori' => 'required|string',
         ]);
 
-        PanikButton::create($request->only(['name', 'nomer']));
+        PanikButton::create([
+            'name' => $request->name,
+            'nomer' => $request->nomer,
+            'kategori' => $request->kategori,
+        ]);
 
-        return redirect()->route('admin.panik.index')
-            ->with('success', 'Data Panik Button berhasil ditambahkan.');
+        return redirect()->route('admin.panik.index')->with('success', 'Data Panik Button berhasil ditambahkan!');
     }
 
     public function edit(PanikButton $panik)
@@ -42,9 +46,10 @@ class PanikButtonController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'nomer' => 'required|string|max:20',
+            'kategori' => 'required|string|max:255',
         ]);
 
-        $panik->update($request->only(['name', 'nomer']));
+        $panik->update($request->only(['name', 'nomer', 'kategori']));
 
         return redirect()->route('admin.panik.index')
             ->with('success', 'Data Panik Button berhasil diperbarui.');

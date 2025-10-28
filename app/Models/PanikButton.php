@@ -11,5 +11,5 @@ class PanikButton extends Model
 
     protected $table = 'panik_button';
 
-    protected $fillable = ['name', 'nomer'];
+    protected $fillable = ['name', 'kategori' ,'nomer'];
 }

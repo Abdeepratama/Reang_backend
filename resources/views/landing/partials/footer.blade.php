@@ -18,7 +18,21 @@
         <ul>
           <li><a href="https://diskominfo.indramayukab.go.id">Diskominfo Kab. Indramayu</a></li>
           <li><a href="https://indramayukab.go.id">Website Indramayu</a></li>
-          <li><a href="{{ route('admin.login') }}">Login</a></li>
+          <li>
+            @if(Auth::guard('admin')->check())
+            {{-- Kalau sudah login --}}
+            <a href="{{ route('admin.dashboard') }}">
+              <i class="bi bi-person-circle me-1"></i>
+              {{ ucwords(Auth::guard('admin')->user()->name) }}
+            </a>
+            @else
+            {{-- Kalau belum login --}}
+            <a href="{{ route('admin.login') }}">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Login
+            </a>
+            @endif
+          </li>
+
         </ul>
       </div>
 

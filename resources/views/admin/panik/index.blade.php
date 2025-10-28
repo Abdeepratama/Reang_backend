@@ -17,6 +17,7 @@
             <tr>
                 <th>No</th>
                 <th>Nama</th>
+                <th>Kategori</th>
                 <th>Nomor</th>
                 <th>Aksi</th>
             </tr>
@@ -26,6 +27,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->name }}</td>
+                    <td>{{ $item->kategori }}</td>
                     <td>{{ $item->nomer }}</td>
                     <td>
                         <a href="{{ route('admin.panik.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
