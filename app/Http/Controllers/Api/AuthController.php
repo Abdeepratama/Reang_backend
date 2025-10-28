@@ -20,16 +20,18 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $validated = $request->validate([
-            'fullName' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'alamat'=> 'nullable|string|max:255',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'noKtp' => 'nullable|string|max:20|unique:users,no_ktp',
         ]);
 
         $user = User::create([
-            'name' => $validated['fullName'],
+            'name' => $validated['name'],
             'email' => $validated['email'],
+            'alamat' => $validated['alamat'],
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'no_ktp' => $validated['noKtp'] ?? null,
@@ -127,5 +129,43 @@ class AuthController extends Controller
         return $status == Password::PASSWORD_RESET
             ? response()->json(['message' => 'Password reset successful!'])
             : response()->json(['message' => 'Reset failed. Invalid token or email.'], 400);
+    }
+
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'message' => 'Profile retrieved successfully!',
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Update user profile
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:users,email,' . $user->id,
+            'alamat'=> 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        // Update data
+        if (isset($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'Profile updated successfully!',
+            'user' => $user
+        ]);
     }
 }

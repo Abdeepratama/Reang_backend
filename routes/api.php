@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\KeranjangController;
 use App\Http\Controllers\Api\TransaksiController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Admin\PanikButtonController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -39,6 +40,8 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
+        Route::get('/profile', [AuthController::class, 'profile']);
+        Route::put('/profile/edit', [AuthController::class, 'updateProfile']);
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 });
@@ -231,3 +234,7 @@ Route::get('owner/umkm/{umkmId}', [OwnerController::class, 'apiShowByUmkm']);
 Route::prefix('checkout')->group(function () {
     Route::post('/', [CheckoutController::class, 'checkout']);
 });
+
+//panik button
+Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
+Route::get('/panik/{id}', [PanikButtonController::class, 'apiShow']);

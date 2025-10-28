@@ -24,5 +24,9 @@
     <a href="{{ route('admin.banner.index') }}" class="btn btn-outline-primary">
         Banner
     </a>
+
+    <a href="{{ route('admin.panik.index') }}" class="btn btn-outline-primary">
+        Panik botton
+    </a>
 </div>
 @endsection

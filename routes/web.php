@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\KategoriDumasController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CaptchaController;
 use App\Http\Controllers\Admin\AdminAccountController;
+use App\Http\Controllers\Admin\PanikButtonController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // ----------------- HALAMAN DEPAN -----------------
@@ -338,6 +339,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 })->name('notifikasi.baca.satu');
 });
 
+//owner umkm
 Route::prefix('admin/pasar/umkm/owner')->name('admin.pasar.umkm.owner.')->middleware('auth:admin')->group(function () {
     Route::get('/', [OwnerController::class, 'index'])->name('index');
     Route::get('/create', [OwnerController::class, 'create'])->name('create');
@@ -346,3 +348,13 @@ Route::prefix('admin/pasar/umkm/owner')->name('admin.pasar.umkm.owner.')->middle
     Route::put('/{owner}', [OwnerController::class, 'update'])->name('update');
     Route::delete('/{owner}', [OwnerController::class, 'destroy'])->name('destroy');
 });
+
+// panik botton
+Route::prefix('admin/panik')->name('admin.panik.')->group(function () {
+        Route::get('/', [PanikButtonController::class, 'index'])->name('index');
+        Route::get('/create', [PanikButtonController::class, 'create'])->name('create');
+        Route::post('/', [PanikButtonController::class, 'store'])->name('store');
+        Route::get('/{panik}/edit', [PanikButtonController::class, 'edit'])->name('edit');
+        Route::put('/{panik}', [PanikButtonController::class, 'update'])->name('update');
+        Route::delete('/{panik}', [PanikButtonController::class, 'destroy'])->name('destroy');
+    });
