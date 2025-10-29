@@ -69,7 +69,7 @@ class IbadahController extends Controller
         Ibadah::create($validated);
 
         $this->logAktivitas("Tempat ibadah telah ditambahkan");
-        $this->logNotifikasi("Tempat Ibadah telah ditambahkan.");
+        $this->logNotifikasi('Tempat ibadah telah ditambahkan', route('admin.ibadah.tempat.index'));
 
         return redirect()->route('admin.ibadah.tempat.index')
             ->with('success', 'Tempat ibadah berhasil ditambahkan!');
@@ -108,8 +108,8 @@ class IbadahController extends Controller
             $ibadah->save();
         }
 
-        $this->logAktivitas("Tempat ibadah diperbarui");
-        $this->logNotifikasi("Tempat Ibadah diperbarui");
+        $this->logAktivitas("Tempat ibadah telah diupdate");
+        $this->logNotifikasi('Tempat ibadah telah diupdate', route('admin.ibadah.tempat.index'));
 
         return redirect()->route('admin.ibadah.tempat.index')
             ->with('success', 'Lokasi berhasil diperbarui!');
@@ -572,7 +572,7 @@ class IbadahController extends Controller
     public function infoIndex()
     {
         $infoItems = InfoKeagamaan::with('kategori')
-            ->orderBy('created_at', 'desc') 
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('admin.ibadah.info.index', compact('infoItems'));
@@ -643,7 +643,7 @@ class IbadahController extends Controller
         ]);
 
         $this->logAktivitas("Info keagamaan telah ditambahkan");
-        $this->logNotifikasi("Info keagamaan telah ditambahkan");
+        $this->logNotifikasi('Info keagamaan telah ditambahkan', route('admin.ibadah.info.index'));
 
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info keagamaan berhasil disimpan.');
     }
@@ -681,8 +681,8 @@ class IbadahController extends Controller
 
         $item->update($data);
 
-        $this->logAktivitas("Info keagamaan telah diperbarui");
-        $this->logNotifikasi("Info keagamaan telah diperbarui");
+        $this->logAktivitas("Info keagamaan telah diupdate");
+        $this->logNotifikasi('Info keagamaan telah diupdate', route('admin.ibadah.info.index'));
 
         return redirect()->route('admin.ibadah.info.index')->with('success', 'Info Keagamaan berhasil diperbarui');
     }
@@ -693,8 +693,8 @@ class IbadahController extends Controller
         if ($item->foto) Storage::disk('public')->delete($item->foto);
         $item->delete();
 
-        $this->logAktivitas("Info keagamaan telah dihapus");
-        $this->logNotifikasi("Info keagamaan telah dihapus");
+        $this->logAktivitas("Info Keagamaan telah dihapus");
+        $this->logNotifikasi('Info Keagamaan telah dihapus', route('admin.ibadah.info.index'));
 
         return back()->with('success', 'Info Keagamaan berhasil dihapus');
     }
@@ -927,14 +927,14 @@ class IbadahController extends Controller
         }
     }
 
-    protected function logNotifikasi($pesan)
+    protected function logNotifikasi($pesan, $url = null)
     {
         $user = auth()->user();
 
         NotifikasiAktivitas::create([
             'keterangan'   => $pesan,
             'dibaca'       => false,
-            'url'          => route('admin.ibadah.tempat.index'),
+            'url'          => $url ?? url()->current(),
             'role'         => $user->role,
             'id_instansi'  => $user->id_instansi,
         ]);

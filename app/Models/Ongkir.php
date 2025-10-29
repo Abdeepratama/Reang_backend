@@ -5,17 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Umkm extends Model
+class Ongkir extends Model
 {
     use HasFactory;
 
-    protected $table = 'umkm';
+    protected $table = 'ongkir'; // nama tabel
 
     protected $fillable = [
-        'nama',
-        'deskripsi',
-        'alamat',
-        'no_hp',
-        'foto',
+        'dareah',
+        'harga',
     ];
 }

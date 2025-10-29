@@ -138,7 +138,6 @@
         document.getElementById('longitude').value = lng;
 
         let alamat = document.getElementById('address').value;
-        let namaTempat = document.getElementById('name').value;
 
         if (fetchAddress) {
             try {
@@ -152,9 +151,6 @@
                         data.address.amenity || '';
                 }
 
-                if (!namaTempat && data.display_name) {
-                    namaTempat = data.display_name.split(',')[0];
-                }
                 alamat = data.display_name || alamat;
             } catch (err) {
                 console.error('Gagal ambil alamat:', err);

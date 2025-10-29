@@ -37,8 +37,8 @@ class PajakController extends Controller
 
         $info = InfoPajak::create($data);
 
-        $this->logAktivitas("Info Pajak telah ditambahkan", $info->id);
-        $this->logNotifikasi("Info Pajak telah ditambahkan", $info->id);
+        $this->logAktivitas("Info Pajak telah ditambahkan");
+        $this->logNotifikasi("Info Pajak telah ditambahkan");
 
         return redirect()->route('admin.pajak.info.index')->with('success', 'Info pajak berhasil ditambahkan.');
     }
@@ -69,8 +69,8 @@ class PajakController extends Controller
 
         $info->update($data);
 
-        $this->logAktivitas("Info Pajak telah diupdate", $info->id);
-        $this->logNotifikasi("Info Pajak telah diupdate", $info->id);
+        $this->logAktivitas("Info Pajak telah diupdate");
+        $this->logNotifikasi("Info Pajak telah diupdate");
 
         return redirect()->route('admin.pajak.info.index')->with('success', 'Info pajak berhasil diperbarui.');
     }
@@ -88,8 +88,8 @@ class PajakController extends Controller
 
         $info->delete();
 
-        $this->logAktivitas("Info Pajak telah dihapus", $info->id);
-        $this->logNotifikasi("Info Pajak telah dihapus", $info->id);
+        $this->logAktivitas("Info Pajak telah dihapus");
+        $this->logNotifikasi("Info Pajak telah dihapus");
 
         return back()->with('success', 'Info pajak berhasil dihapus.');
     }

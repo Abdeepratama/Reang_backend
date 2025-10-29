@@ -32,9 +32,10 @@
             <select name="kategori" class="form-control" required>
                 <option value="">-- Pilih Kategori --</option>
                 <option value="Ambulans" {{ old('kategori', $panik->kategori) == 'Ambulans' ? 'selected' : '' }}>Ambulans</option>
+                <option value="Bpbd" {{ old('kategori', $panik->kategori) == 'Bpbd' ? 'selected' : '' }}>Bpbd</option>
                 <option value="Pemadam" {{ old('kategori', $panik->kategori) == 'Pemadam' ? 'selected' : '' }}>Pemadam</option>
                 <option value="Polisi" {{ old('kategori', $panik->kategori) == 'Polisi' ? 'selected' : '' }}>Polisi</option>
-                <option value="Lainnya" {{ old('kategori', $panik->kategori) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                <option value="Pmi" {{ old('kategori', $panik->kategori) == 'Pmi' ? 'selected' : '' }}>Pmi</option>
             </select>
             @error('kategori') <small class="text-danger">{{ $message }}</small> @enderror
         </div>

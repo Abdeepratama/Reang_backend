@@ -184,6 +184,12 @@
                                 Lokasi Pasar
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.umkm.toko.*') ? 'text-primary bg-light' : '' }}"
+                                href="{{ route('admin.pasar.umkm.toko.index') }}">
+                                UMKM
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endif

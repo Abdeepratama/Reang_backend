@@ -63,7 +63,7 @@ class RenbangController extends Controller
         Renbang::create($data);
 
         $this->logAktivitas("Info Renbang telah ditambahkan");
-        $this->logNotifikasi("Info Renbang telah ditambahkan");
+        $this->logNotifikasi('Info Renbang telah ditambahkan', route('admin.renbang.info.index'));
 
         return redirect()->route('admin.renbang.info.index')
             ->with('success', 'Info Renbang berhasil ditambahkan.');
@@ -89,8 +89,8 @@ class RenbangController extends Controller
 
         $item->update($data);
 
-        $this->logAktivitas("Info Renbang telah diperbarui");
-        $this->logNotifikasi("Info Renbang telah diperbarui");
+        $this->logAktivitas("Info Renbang telah diupdate");
+        $this->logNotifikasi('Info Renbang telah diupdate', route('admin.renbang.info.index'));
 
         return redirect()->route('admin.renbang.info.index')
             ->with('success', 'Info Renbang berhasil diperbarui');
@@ -107,7 +107,7 @@ class RenbangController extends Controller
         $item->delete();
 
         $this->logAktivitas("Info Renbang telah dihapus");
-        $this->logNotifikasi("Info Renbang telah dihapus");
+        $this->logNotifikasi('Info Renbang telah dihapus', route('admin.renbang.info.index'));
 
         return redirect()->route('admin.renbang.info.index')
             ->with('success', 'Info Renbang berhasil dihapus');
@@ -293,6 +293,9 @@ class RenbangController extends Controller
             'user_id'   => $user?->id,
         ]);
 
+        $this->logAktivitas("Ada Ajuan Renbang baru yang ditambahkan");
+        $this->logNotifikasi('Ada Ajuan Renbang baru yang ditambahkan', route('admin.renbang.ajuan.index'));
+
         return response()->json([
             'message' => 'Ajuan berhasil dikirim',
             'data' => $ajuan,
@@ -469,25 +472,28 @@ class RenbangController extends Controller
     {
         if (auth()->check()) {
             $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
-                'user_id'     => $user->id,
-                'tipe'        => $this->aktivitasTipe,
-                'keterangan'  => $pesan,
-                'role'        => $user->role,
-                'id_instansi' => $user->id_instansi,
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
             ]);
         }
     }
 
-    protected function logNotifikasi($pesan)
+    protected function logNotifikasi($pesan, $url = null)
     {
         $user = auth()->user();
+
         NotifikasiAktivitas::create([
-            'keterangan'  => $pesan,
-            'dibaca'      => false,
-            'url'         => route('admin.renbang.info.index'),
-            'role'        => $user->role,
-            'id_instansi' => $user->id_instansi,
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => $url ?? url()->current(),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
         ]);
     }
 }

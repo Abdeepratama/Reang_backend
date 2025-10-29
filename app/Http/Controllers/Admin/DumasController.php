@@ -152,6 +152,8 @@ class DumasController extends Controller
         // Tambahkan nama kategori secara manual untuk konsistensi
         $dumasResponse['kategori_laporan'] = $kategori->nama_kategori;
 
+        $this->logAktivitas("Ada Pengaduan baru yang ditambahkan");
+        $this->logNotifikasi("Ada Pengaduan baru yang ditambahkan");
 
         return response()->json([
             'message' => 'Pengaduan berhasil ditambahkan',
@@ -179,6 +181,9 @@ class DumasController extends Controller
 
         $dumas->save();
 
+        $this->logAktivitas("Pengaduan telah diupdate");
+        $this->logNotifikasi("Pengaduan telah diupdate");
+
         return back()->with('success', 'Data berhasil diperbarui!');
     }
 
@@ -192,6 +197,39 @@ class DumasController extends Controller
 
         $dumas->delete();
 
+        $this->logAktivitas("Pengaduan telah dihapus");
+        $this->logNotifikasi("Pengaduan telah dihapus");
+
         return back()->with('success', 'Data berhasil dihapus!');
+    }
+
+    protected $aktivitasTipe = 'dumas';
+
+    protected function logAktivitas($pesan)
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            \App\Models\Aktivitas::create([
+                'user_id'     => $user->id,
+                'tipe'        => $this->aktivitasTipe,
+                'keterangan'  => $pesan,
+                'role'        => $user->role,
+                'id_instansi' => $user->id_instansi ?? null,
+            ]);
+        }
+    }
+
+    protected function logNotifikasi($pesan)
+    {
+        $user = auth()->user();
+
+        \App\Models\NotifikasiAktivitas::create([
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.dumas.aduan.index'),
+            'role'         => $user->role ?? 'admin',
+            'id_instansi'  => $user->id_instansi ?? null,
+        ]);
     }
 }

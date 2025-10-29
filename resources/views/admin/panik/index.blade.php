@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <h2>Daftar Panik Button</h2>
 
-    <a href="{{ route('admin.panik.create') }}" class="btn btn-primary mb-3">+ Tambah Panik Button</a>
+    <a href="{{ route('admin.panik.create') }}" class="btn btn-primary mb-3">Tambah Panik Button</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

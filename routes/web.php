@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CaptchaController;
 use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\PanikButtonController;
+use App\Http\Controllers\Admin\UmkmController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // ----------------- HALAMAN DEPAN -----------------
@@ -337,6 +338,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     abort(403, 'Anda tidak memiliki akses ke halaman ini.');
 })->name('notifikasi.baca.satu');
+});
+
+//toko umkm
+Route::prefix('admin/pasar/umkm/toko')->name('admin.pasar.umkm.toko.')->middleware('auth:admin')->group(function () {
+    Route::get('/', [UmkmController::class, 'index'])->name('index');
+    Route::get('/create', [UmkmController::class, 'create'])->name('create');
+    Route::post('/', [UmkmController::class, 'store'])->name('store');
+    Route::get('/{owner}/edit', [UmkmController::class, 'edit'])->name('edit');
+    Route::put('/{owner}', [UmkmController::class, 'update'])->name('update');
+    Route::delete('/{owner}', [UmkmController::class, 'destroy'])->name('destroy');
 });
 
 //owner umkm

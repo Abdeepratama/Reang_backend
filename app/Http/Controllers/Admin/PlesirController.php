@@ -54,7 +54,7 @@ class PlesirController extends Controller
         Plesir::create($validated);
 
         $this->logAktivitas("Lokasi Plesir telah ditambahkan");
-        $this->logNotifikasi("Lokasi Plesir telah ditambahkan");
+        $this->logNotifikasi('Lokasi Plesir telah ditambahkan', route('admin.plesir.tempat.index'));
 
         return redirect()->route('admin.plesir.tempat.index',)
             ->with('success', 'Tempat plesir berhasil ditambahkan!');
@@ -105,7 +105,7 @@ class PlesirController extends Controller
         $plesir->save();
 
         $this->logAktivitas("Lokasi Plesir telah diupdate");
-        $this->logNotifikasi("Lokasi Plesir telah diupdate");
+        $this->logNotifikasi('Lokasi Plesir telah diupdate', route('admin.plesir.tempat.index'));
 
         return redirect()->route('admin.plesir.tempat.index')
             ->with('success', 'Lokasi berhasil diperbarui!');
@@ -123,7 +123,7 @@ class PlesirController extends Controller
         $plesir->delete();
 
         $this->logAktivitas("Lokasi Plesir telah dihapus");
-        $this->logNotifikasi("Lokasi Plesir telah dihapus");
+        $this->logNotifikasi('Lokasi Plesir telah dihapus', route('admin.plesir.tempat.index'));
 
         return redirect()->route('admin.plesir.tempat.index')
             ->with('success', 'Lokasi plesir berhasil dihapus!');
@@ -229,7 +229,7 @@ class PlesirController extends Controller
         $infoItems = InfoPlesir::with('kategori')
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         return view('admin.plesir.info.index', compact('infoItems'));
     }
 
@@ -277,7 +277,7 @@ class PlesirController extends Controller
         ]);
 
         $this->logAktivitas("Info Plesir telah ditambahkan");
-        $this->logNotifikasi("Info Plesir telah ditambahkan");
+        $this->logNotifikasi('Info Plesir telah ditambahkan', route('admin.plesir.info.index'));
 
         return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil disimpan.');
     }
@@ -314,7 +314,7 @@ class PlesirController extends Controller
         $item->update($data);
 
         $this->logAktivitas("Info Plesir telah diupdate");
-        $this->logNotifikasi("Info Plesir telah diupdate");
+        $this->logNotifikasi('Info Plesir telah diupdate', route('admin.plesir.info.index'));
 
         return redirect()->route('admin.plesir.info.index')->with('success', 'Info plesir berhasil diperbarui.');
     }
@@ -326,7 +326,7 @@ class PlesirController extends Controller
         $item->delete();
 
         $this->logAktivitas("Info Plesir telah dihapus");
-        $this->logNotifikasi("Info Plesir telah dihapus");
+        $this->logNotifikasi('Info Plesir telah dihapus', route('admin.plesir.info.index'));
 
         return back()->with('success', 'Info plesir berhasil dihapus.');
     }
@@ -439,7 +439,7 @@ class PlesirController extends Controller
         ], 400);
     }
 
-    protected $aktivitasTipe = 'Sekolah';
+    protected $aktivitasTipe = 'plesir';
 
     protected function logAktivitas($pesan)
     {
@@ -457,14 +457,14 @@ class PlesirController extends Controller
         }
     }
 
-    protected function logNotifikasi($pesan)
+    protected function logNotifikasi($pesan ,$url = null)
     {
         $user = auth()->user();
 
         NotifikasiAktivitas::create([
             'keterangan'   => $pesan,
             'dibaca'       => false,
-            'url'          => route('admin.sekolah.tempat.index'),
+            'url'          => $url ?? url()->current(),
             'role'         => $user->role,
             'id_instansi'  => $user->id_instansi,
         ]);

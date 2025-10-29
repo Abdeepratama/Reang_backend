@@ -23,13 +23,13 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Admin\PuskesmasController;
 use App\Http\Controllers\Admin\DokterController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Api\UmkmController;
 use App\Http\Controllers\Api\ProdukController;
 use App\Http\Controllers\Api\KeranjangController;
 use App\Http\Controllers\Api\TransaksiController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Admin\PanikButtonController;
+use App\Http\Controllers\Api\OngkirController;
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -187,19 +187,12 @@ Route::middleware('auth:sanctum')->group(function () {
 ///storage chat image
 Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
 
-//Umkm
-Route::prefix('umkm')->group(function () {
-    Route::get('/', [UmkmController::class, 'index']);
-    Route::post('/', [UmkmController::class, 'store']);
-    Route::get('/{id}', [UmkmController::class, 'show']);
-    Route::put('/{id}', [UmkmController::class, 'update']);
-    Route::delete('/{id}', [UmkmController::class, 'destroy']);
-});
-
 //Produk
+Route::get('/', [ProdukController::class, 'index']);       // GET semua produk
+Route::get('/{id}', [ProdukController::class, 'show']);    // GET 1 produk
+
+//admin ongkir
 Route::prefix('produk')->group(function () {
-    Route::get('/', [ProdukController::class, 'index']);       // GET semua produk
-    Route::get('/{id}', [ProdukController::class, 'show']);    // GET 1 produk
     Route::post('/', [ProdukController::class, 'store']);      // POST tambah produk
     Route::put('/{id}', [ProdukController::class, 'update']);  // PUT edit produk
     Route::delete('/{id}', [ProdukController::class, 'destroy']); // DELETE produk
@@ -226,11 +219,6 @@ Route::prefix('payment')->group(function () {
     Route::get('/user/{id_user}', [PaymentController::class, 'riwayat']);
 });
 
-//owner
-Route::get('owner', [OwnerController::class, 'apiIndex']);
-Route::get('owner/{id?}', [OwnerController::class, 'apiShow']);
-Route::get('owner/umkm/{umkmId}', [OwnerController::class, 'apiShowByUmkm']);
-
 Route::prefix('checkout')->group(function () {
     Route::post('/', [CheckoutController::class, 'checkout']);
 });
@@ -238,3 +226,12 @@ Route::prefix('checkout')->group(function () {
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
 Route::get('/panik/{id}', [PanikButtonController::class, 'apiShow']);
+
+//ongkir
+Route::prefix('ongkir')->group(function () {
+    Route::get('/', [OngkirController::class, 'index']);
+    Route::get('/show/{id}', [OngkirController::class, 'show']);
+    Route::post('/store', [OngkirController::class, 'store']);
+    Route::put('/update/{id}', [OngkirController::class, 'update']);
+    Route::delete('/{id}', [OngkirController::class, 'destroy']);
+});

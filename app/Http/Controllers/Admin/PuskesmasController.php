@@ -7,6 +7,8 @@ use App\Models\Puskesmas;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Aktivitas;
+use App\Models\NotifikasiAktivitas;
 
 class PuskesmasController extends Controller
 {
@@ -51,6 +53,9 @@ class PuskesmasController extends Controller
 
         Puskesmas::create($request->only(['nama', 'alamat', 'jam']));
 
+        $this->logAktivitas("Puskesmas telah ditambahkan");
+        $this->logNotifikasi("Puskesmas telah ditambahkan");
+
         return redirect()->route('admin.sehat.puskesmas.index')
             ->with('success', 'Data puskesmas berhasil ditambahkan');
     }
@@ -70,13 +75,21 @@ class PuskesmasController extends Controller
 
         $puskesmas->update($request->all());
 
+        $this->logAktivitas("Puskesmas telah diupdate");
+        $this->logNotifikasi("Puskesmas telah diupdate");
+
         return redirect()->route('admin.sehat.puskesmas.index')
             ->with('success', 'Data berhasil diperbarui');
     }
 
     public function destroy(Puskesmas $puskesmas)
     {
+
         $puskesmas->delete();
+
+        $this->logAktivitas("Puskesmas telah dihapus");
+        $this->logNotifikasi("Puskesmas telah dihapus");
+
         return redirect()->route('admin.sehat.puskesmas.index')
             ->with('success', 'Data berhasil dihapus');
     }
@@ -273,6 +286,37 @@ class PuskesmasController extends Controller
         $puskesmas->admin_id = $admin->id;
 
         return response()->json($puskesmas);
+    }
+
+    protected $aktivitasTipe = 'puskesmas';
+
+    protected function logAktivitas($pesan)
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            // untuk role/dinas yang melakukan aksi
+            Aktivitas::create([
+                'user_id'      => $user->id,
+                'tipe'         => $this->aktivitasTipe,
+                'keterangan'   => $pesan,
+                'role'         => $user->role,
+                'id_instansi'  => $user->id_instansi,
+            ]);
+        }
+    }
+
+    protected function logNotifikasi($pesan)
+    {
+        $user = auth()->user();
+
+        NotifikasiAktivitas::create([
+            'keterangan'   => $pesan,
+            'dibaca'       => false,
+            'url'          => route('admin.sehat.puskesmas.index'),
+            'role'         => $user->role,
+            'id_instansi'  => $user->id_instansi,
+        ]);
     }
 
 }
