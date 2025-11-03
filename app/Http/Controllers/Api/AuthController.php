@@ -40,6 +40,8 @@ class AuthController extends Controller
         // 🔹 Beri role default "user"
         $user->role()->attach(1);
 
+        $user = $user->fresh(['role']);
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -66,6 +68,8 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        $user->load('role');
+        
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
