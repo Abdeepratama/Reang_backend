@@ -18,12 +18,12 @@ class CheckAdminDinas
             return redirect()->route('admin.login');
         }
 
-        // Superadmin bebas akses ke semua
+        // 🧑‍💼 Superadmin bebas akses ke semua
         if ($user->role === 'superadmin') {
             return $next($request);
         }
 
-        // Admin Dinas → cek akses berdasar id_instansi
+        // 🏢 Admin Dinas → cek akses berdasarkan id_instansi
         if ($user->role === 'admindinas') {
             $user->loadMissing('userData.instansi');
 
@@ -45,29 +45,7 @@ class CheckAdminDinas
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        // 🏥 Role Puskesmas
-        if ($user->role === 'puskesmas') {
-            $user->loadMissing('userData.puskesmas');
-
-            $idPuskesmas = optional($user->userData->puskesmas)->id;
-
-            if (empty($idPuskesmas)) {
-                abort(403, 'Akun Anda belum terhubung dengan puskesmas manapun');
-            }
-
-            $allowedRoutesByPuskesmas = $this->getAllowedRoutesByPuskesmas($idPuskesmas);
-            $routeName = $request->route()->getName();
-
-            foreach ($allowedRoutesByPuskesmas as $pattern) {
-                if (Str::is($pattern, $routeName)) {
-                    return $next($request);
-                }
-            }
-
-            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }
-
-        // Jika role tidak dikenali
+        // 🚫 Jika role tidak dikenali
         abort(403, 'Role tidak dikenali.');
     }
 
@@ -197,24 +175,6 @@ class CheckAdminDinas
             default:
                 return ['admin.dashboard']; // Default minimal akses
         }
-    }
-
-    private function getAllowedRoutesByPuskesmas($id_puskesmas)
-    {
-        // default akses untuk semua puskesmas
-        return [
-            'admin.dashboard',
-            'admin.sehat.tempat.*',
-            'admin.sehat.info.*',
-            'admin.sehat.olahraga.*',
-            'admin.sehat.puskesmas.*',
-            'admin.accounts.profile',
-            'admin.dumas.aduan.*',
-            'admin.setting.*',
-            'admin.sehat.dokter.*',
-            'admin.notifikasi.*',
-            'admin.accounts.index',
-        ];
     }
 
     public function sidebar()

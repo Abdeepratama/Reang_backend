@@ -13,21 +13,15 @@ use App\Models\NotifikasiAktivitas;
 class PuskesmasController extends Controller
 {
     // ==========================================================
-    // 🧭 BAGIAN PANEL ADMIN (TIDAK DIUBAH)
+    // 🧭 BAGIAN PANEL ADMIN
     // ==========================================================
     public function index()
     {
         $user = Auth::guard('admin')->user();
 
+        // Hanya superadmin & dinas kesehatan yang boleh mengakses
         if ($user->role === 'superadmin' || $user->role === 'kesehatan') {
-            // superadmin & dinas kesehatan boleh lihat semua
             $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
-        } elseif ($user->role === 'puskesmas') {
-            $idPuskesmas = optional($user->userData)->id_puskesmas;
-            if (!$idPuskesmas) {
-                abort(403, 'Akun Anda belum terhubung dengan data puskesmas.');
-            }
-            $puskesmas = Puskesmas::where('id', $idPuskesmas)->get();
         } else {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
@@ -81,7 +75,6 @@ class PuskesmasController extends Controller
 
     public function destroy(Puskesmas $puskesmas)
     {
-
         $puskesmas->delete();
 
         $this->logAktivitas("Puskesmas telah dihapus");
@@ -94,13 +87,8 @@ class PuskesmasController extends Controller
     // ==========================================================
     // 🔎 Helper: cari admin_id yang mengait ke puskesmas
     // ==========================================================
-    /**
-     * Cari admin yang punya userData.id_puskesmas == $puskesmasId
-     * Mengembalikan id admin atau null jika tidak ditemukan.
-     */
     protected function findAdminIdByPuskesmasId($puskesmasId)
     {
-        // Asumsi model Admin punya relasi userData yang menyimpan id_puskesmas
         $admin = Admin::whereHas('userData', function ($q) use ($puskesmasId) {
             $q->where('id_puskesmas', $puskesmasId);
         })->first();
@@ -109,7 +97,7 @@ class PuskesmasController extends Controller
     }
 
     // ==========================================================
-    // 📡 BAGIAN API DATA PUSKESMAS (meng-include admin_id)
+    // 📡 BAGIAN API DATA PUSKESMAS
     // ==========================================================
     public function apiIndex()
     {
@@ -117,7 +105,6 @@ class PuskesmasController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-        // Tambahkan admin_id untuk setiap item di collection paginator
         $collection = $paginator->getCollection()->map(function ($item) {
             $item->admin_id = $this->findAdminIdByPuskesmasId($item->id);
             return $item;
@@ -136,15 +123,12 @@ class PuskesmasController extends Controller
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
 
-            // tambahkan admin_id
             $data->admin_id = $this->findAdminIdByPuskesmasId($data->id);
-
             return response()->json($data);
         }
 
         $paginator = Puskesmas::withCount('dokter as dokter_tersedia')->paginate(10);
 
-        // tambahkan admin_id untuk setiap item
         $collection = $paginator->getCollection()->map(function ($item) {
             $item->admin_id = $this->findAdminIdByPuskesmasId($item->id);
             return $item;
@@ -171,7 +155,6 @@ class PuskesmasController extends Controller
 
         $paginator = $query->orderBy('id', 'desc')->paginate(10);
 
-        // tambahkan admin_id untuk setiap item
         $collection = $paginator->getCollection()->map(function ($item) {
             $item->admin_id = $this->findAdminIdByPuskesmasId($item->id);
             return $item;
@@ -183,8 +166,7 @@ class PuskesmasController extends Controller
     }
 
     // ==========================================================
-    // 🔐 BAGIAN API LOGIN / LOGOUT / PROFILE PUSKESMAS
-    //    (tidak diubah kecuali menambahkan admin_id di puskesmas response)
+    // 🔐 BAGIAN API LOGIN / LOGOUT / PROFILE ADMIN KESEHATAN
     // ==========================================================
     public function apiLogin(Request $request)
     {
@@ -201,32 +183,18 @@ class PuskesmasController extends Controller
 
         $admin = Auth::guard('admin')->user();
 
-        // Hanya untuk role puskesmas
-        if ($admin->role !== 'puskesmas') {
+        // Hanya role superadmin atau dinas kesehatan
+        if (!in_array($admin->role, ['superadmin', 'kesehatan'])) {
             Auth::guard('admin')->logout();
-            return response()->json(['message' => 'Hanya admin puskesmas yang dapat login di sini.'], 403);
+            return response()->json(['message' => 'Hanya admin dinas kesehatan yang dapat login di sini.'], 403);
         }
 
-        // Ambil data puskesmas yang terhubung lewat userData (jika ada)
-        $puskesmasId = optional($admin->userData)->id_puskesmas;
-        $puskesmas = $puskesmasId ? Puskesmas::find($puskesmasId) : null;
-
-        if (!$puskesmas) {
-            return response()->json(['message' => 'Akun belum terhubung dengan data puskesmas.'], 404);
-        }
-
-        // Token Sanctum
-        $token = $admin->createToken('PuskesmasToken')->plainTextToken;
-
-        // tambahkan admin_id pada puskesmas response (jika ada admin lain yang berelasi,
-        // tetap akan mengembalikan admin yang dipetakan oleh findAdminIdByPuskesmasId)
-        $puskesmas->admin_id = $this->findAdminIdByPuskesmasId($puskesmas->id);
+        $token = $admin->createToken('AdminKesehatanToken')->plainTextToken;
 
         return response()->json([
             'message' => 'Login berhasil',
             'token' => $token,
             'admin' => $admin,
-            'puskesmas' => $puskesmas,
         ]);
     }
 
@@ -234,20 +202,12 @@ class PuskesmasController extends Controller
     {
         $admin = $request->user();
 
-        if ($admin->role !== 'puskesmas') {
+        if (!in_array($admin->role, ['superadmin', 'kesehatan'])) {
             return response()->json(['message' => 'Akses ditolak.'], 403);
-        }
-
-        $puskesmasId = optional($admin->userData)->id_puskesmas;
-        $puskesmas = $puskesmasId ? Puskesmas::find($puskesmasId) : null;
-
-        if ($puskesmas) {
-            $puskesmas->admin_id = $this->findAdminIdByPuskesmasId($puskesmas->id);
         }
 
         return response()->json([
             'admin' => $admin,
-            'puskesmas' => $puskesmas,
         ]);
     }
 
@@ -256,35 +216,36 @@ class PuskesmasController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logout berhasil']);
     }
+
+    // ==========================================================
+    // 🔍 API: cari puskesmas berdasarkan admin_id
+    // ==========================================================
     public function apiShowByAdmin($adminId)
     {
-        // 1. Cari Admin berdasarkan ID
         $admin = Admin::find($adminId);
         if (!$admin) {
             return response()->json(['message' => 'Admin tidak ditemukan'], 404);
         }
 
-        // 2. Ambil ID Puskesmas dari relasi userData
-        // (Saya asumsikan relasi 'userData' sudah ada di model Admin Anda
-        // berdasarkan kode Anda yang lain)
         $puskesmasId = optional($admin->userData)->id_puskesmas;
         if (!$puskesmasId) {
             return response()->json(['message' => 'Admin ini tidak terhubung ke puskesmas manapun'], 404);
         }
 
-        // 3. Cari Puskesmas
         $puskesmas = Puskesmas::find($puskesmasId);
 
         if (!$puskesmas) {
             return response()->json(['message' => 'Puskesmas tidak ditemukan'], 404);
         }
 
-        // 4. Tambahkan admin_id secara manual agar konsisten
         $puskesmas->admin_id = $admin->id;
 
         return response()->json($puskesmas);
     }
 
+    // ==========================================================
+    // 🧾 Log Aktivitas dan Notifikasi
+    // ==========================================================
     protected $aktivitasTipe = 'puskesmas';
 
     protected function logAktivitas($pesan)
@@ -292,7 +253,6 @@ class PuskesmasController extends Controller
         if (auth()->check()) {
             $user = auth()->user();
 
-            // untuk role/dinas yang melakukan aksi
             Aktivitas::create([
                 'user_id'      => $user->id,
                 'tipe'         => $this->aktivitasTipe,
