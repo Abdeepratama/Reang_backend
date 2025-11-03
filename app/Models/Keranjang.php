@@ -10,12 +10,12 @@ class Keranjang extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id_umkm', 'id_user', 'id_produk', 'harga', 'stok', 'jumlah', 'subtotal'
+        'id_toko', 'id_user', 'id_produk', 'harga', 'stok', 'jumlah', 'subtotal'
     ];
 
-    public function umkm()
+    public function toko()
     {
-        return $this->belongsTo(Umkm::class, 'id_umkm');
+        return $this->belongsTo(toko::class, 'id_toko');
     }
 
     public function produk()

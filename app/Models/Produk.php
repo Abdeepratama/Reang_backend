@@ -10,12 +10,12 @@ class Produk extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id_umkm', 'nama', 'foto', 'harga', 'variasi',
+        'id_toko', 'nama', 'foto', 'harga', 'variasi',
         'deskripsi', 'spesifikasi', 'lokasi', 'fitur', 'stok'
     ];
 
-    public function umkm()
+    public function toko()
     {
-        return $this->belongsTo(Umkm::class, 'id_umkm');
+        return $this->belongsTo(Toko::class, 'id_toko');
     }
 }

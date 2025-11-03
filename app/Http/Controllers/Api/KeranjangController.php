@@ -13,7 +13,7 @@ class KeranjangController extends Controller
     {
         $request->validate([
             'id_user' => 'required|integer',
-            'id_umkm' => 'required|integer',
+            'id_toko' => 'required|integer',
             'id_produk' => 'required|integer',
             'jumlah' => 'required|integer|min:1',
         ]);
@@ -26,7 +26,7 @@ class KeranjangController extends Controller
         $subtotal = $produk->harga * $request->jumlah;
 
         DB::table('keranjang')->insert([
-            'id_umkm' => $request->id_umkm,
+            'id_toko' => $request->id_toko,
             'id_user' => $request->id_user,
             'id_produk' => $request->id_produk,
             'harga' => $produk->harga,

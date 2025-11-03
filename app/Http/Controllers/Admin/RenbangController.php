@@ -239,7 +239,7 @@ class RenbangController extends Controller
     // =======================
     // 🔹 BAGIAN API (Flutter)
     // =======================
-    
+
     // --- PERUBAHAN UTAMA DI FUNGSI INI ---
     public function apiIndex(Request $request)
     {
@@ -263,7 +263,7 @@ class RenbangController extends Controller
                     ->pluck('id_renbang');
             }
         }
-        
+
         // 3. Tambahkan properti 'is_liked_by_user' ke setiap item
         $data->getCollection()->transform(function ($ajuan) use ($likedAjuanIds) {
             $ajuan->is_liked_by_user = $likedAjuanIds->contains($ajuan->id);
@@ -319,7 +319,7 @@ class RenbangController extends Controller
             ->where('id_renbang', $id)
             ->exists()
             : false;
-        
+
         // Menambahkan properti 'is_liked_by_user' ke objek ajuan
         $ajuan->is_liked_by_user = $liked;
 

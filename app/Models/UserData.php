@@ -42,9 +42,4 @@ class UserData extends Model
     {
         return $this->belongsTo(Puskesmas::class, 'id_puskesmas');
     }
-
-    public function umkm()
-    {
-        return $this->belongsTo(\App\Models\Umkm::class, 'id_umkm');
-    }
 }

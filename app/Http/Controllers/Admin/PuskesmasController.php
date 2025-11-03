@@ -19,19 +19,16 @@ class PuskesmasController extends Controller
     {
         $user = Auth::guard('admin')->user();
 
-        // Superadmin: tampilkan semua
-        if ($user->role === 'superadmin') {
+        if ($user->role === 'superadmin' || $user->role === 'kesehatan') {
+            // superadmin & dinas kesehatan boleh lihat semua
             $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
-        }
-        // Role puskesmas: tampilkan hanya miliknya
-        elseif ($user->role === 'puskesmas') {
+        } elseif ($user->role === 'puskesmas') {
             $idPuskesmas = optional($user->userData)->id_puskesmas;
             if (!$idPuskesmas) {
                 abort(403, 'Akun Anda belum terhubung dengan data puskesmas.');
             }
             $puskesmas = Puskesmas::where('id', $idPuskesmas)->get();
-        }
-        else {
+        } else {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
@@ -165,10 +162,10 @@ class PuskesmasController extends Controller
         $query = Puskesmas::withCount('dokter as dokter_tersedia');
 
         if ($keyword) {
-            $query->where(function($q) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
                 $q->where('nama', 'like', "%{$keyword}%")
-                  ->orWhere('alamat', 'like', "%{$keyword}%")
-                  ->orWhere('jam', 'like', "%{$keyword}%");
+                    ->orWhere('alamat', 'like', "%{$keyword}%")
+                    ->orWhere('jam', 'like', "%{$keyword}%");
             });
         }
 
@@ -272,16 +269,16 @@ class PuskesmasController extends Controller
         // berdasarkan kode Anda yang lain)
         $puskesmasId = optional($admin->userData)->id_puskesmas;
         if (!$puskesmasId) {
-             return response()->json(['message' => 'Admin ini tidak terhubung ke puskesmas manapun'], 404);
+            return response()->json(['message' => 'Admin ini tidak terhubung ke puskesmas manapun'], 404);
         }
-        
+
         // 3. Cari Puskesmas
         $puskesmas = Puskesmas::find($puskesmasId);
 
         if (!$puskesmas) {
             return response()->json(['message' => 'Puskesmas tidak ditemukan'], 404);
         }
-        
+
         // 4. Tambahkan admin_id secara manual agar konsisten
         $puskesmas->admin_id = $admin->id;
 
@@ -318,5 +315,4 @@ class PuskesmasController extends Controller
             'id_instansi'  => $user->id_instansi,
         ]);
     }
-
 }

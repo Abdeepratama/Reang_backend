@@ -10,14 +10,14 @@ class Transaksi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id_umkm', 'id_user', 'id_produk', 'no_transaksi', 'no_resi',
-        'alamat', 'jumlah', 'harga', 'total', 'subtotal', 'catatan',
+        'id_toko', 'id_user', 'id_produk', 'no_transaksi', 'no_resi',
+        'alamat', 'id_ongkir', 'jumlah', 'harga', 'total', 'subtotal', 'catatan',
         'status', 'jasa_pengiriman'
     ];
 
-    public function umkm()
+    public function toko()
     {
-        return $this->belongsTo(Umkm::class, 'id_umkm');
+        return $this->belongsTo(Toko::class, 'id_toko');
     }
 
     public function produk()

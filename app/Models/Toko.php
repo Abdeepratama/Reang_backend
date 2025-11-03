@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Umkm extends Model
+class Toko extends Model
 {
     use HasFactory;
 
-    protected $table = 'umkm';
+    protected $table = 'toko';
 
     protected $fillable = [
         'nama',

@@ -13,7 +13,7 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'id_user' => 'required|integer',
-            'id_umkm' => 'required|integer',
+            'id_toko' => 'required|integer',
             'id_produk' => 'required|integer',
             'alamat' => 'required|string',
             'metode_pembayaran' => 'required|string',
@@ -33,7 +33,7 @@ class CheckoutController extends Controller
 
             // Simpan transaksi utama
             DB::table('transaksi')->insert([
-                'id_umkm' => $request->id_umkm,
+                'id_toko' => $request->id_toko,
                 'id_user' => $request->id_user,
                 'no_transaksi' => $no_transaksi,
                 'id_produk' => $request->id_produk,

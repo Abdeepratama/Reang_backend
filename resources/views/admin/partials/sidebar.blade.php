@@ -80,8 +80,6 @@
                 </a>
 
                 <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.sehat.*') ? 'show' : '' }}" id="submenu-sehat">
-                    {{-- Jika bukan puskesmas, tampilkan semua menu utama --}}
-                    @if ($user->role !== 'puskesmas')
                     <li>
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.tempat.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.tempat.index') }}">
@@ -102,17 +100,12 @@
                             Lokasi Olahraga
                         </a>
                     </li>
-                    @endif
-
-                    {{-- Menu khusus untuk superadmin & puskesmas --}}
-                    @if ($user->role === 'superadmin' || $user->role === 'puskesmas')
                     <li>
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.puskesmas.index') }}">
                             Puskesmas
                         </a>
                     </li>
-                    @endif
                 </ul>
             </li>
             @endif
@@ -182,12 +175,6 @@
                             <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.tempat.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.pasar.tempat.index') }}">
                                 Lokasi Pasar
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.pasar.umkm.toko.*') ? 'text-primary bg-light' : '' }}"
-                                href="{{ route('admin.pasar.umkm.toko.index') }}">
-                                UMKM
                             </a>
                         </li>
                     </ul>

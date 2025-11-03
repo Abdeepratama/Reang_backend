@@ -30,6 +30,11 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Admin\PanikButtonController;
 use App\Http\Controllers\Api\OngkirController;
+use App\Http\Controllers\Api\TokoController;
+
+//panik button
+Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
+Route::get('/panik/{id}', [PanikButtonController::class, 'apiShow']);
 
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
@@ -184,28 +189,36 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/delete-fcm-token', [FirebaseController::class, 'deleteFcmToken']);
 });
 
-///storage chat image
+//storage chat image
 Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
 
-//Produk
-Route::get('/', [ProdukController::class, 'index']);       // GET semua produk
-Route::get('/{id}', [ProdukController::class, 'show']);    // GET 1 produk
+//toko
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/toko', [TokoController::class, 'index']);
+    Route::get('/toko/{id}', [TokoController::class, 'show']);
+    Route::post('/toko/store', [TokoController::class, 'store']);
+    Route::put('/toko/{id}', [TokoController::class, 'update']);
+    Route::delete('/toko/{id}', [TokoController::class, 'destroy']);
+});
 
-//admin ongkir
-Route::prefix('produk')->group(function () {
-    Route::post('/', [ProdukController::class, 'store']);      // POST tambah produk
-    Route::put('/{id}', [ProdukController::class, 'update']);  // PUT edit produk
-    Route::delete('/{id}', [ProdukController::class, 'destroy']); // DELETE produk
+//Produk
+Route::get('/produk/show', [ProdukController::class, 'index']);
+Route::get('/produk/show/{id}', [ProdukController::class, 'show']);
+Route::get('/produk/toko/{id_toko}', [ProdukController::class, 'showByToko']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/produk/store', [ProdukController::class, 'store']);      // POST tambah produk
+    Route::put('/produk/update/{id}', [ProdukController::class, 'update']);  // PUT edit produk
+    Route::delete('/produk/{id}', [ProdukController::class, 'destroy']); // DELETE produk
 });
 
 //Keranjang
-Route::prefix('keranjang')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('/create', [KeranjangController::class, 'tambah']);
-    Route::get('/{id_user}', [KeranjangController::class, 'lihat']);
+    Route::get('/show/{id_user}', [KeranjangController::class, 'lihat']);
 });
 
 //Transaksi
-Route::prefix('transaksi')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/{userId}', [TransaksiController::class, 'index']);
     Route::post('/', [TransaksiController::class, 'store']);
     Route::put('/{id}', [TransaksiController::class, 'update']);
@@ -213,25 +226,21 @@ Route::prefix('transaksi')->group(function () {
 });
 
 //Payment
-Route::prefix('payment')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('/', [PaymentController::class, 'store']);
     Route::get('/{noTransaksi}', [PaymentController::class, 'show']);
     Route::get('/user/{id_user}', [PaymentController::class, 'riwayat']);
 });
 
-Route::prefix('checkout')->group(function () {
-    Route::post('/', [CheckoutController::class, 'checkout']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/checkout', [CheckoutController::class, 'checkout']);
 });
 
-//panik button
-Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
-Route::get('/panik/{id}', [PanikButtonController::class, 'apiShow']);
-
 //ongkir
-Route::prefix('ongkir')->group(function () {
-    Route::get('/', [OngkirController::class, 'index']);
-    Route::get('/show/{id}', [OngkirController::class, 'show']);
-    Route::post('/store', [OngkirController::class, 'store']);
-    Route::put('/update/{id}', [OngkirController::class, 'update']);
-    Route::delete('/{id}', [OngkirController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/ongkir/index', [OngkirController::class, 'index']);
+    Route::get('/ongkir/show/{id}', [OngkirController::class, 'show']);
+    Route::post('/ongkir/store', [OngkirController::class, 'store']);
+    Route::put('/ongkir/update/{id}', [OngkirController::class, 'update']);
+    Route::delete('/ongkir/{id}', [OngkirController::class, 'destroy']);
 });

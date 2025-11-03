@@ -4,51 +4,44 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // <--- BARIS 1: PASTIKAN INI ADA DI SINI (IMPOR NAMESPACE)
-
-/**
- * @method NewAccessToken createToken(string $name, array $abilities = ['*'])
- */
 
 class User extends Authenticatable
 {
-    // <--- BARIS 2: PASTIKAN 'HasApiTokens' ADA DI SINI, DALAM PERNYATAAN 'use' TRAIT
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
-        'email',
         'alamat',
-        'password',
+        'email',
         'phone',
         'no_ktp',
-        'role',
+        'password',
         'fcm_token',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    // 🔹 Relasi ke tabel role
+    public function role()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+
+    // 🔹 Cek apakah user punya role tertentu
+    public function hasRole($roleName)
+    {
+        return $this->role()->where('name', $roleName)->exists();
+    }
+
+    // 🔹 Tambahkan role ke user
+    public function assignRole($roleName)
+    {
+        $role = Role::where('name', $roleName)->firstOrFail();
+        $this->role()->syncWithoutDetaching([$role->id]);
+    }
 }

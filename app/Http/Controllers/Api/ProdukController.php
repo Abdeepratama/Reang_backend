@@ -27,11 +27,32 @@ class ProdukController extends Controller
         return response()->json($produk);
     }
 
+    public function showByToko($id_toko)
+    {
+        $produk = DB::table('produk')
+            ->where('id_toko', $id_toko)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($produk->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada produk untuk toko ini'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Daftar produk berdasarkan toko',
+            'data' => $produk
+        ]);
+    }
+
     // 🔹 POST: /api/produk
     public function store(Request $request)
     {
         $data = $request->validate([
-            'id_umkm' => 'required|integer|exists:umkm,id',
+            'id_toko' => 'required|integer|exists:toko,id',
             'nama' => 'required|string|max:255',
             'foto' => 'nullable|string',
             'harga' => 'required|numeric',
@@ -64,7 +85,7 @@ class ProdukController extends Controller
         }
 
         $data = $request->validate([
-            'id_umkm' => 'required|integer|exists:umkm,id',
+            'id_toko' => 'required|integer|exists:toko,id',
             'nama' => 'sometimes|string|max:255',
             'foto' => 'nullable|string',
             'harga' => 'sometimes|numeric',

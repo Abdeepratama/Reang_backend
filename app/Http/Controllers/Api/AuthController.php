@@ -22,7 +22,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'alamat'=> 'nullable|string|max:255',
+            'alamat' => 'nullable|string|max:255',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'noKtp' => 'nullable|string|max:20|unique:users,no_ktp',
@@ -31,21 +31,25 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'alamat' => $validated['alamat'],
+            'alamat' => $validated['alamat']?? null,
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'no_ktp' => $validated['noKtp'] ?? null,
         ]);
 
+        // 🔹 Beri role default "user"
+        $user->role()->attach(1);
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully!',
-            'user' => $user,
+            'user' => $user->load('role'), // sesuai nama relasi
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 201);
     }
+
 
     /**
      * Login user
@@ -151,7 +155,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|unique:users,email,' . $user->id,
-            'alamat'=> 'nullable|string|max:255',
+            'alamat' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
