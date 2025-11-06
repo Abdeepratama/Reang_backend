@@ -60,13 +60,13 @@
                     <div class="row mb-3">
                         <div class="col-sm-6 mb-2">
                             <p class="mb-1 text-muted fw-semibold">
-                                <i class="bi bi-envelope me-2"></i><strong>Email</strong>
+                                <i class="bi me-2"></i><strong>Email</strong>
                             </p>
                             <h6 class="fw-bold text-dark">{{ $admin->userData->email ?? '-' }}</h6>
                         </div>
                         <div class="col-sm-6 mb-2">
                             <p class="mb-1 text-muted fw-semibold">
-                                <i class="bi bi-envelope me-2"></i><strong>Nomer Handphone</strong>
+                                <i class="bi me-2"></i><strong>Nomer Handphone</strong>
                             </p>
                             <h6 class="fw-bold text-dark">{{ $admin->userData->no_hp ?? '-' }}</h6>
                         </div>
@@ -75,7 +75,7 @@
                     <div class="row mb-3">
                         <div class="col-sm-6 mb-2">
                             <p class="mb-1 text-muted fw-semibold">
-                                <i class="bi bi-envelope me-2"></i><strong>Role</strong>
+                                <i class="bi me-2"></i><strong>Role</strong>
                             </p>
                             <span class="fw-bold text-dark"
                                 @if($admin->role === 'superadmin') 

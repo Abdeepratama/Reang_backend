@@ -54,6 +54,10 @@ class DashboardController extends Controller
             'jumlah_info_perizinan' => InfoPerizinan::count(),
             'jumlah_puskesmas' => Puskesmas::count(),
             'jumlah_dokter' => Dokter::count(),
+            'menunggu' => Dumas::where('status', 'menunggu')->count(),
+            'diproses' => Dumas::where('status', 'diproses')->count(),
+            'selesai'  => Dumas::where('status', 'selesai')->count(),
+            'ditolak'  => Dumas::where('status', 'ditolak')->count(),
         ];
 
         $user = auth()->guard('admin')->user();

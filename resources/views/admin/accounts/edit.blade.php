@@ -90,8 +90,6 @@
                 <option value="superadmin" {{ old('role', $account->role) == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                 <option value="admindinas" {{ old('role', $account->role) == 'admindinas' ? 'selected' : '' }}>Admin Dinas</option>
                 <option value="puskesmas" {{ old('role', $account->role) == 'puskesmas' ? 'selected' : '' }}>Admin Puskesmas</option>
-                <option value="dokter" {{ old('role', $account->role) == 'dokter' ? 'selected' : '' }}>Dokter</option>
-                <option value="umkm" {{ old('role', $account->role) == 'umkm' ? 'selected' : '' }}>UMKM</option>
             </select>
             @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
@@ -122,19 +120,6 @@
             </select>
         </div>
 
-        {{-- UMKM --}}
-        <div class="mb-3" id="umkm-wrapper" style="display:none;">
-            <label for="id_umkm" class="form-label">UMKM</label>
-            <select name="id_umkm" id="id_umkm" class="form-select">
-                <option value="">-- Pilih UMKM --</option>
-                @foreach ($umkm as $item)
-                    <option value="{{ $item->id }}" {{ old('id_umkm', $account->userData->id_umkm ?? '') == $item->id ? 'selected' : '' }}>
-                        {{ $item->nama }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
         {{-- Tombol --}}
         <div class="mt-4">
             <button type="submit" class="btn btn-success">💾 Simpan Perubahan</button>
@@ -154,13 +139,25 @@
         const roleSelect = document.getElementById('role');
         const instansiWrapper = document.getElementById('instansi-wrapper');
         const puskesmasWrapper = document.getElementById('puskesmas-wrapper');
-        const umkmWrapper = document.getElementById('umkm-wrapper');
+        const idInstansi = document.getElementById('id_instansi');
+        const idPuskesmas = document.getElementById('id_puskesmas');
 
         function toggleFields() {
             const role = roleSelect.value;
-            instansiWrapper.style.display = (role === 'admindinas') ? 'block' : 'none';
-            puskesmasWrapper.style.display = (role === 'puskesmas' || role === 'dokter') ? 'block' : 'none';
-            umkmWrapper.style.display = (role === 'umkm') ? 'block' : 'none';
+
+            // Sembunyikan semua dulu
+            instansiWrapper.style.display = 'none';
+            puskesmasWrapper.style.display = 'none';
+            idInstansi.disabled = true;
+            idPuskesmas.disabled = true;
+
+            if (role === 'admindinas') {
+                instansiWrapper.style.display = 'block';
+                idInstansi.disabled = false;
+            } else if (role === 'puskesmas') {
+                puskesmasWrapper.style.display = 'block';
+                idPuskesmas.disabled = false;
+            }
         }
 
         roleSelect.addEventListener('change', toggleFields);

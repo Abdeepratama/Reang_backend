@@ -8,10 +8,13 @@ use Illuminate\Http\Request;
 
 class OngkirController extends Controller
 {
-    // GET /api/ongkir
-    public function index()
+    // GET /api/ongkir/{id_toko}
+    public function index($id_toko)
     {
-        $data = Ongkir::orderBy('id', 'asc')->get();
+        $data = Ongkir::where('id_toko', $id_toko)
+            ->orderBy('id', 'asc')
+            ->get();
+
         return response()->json([
             'status' => true,
             'message' => 'Daftar ongkir berhasil diambil',
@@ -19,7 +22,7 @@ class OngkirController extends Controller
         ]);
     }
 
-    // GET /api/ongkir/{id}
+    // GET /api/ongkir/detail/{id}
     public function show($id)
     {
         $ongkir = Ongkir::find($id);
@@ -33,6 +36,7 @@ class OngkirController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'id_toko' => 'required|integer',
             'dareah' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
         ]);

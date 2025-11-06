@@ -18,7 +18,7 @@
                 <th width="60">No</th>
                 <th>Nama</th>
                 <th>Role</th>
-                <th>Instansi / Puskesmas / UMKM</th>
+                <th>Instansi</th>
                 <th width="180">Aksi</th>
             </tr>
         </thead>
@@ -34,21 +34,15 @@
                         <span class="text-bg-primary rounded px-2">Admin Dinas</span>
                     @elseif($admin->role === 'puskesmas')
                         <span class="text-bg-primary rounded px-2">Puskesmas</span>
-                    @elseif($admin->role === 'dokter')
-                        <span class="text-bg-primary rounded px-2">Dokter</span>
-                    @elseif($admin->role === 'umkm')
-                        <span class="text-bg-primary rounded px-2">UMKM</span>
                     @endif
                 </td>
                 <td>
                     @if($admin->role === 'admindinas')
                         {{ $admin->userData->instansi->nama ?? '-' }}
-                    @elseif($admin->role === 'puskesmas' || $admin->role === 'dokter')
+                    @elseif($admin->role === 'puskesmas')
                         {{ $admin->userData->puskesmas->nama ?? '-' }}
-                    @elseif($admin->role === 'umkm')
-                        {{ $admin->userData->umkm->nama ?? '-' }}
                     @else
-                        -
+                        Superadmin
                     @endif
                 </td>
                 <td>

@@ -17,7 +17,6 @@ class UserData extends Model
         'id_admin',
         'id_instansi',
         'id_puskesmas',
-        'id_umkm',
         'nama',
         'email',
         'no_hp',

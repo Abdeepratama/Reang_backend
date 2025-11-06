@@ -32,7 +32,7 @@
                     <div class="mb-3">
                         <i class="bi bi-collection-fill fs-1 text-success"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Kategori DUMAS</h5>
+                    <h5 class="card-title fw-bold">Kategori Dumas</h5>
                     <p class="card-text text-muted">Atur kategori untuk pengaduan masyarakat</p>
                     <a href="{{ route('admin.kategori_dumas.index') }}" class="btn btn-success w-100">Kelola</a>
                 </div>
@@ -56,6 +56,7 @@
         @endif
 
         {{-- Banner --}}
+        @if(Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4 col-sm-6 mt-4">
             <div class="card border-0 shadow-sm h-100 hover-card">
                 <div class="card-body text-center">
@@ -68,8 +69,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- Panik Button --}}
+        @if(Auth::guard('admin')->user()->role === 'superadmin')
         <div class="col-md-4 col-sm-6 mt-4">
             <div class="card border-0 shadow-sm h-100 hover-card">
                 <div class="card-body text-center">
@@ -82,6 +85,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
     </div>
 </div>

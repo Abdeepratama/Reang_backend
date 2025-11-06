@@ -66,6 +66,7 @@
             $user &&
             (
             $user->role === 'superadmin' ||
+            $user->role === 'puskesmas' ||
             ($user->userData && $user->userData->instansi && $user->userData->instansi->nama === 'kesehatan')
             )
             )
@@ -99,7 +100,6 @@
                             Lokasi Olahraga
                         </a>
                     </li>
-
                     <li>
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.puskesmas.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.puskesmas.index') }}">
@@ -109,7 +109,6 @@
                 </ul>
             </li>
             @endif
-
 
             {{-- Sekolah-Yu --}}
             @if ($user && ($user->role === 'superadmin' || ($user->userData && $user->userData->instansi && $user->userData->instansi->nama === 'pendidikan')))

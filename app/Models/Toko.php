@@ -12,10 +12,16 @@ class Toko extends Model
     protected $table = 'toko';
 
     protected $fillable = [
+        'id_user',
         'nama',
         'deskripsi',
         'alamat',
         'no_hp',
         'foto',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }

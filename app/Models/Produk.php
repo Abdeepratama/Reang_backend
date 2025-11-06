@@ -11,7 +11,7 @@ class Produk extends Model
 
     protected $fillable = [
         'id_toko', 'nama', 'foto', 'harga', 'variasi',
-        'deskripsi', 'spesifikasi', 'lokasi', 'fitur', 'stok'
+        'deskripsi', 'spesifikasi', 'fitur', 'stok'
     ];
 
     public function toko()

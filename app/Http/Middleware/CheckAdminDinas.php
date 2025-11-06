@@ -18,12 +18,12 @@ class CheckAdminDinas
             return redirect()->route('admin.login');
         }
 
-        // 🧑‍💼 Superadmin bebas akses ke semua
-        if ($user->role === 'superadmin') {
-            return $next($request);
-        }
+        // Superadmin bebas akses ke semua
+        if (optional($user)->role === 'superadmin') {
+    return $next($request);
+}
 
-        // 🏢 Admin Dinas → cek akses berdasarkan id_instansi
+        // Admin Dinas → cek akses berdasar id_instansi
         if ($user->role === 'admindinas') {
             $user->loadMissing('userData.instansi');
 
@@ -45,7 +45,7 @@ class CheckAdminDinas
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        // 🚫 Jika role tidak dikenali
+        // Jika role tidak dikenali
         abort(403, 'Role tidak dikenali.');
     }
 
@@ -63,6 +63,7 @@ class CheckAdminDinas
                     'admin.sehat.olahraga.*',
                     'admin.sehat.puskesmas.*',
                     'admin.kategori.*',
+                    'admin.kategori_dumas.*',
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',
@@ -87,6 +88,7 @@ class CheckAdminDinas
                     'admin.dashboard',
                     'admin.pasar.tempat.*',
                     'admin.kategori.*',
+                    'admin.kategori_dumas.*',
                     'admin.accounts.profile',
                     'admin.dumas.aduan.*',
                     'admin.setting.*',

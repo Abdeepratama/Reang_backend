@@ -88,79 +88,102 @@ $cards = [
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col-md-6 col-xl-3 mb-4">
+        <div class="col-md-4">
             <div class="card shadow bg-primary text-white border-0">
                 <div class="card-body">
                     <div class="row align-items-center">
-                        <div class="col-3 text-center">
-                            <span class="circle circle-sm bg-primary-light">
-                                <i class="fe fe-16 fe-file text-white mb-0"></i>
+                        <div class="col-4 text-center">
+                            <span class="circle bg-primary-light d-inline-flex align-items-center justify-content-center"
+                                style="width: 50px; height: 50px;">
+                                <i class="fe fe-file text-white mb-0" style="font-size: 30px;"></i>
                             </span>
                         </div>
-                        <div class="col pr-0">
-                            <p class="small text-muted mb-0">Jumlah Pengaduan</p>
+                        <div class="col" style="margin-left: -20px;">
+                            <p class="small text-white mb-0">Jumlah Pengaduan</p>
                             <span class="h3 mb-0 text-white">{{ $stats['jumlah_dumas'] }}</span>
-                            <span class="small text-muted"> aduan</span>
+                            <span class="small text-white"> aduan</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Jumlah Puskesmas -->
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-3 text-center">
-                            <span class="circle circle-sm bg-warning">
-                                <i class="fe fe-16 fe-home text-white mb-0"></i>
-                            </span>
-                        </div>
-                        <div class="col pr-0">
-                            <p class="small text-muted mb-0">Jumlah Puskesmas</p>
-                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_puskesmas'] }}</span>
-                            <span class="small text-muted"> puskesmas</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Jumlah Rumah Sakit -->
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-3 text-center">
-                            <span class="circle circle-sm bg-primary">
-                                <i class="fe fe-16 fe-plus-square text-white mb-0"></i>
-                            </span>
-                        </div>
-                        <div class="col">
-                            <p class="small text-muted mb-0">Jumlah Rumah Sakit</p>
-                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_sehat'] }}</span>
-                            <span class="small text-muted"> rumah sakit</span>
+        <div class="row mb-4">
+            {{-- Status Menunggu --}}
+            <div class="col-md-4.5 col-xl-3 mb-3">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-3 text-center">
+                                <span class="circle circle-sm bg-warning">
+                                    <i class="fe fe-clock text-white mb-0"></i>
+                                </span>
+                            </div>
+                            <div class="col pr-0">
+                                <p class="small text-muted mb-0">Menunggu</p>
+                                <span class="h3 mb-0 text-black">{{ $stats['menunggu'] }}</span>
+                                <span class="small text-muted"> laporan</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Jumlah Dokter -->
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-3 text-center">
-                            <span class="circle circle-sm bg-success">
-                                <i class="fe fe-16 fe-user text-white mb-0"></i>
-                            </span>
+            {{-- Status Diproses --}}
+            <div class="col-md-4.5 col-xl-3 mb-3">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-3 text-center">
+                                <span class="circle circle-sm bg-info">
+                                    <i class="fe fe-refresh-cw text-white mb-0"></i>
+                                </span>
+                            </div>
+                            <div class="col pr-0">
+                                <p class="small text-muted mb-0">Diproses</p>
+                                <span class="h3 mb-0 text-black">{{ $stats['diproses'] }}</span>
+                                <span class="small text-muted"> laporan</span>
+                            </div>
                         </div>
-                        <div class="col">
-                            <p class="small text-muted mb-0">Jumlah Dokter</p>
-                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_dokter'] }}</span>
-                            <span class="small text-muted"> dokter</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Status Selesai --}}
+            <div class="col-md-4.5 col-xl-3 mb-3">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-3 text-center">
+                                <span class="circle circle-sm bg-success">
+                                    <i class="fe fe-check text-white mb-0"></i>
+                                </span>
+                            </div>
+                            <div class="col pr-0">
+                                <p class="small text-muted mb-0">Selesai</p>
+                                <span class="h3 mb-0 text-black">{{ $stats['selesai'] }}</span>
+                                <span class="small text-muted"> laporan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Status Ditolak --}}
+            <div class="col-md-4 col-xl-3 mb-3">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-3 text-center">
+                                <span class="circle circle-sm bg-danger">
+                                    <i class="fe fe-x text-white mb-0"></i>
+                                </span>
+                            </div>
+                            <div class="col pr-0">
+                                <p class="small text-muted mb-0">Ditolak</p>
+                                <span class="h3 mb-0 text-black">{{ $stats['ditolak'] }}</span>
+                                <span class="small text-muted"> laporan</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -168,12 +191,63 @@ $cards = [
         </div>
 
     </div>
-    <hr>
 
     <!-- =========================================================================================================================== -->
 
 
     <div class="row my-4">
+
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Puskesmas</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_puskesmas'] }}</span>
+                            <span class="small text-muted">puskesmas</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="bi-plus-square" style="font-size: 30px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Rumah Sakit -->
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Rumah Sakit</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_sehat'] }}</span>
+                            <span class="small text-muted">rumah sakit</span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="bi-hospital" style="font-size: 30px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="small text-muted mb-0">Jumlah Lokasi Olahraga</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_olahraga'] }}</span>
+                            <span class="small text-muted">tempat</span>
+                        </div>
+                        <div class="col-2 text-right">
+                            <span class="bi bi-activity" style="font-size: 30px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Jumlah Wifi -->
         <div class="col-md-4">
@@ -200,10 +274,10 @@ $cards = [
                         <div class="col">
                             <p class="small text-muted mb-0">Jumlah Tempat Ibadah</p>
                             <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_ibadah'] }}</span>
-                            <span class="small text-muted">tempat ibadah</span>
+                            <span class="small text-muted">tempat</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-crosshair"></span>
+                            <span class="sparkline fe fe-32 fe-home"></span>
                         </div>
                     </div>
                 </div>
@@ -221,25 +295,25 @@ $cards = [
                             <span class="small text-muted">info</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-crosshair"></span>
+                            <span class="bi-info-circle" style="font-size: 30px;"></span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Jumlah Pasar -->
+        <!--Berita sekolah-->
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <p class="small text-muted mb-0">Jumlah Pasar</p>
-                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_pasar'] }}</span>
-                            <span class="small text-muted">pasar</span>
+                            <p class="small text-muted mb-0">Jumlah Berita Sekolah</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_sekolah'] }}</span>
+                            <span class="small text-muted">berita</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-shopping-bag"></span>
+                            <span class="bi-book" style="font-size: 30px;"></span>
                         </div>
                     </div>
                 </div>
@@ -275,25 +349,25 @@ $cards = [
                             <span class="small text-muted">info</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-briefcase"></span>
+                            <span class="bi-currency-dollar" style="font-size: 30px;"></span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!--Berita sekolah-->
+        <!-- Jumlah Pasar -->
         <div class="col-md-4">
             <div class="card shadow mb-3">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col">
-                            <p class="small text-muted mb-0">Jumlah Berita Sekolah</p>
-                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_info_sekolah'] }}</span>
-                            <span class="small text-muted">berita</span>
+                            <p class="small text-muted mb-0">Jumlah Pasar</p>
+                            <span class="h3 mb-0 text-black">{{ $stats['jumlah_lokasi_pasar'] }}</span>
+                            <span class="small text-muted">pasar</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-book"></span>
+                            <span class="bi-cart" style="font-size: 30px;"></span>
                         </div>
                     </div>
                 </div>
@@ -311,7 +385,7 @@ $cards = [
                             <span class="small text-muted">wisata</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-map"></span>
+                            <span class="bi-map" style="font-size: 30px;"></span>
                         </div>
                     </div>
                 </div>
@@ -329,7 +403,7 @@ $cards = [
                             <span class="small text-muted">info</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="sparkline fe fe-32 fe-briefcase"></span>
+                            <span class="bi-suitcase-lg" style="font-size: 30px;"></span>
                         </div>
                     </div>
                 </div>
@@ -390,7 +464,7 @@ $cards = [
             <div class="card h-100 d-flex flex-column">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">Modul Aplikasi</h6>
-                    @if(Auth::guard('admin')->user()->role === 'superadmin')
+                    @if(optional(Auth::guard('admin')->user())->role === 'superadmin')
                     <a href="{{ route('admin.fitur.index') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
                     @endif
                 </div>
@@ -405,12 +479,12 @@ $cards = [
                         @if($user->role === 'superadmin')
                         @php
                         $moduls = [
-                        ['route' => 'admin.ibadah.info.index', 'icon' => 'fas fa-mosque', 'label' => 'Ibadah-Yu'],
+                        ['route' => 'admin.ibadah.info.index', 'icon' => 'fe fe-home', 'label' => 'Ibadah-Yu'],
                         ['route' => 'admin.sehat.info.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Sehat-Yu'],
                         ['route' => 'admin.pasar.tempat.index', 'icon' => 'bi bi-cart', 'label' => 'Pasar-Yu'],
                         ['route' => 'admin.adminduk.info.index', 'icon' => 'bi bi-card-list', 'label' => 'Adminduk-Yu'],
-                        ['route' => 'admin.plesir.info.index', 'icon' => 'bi bi-geo-alt-fill', 'label' => 'Plesir-Yu'],
-                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-exclamation-circle', 'label' => 'Dumas-Yu'],
+                        ['route' => 'admin.plesir.info.index', 'icon' => 'bi-suitcase-lg', 'label' => 'Plesir-Yu'],
+                        ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-file-earmark', 'label' => 'Dumas-Yu'],
                         ];
                         @endphp
 
@@ -422,7 +496,7 @@ $cards = [
                         case 2: // 🏥 Kesehatan
                         $moduls = [
                         ['route' => 'admin.sehat.tempat.index', 'icon' => 'bi bi-heart-pulse', 'label' => 'Lokasi Kesehatan'],
-                        ['route' => 'admin.sehat.info.index', 'icon' => 'bi bi-info-circle', 'label' => 'Info Kesehatan'],
+                        ['route' => 'admin.sehat.info.index', 'icon' => 'bi bi-hospital', 'label' => 'Info Kesehatan'],
                         ['route' => 'admin.sehat.olahraga.index', 'icon' => 'bi bi-bicycle', 'label' => 'Lokasi Olahraga'],
                         ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
@@ -459,7 +533,7 @@ $cards = [
 
                         case 9: // 🏖️ Pariwisata
                         $moduls = [
-                        ['route' => 'admin.plesir.tempat.index', 'icon' => 'bi bi-geo-alt', 'label' => 'Lokasi Pariwisata'],
+                        ['route' => 'admin.plesir.tempat.index', 'icon' => 'bi-suitcase-lg', 'label' => 'Lokasi Pariwisata'],
                         ['route' => 'admin.plesir.info.index', 'icon' => 'bi bi-newspaper', 'label' => 'Info Pariwisata'],
                         ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];
@@ -467,7 +541,7 @@ $cards = [
 
                         case 10: // 🕌 Keagamaan
                         $moduls = [
-                        ['route' => 'admin.ibadah.tempat.index', 'icon' => 'fas fa-mosque', 'label' => 'Lokasi Tempat Ibadah'],
+                        ['route' => 'admin.ibadah.tempat.index', 'icon' => 'fas fe-home', 'label' => 'Lokasi Tempat Ibadah'],
                         ['route' => 'admin.ibadah.info.index', 'icon' => 'bi bi-book', 'label' => 'Info Keagamaan'],
                         ['route' => 'admin.dumas.aduan.index', 'icon' => 'bi bi-chat-text', 'label' => 'Aduan Masyarakat'],
                         ];

@@ -8,22 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Transaksi extends Model
 {
     use HasFactory;
+    protected $table = 'transaksi';
 
     protected $fillable = [
-        'id_toko', 'id_user', 'id_produk', 'no_transaksi', 'no_resi',
+        'id_user', 'no_transaksi', 'no_resi',
         'alamat', 'id_ongkir', 'jumlah', 'harga', 'total', 'subtotal', 'catatan',
         'status', 'jasa_pengiriman'
     ];
-
-    public function toko()
-    {
-        return $this->belongsTo(Toko::class, 'id_toko');
-    }
-
-    public function produk()
-    {
-        return $this->belongsTo(Produk::class, 'id_produk');
-    }
 
     public function user()
     {
@@ -33,5 +24,10 @@ class Transaksi extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class, 'no_transaksi', 'no_transaksi');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'id_transaksi', 'id');
     }
 }

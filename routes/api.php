@@ -205,42 +205,42 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/produk/show', [ProdukController::class, 'index']);
 Route::get('/produk/show/{id}', [ProdukController::class, 'show']);
 Route::get('/produk/toko/{id_toko}', [ProdukController::class, 'showByToko']);
+Route::get('/produk/kategori/{kategori}', [ProdukController::class, 'showByKategori']);
+Route::get('/produk/suggestions', [ProdukController::class, 'getSuggestions']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/produk/store', [ProdukController::class, 'store']);      // POST tambah produk
     Route::put('/produk/update/{id}', [ProdukController::class, 'update']);  // PUT edit produk
-    Route::delete('/produk/{id}', [ProdukController::class, 'destroy']); // DELETE produk
+    Route::delete('/produk/{id}', [ProdukController::class, 'destroy']); // DELETE produk
 });
 
-//Keranjang
+
+//keranjang
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/create', [KeranjangController::class, 'tambah']);
-    Route::get('/show/{id_user}', [KeranjangController::class, 'lihat']);
+    Route::post('/keranjang/create', [KeranjangController::class, 'tambah']);
+    Route::get('/keranjang/show/{id_user}', [KeranjangController::class, 'lihat']);
+    Route::put('/keranjang/update/{id}', [KeranjangController::class, 'update']);
+    Route::delete('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus']);
 });
 
-//Transaksi
+//transaksi
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user/{userId}', [TransaksiController::class, 'index']);
-    Route::post('/', [TransaksiController::class, 'store']);
-    Route::put('/{id}', [TransaksiController::class, 'update']);
-    Route::get('/transaksi/{id_user}', [TransaksiController::class, 'riwayat']);
+    Route::post('/transaksi/create', [TransaksiController::class, 'store']);
+    Route::get('/transaksi/riwayat/{id_user}', [TransaksiController::class, 'riwayat']);
+    Route::get('/transaksi/detail/{no_transaksi}', [TransaksiController::class, 'show']);
 });
 
 //Payment
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/', [PaymentController::class, 'store']);
-    Route::get('/{noTransaksi}', [PaymentController::class, 'show']);
-    Route::get('/user/{id_user}', [PaymentController::class, 'riwayat']);
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/checkout', [CheckoutController::class, 'checkout']);
+    Route::post('/payment', [PaymentController::class, 'store']);
+    Route::get('/payment/{noTransaksi}', [PaymentController::class, 'show']);
+    Route::get('/payment/user/{id_user}', [PaymentController::class, 'riwayat']);
 });
 
 //ongkir
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/ongkir/index', [OngkirController::class, 'index']);
-    Route::get('/ongkir/show/{id}', [OngkirController::class, 'show']);
+    Route::get('/ongkir/{id_toko}', [OngkirController::class, 'index']);
+    Route::get('/ongkir/detail/{id}', [OngkirController::class, 'show']);
     Route::post('/ongkir/store', [OngkirController::class, 'store']);
-    Route::put('/ongkir/update/{id}', [OngkirController::class, 'update']);
+    Route::put('/ongkir/{id}', [OngkirController::class, 'update']);
     Route::delete('/ongkir/{id}', [OngkirController::class, 'destroy']);
 });

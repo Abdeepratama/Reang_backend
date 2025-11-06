@@ -11,7 +11,6 @@
     </div>
     <h3>Daftar Slider</h3>
     <a href="{{ route('admin.slider.create') }}" class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm">
-        <i class="bi bi-plus-circle"></i>
         <span>Tambah Gambar</span>
     </a>
 </div>

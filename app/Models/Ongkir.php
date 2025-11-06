@@ -9,10 +9,17 @@ class Ongkir extends Model
 {
     use HasFactory;
 
-    protected $table = 'ongkir'; // nama tabel
+    protected $table = 'ongkir';
 
     protected $fillable = [
+        'id_toko',
         'dareah',
         'harga',
     ];
+
+    public function toko()
+    {
+        return $this->belongsTo(Toko::class, 'id_toko');
+    }
 }
+

@@ -261,114 +261,110 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     Route::get('wifi', [WifiController::class, 'index'])->name('wifi.index');
 
     // ----------------- SLIDER -----------------
-Route::prefix('admin/slider')
-    ->name('slider.')
-    ->middleware(['auth:admin', 'role:superadmin|admindinas'])
-    ->group(function () {
-        Route::get('/', [DashboardController::class, 'sliderIndex'])->name('index');
-        Route::get('/create', [DashboardController::class, 'sliderCreate'])->name('create');
-        Route::post('/store', [DashboardController::class, 'sliderStore'])->name('store');
-        Route::get('/{id}/edit', [DashboardController::class, 'sliderEdit'])->name('edit');
-        Route::put('/{id}/update', [DashboardController::class, 'sliderUpdate'])->name('update');
-        Route::delete('/{id}/destroy', [DashboardController::class, 'sliderDestroy'])->name('destroy');
+    Route::prefix('admin/slider')
+        ->name('slider.')
+        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->group(function () {
+            Route::get('/', [DashboardController::class, 'sliderIndex'])->name('index');
+            Route::get('/create', [DashboardController::class, 'sliderCreate'])->name('create');
+            Route::post('/store', [DashboardController::class, 'sliderStore'])->name('store');
+            Route::get('/{id}/edit', [DashboardController::class, 'sliderEdit'])->name('edit');
+            Route::put('/{id}/update', [DashboardController::class, 'sliderUpdate'])->name('update');
+            Route::delete('/{id}/destroy', [DashboardController::class, 'sliderDestroy'])->name('destroy');
+        });
+
+    // ------------------ BANNER -------------------
+    Route::prefix('admin/banner')
+        ->name('banner.')
+        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->group(function () {
+            Route::get('/banner', [DashboardController::class, 'bannerIndex'])->name('index');
+            Route::get('/banner/create', [DashboardController::class, 'bannerCreate'])->name('create');
+            Route::post('/banner', [DashboardController::class, 'bannerStore'])->name('store');
+            Route::get('/banner/{id}/edit', [DashboardController::class, 'bannerEdit'])->name('edit');
+            Route::put('/banner/{id}', [DashboardController::class, 'bannerUpdate'])->name('update');
+            Route::delete('/banner/{id}', [DashboardController::class, 'bannerDestroy'])->name('destroy');
+            Route::post('info/upload-image', [DashboardController::class, 'uploadBanner'])->name('upload.image');
     });
 
-// ------------------ BANNER -------------------
-Route::prefix('admin/banner')
-    ->name('banner.')
-    ->middleware(['auth:admin', 'role:superadmin|admindinas'])
-    ->group(function () {
-        Route::get('/banner', [DashboardController::class, 'bannerIndex'])->name('index');
-        Route::get('/banner/create', [DashboardController::class, 'bannerCreate'])->name('create');
-        Route::post('/banner', [DashboardController::class, 'bannerStore'])->name('store');
-        Route::get('/banner/{id}/edit', [DashboardController::class, 'bannerEdit'])->name('edit');
-        Route::put('/banner/{id}', [DashboardController::class, 'bannerUpdate'])->name('update');
-        Route::delete('/banner/{id}', [DashboardController::class, 'bannerDestroy'])->name('destroy');
-        Route::post('info/upload-image', [DashboardController::class, 'uploadBanner'])->name('upload.image');
-    });
+    // ----------------- SEKOLAH -----------------
+    Route::prefix('sekolah')
+        ->name('sekolah.')
+        ->middleware(['auth:admin', 'role:superadmin|admindinas|adminpuskesmas'])
+        ->group(function () {
+            Route::get('tempat', [SekolahController::class, 'indexTempat'])->name('tempat.index');
+            Route::get('tempat/create', [SekolahController::class, 'createTempat'])->name('tempat.create');
+            Route::post('tempat', [SekolahController::class, 'storeTempat'])->name('tempat.store');
+            Route::get('tempat/{id}/edit', [SekolahController::class, 'editTempat'])->name('tempat.edit');
+            Route::put('tempat/{id}', [SekolahController::class, 'updateTempat'])->name('tempat.update');
+            Route::delete('tempat/{id}', [SekolahController::class, 'destroyTempat'])->name('tempat.destroy');
+            Route::get('tempat/map', [SekolahController::class, 'mapTempat'])->name('tempat.map');
+            Route::get('tempat/{id}', [SekolahController::class, 'showTempatWeb'])->name('tempat.show');
 
-// ----------------- SEKOLAH -----------------
-Route::prefix('sekolah')
-    ->name('sekolah.')
-    ->middleware(['auth:admin', 'role:superadmin|admindinas|adminpuskesmas'])
-    ->group(function () {
-        Route::get('tempat', [SekolahController::class, 'indexTempat'])->name('tempat.index');
-        Route::get('tempat/create', [SekolahController::class, 'createTempat'])->name('tempat.create');
-        Route::post('tempat', [SekolahController::class, 'storeTempat'])->name('tempat.store');
-        Route::get('tempat/{id}/edit', [SekolahController::class, 'editTempat'])->name('tempat.edit');
-        Route::put('tempat/{id}', [SekolahController::class, 'updateTempat'])->name('tempat.update');
-        Route::delete('tempat/{id}', [SekolahController::class, 'destroyTempat'])->name('tempat.destroy');
-        Route::get('tempat/map', [SekolahController::class, 'mapTempat'])->name('tempat.map');
-        Route::get('tempat/{id}', [SekolahController::class, 'showTempatWeb'])->name('tempat.show');
+            Route::get('info', [SekolahController::class, 'infoindex'])->name('info.index');
+            Route::get('info/create', [SekolahController::class, 'infocreate'])->name('info.create');
+            Route::post('info', [SekolahController::class, 'infostore'])->name('info.store');
+            Route::get('info/edit/{id}', [SekolahController::class, 'infoedit'])->name('info.edit');
+            Route::put('info/{id}', [SekolahController::class, 'infoupdate'])->name('info.update');
+            Route::get('info/show/{id}', [SekolahController::class, 'infoshowDetail'])->name('info.show');
+            Route::delete('info/{id}', [SekolahController::class, 'infodestroy'])->name('info.destroy');
+            Route::post('info/upload-image', [SekolahController::class, 'infoupload'])->name('info.upload.image');
+        });
 
-        Route::get('info', [SekolahController::class, 'infoindex'])->name('info.index');
-        Route::get('info/create', [SekolahController::class, 'infocreate'])->name('info.create');
-        Route::post('info', [SekolahController::class, 'infostore'])->name('info.store');
-        Route::get('info/edit/{id}', [SekolahController::class, 'infoedit'])->name('info.edit');
-        Route::put('info/{id}', [SekolahController::class, 'infoupdate'])->name('info.update');
-        Route::get('info/show/{id}', [SekolahController::class, 'infoshowDetail'])->name('info.show');
-        Route::delete('info/{id}', [SekolahController::class, 'infodestroy'])->name('info.destroy');
-        Route::post('info/upload-image', [SekolahController::class, 'infoupload'])->name('info.upload.image');
-    });
+    // ----------------- SETTING -----------------
+    Route::get('setting', [SettingController::class, 'index'])
+        ->name('setting.index');
 
-// ----------------- SETTING -----------------
-Route::get('setting', [SettingController::class, 'index'])
-    ->middleware(['auth:admin', 'role:superadmin'])
-    ->name('setting.index');
+    // ----------------- KATEGORI -----------------
+    Route::resource('kategori', KategoriController::class)
+        ->except(['show', 'edit', 'update']);
 
-// ----------------- KATEGORI -----------------
-Route::resource('kategori', KategoriController::class)
-    ->except(['show', 'edit', 'update'])
-    ->middleware(['auth:admin', 'role:superadmin|admindinas']);
+    // ----------------- KATEGORI DUMAS -----------------
+    Route::prefix('kategori-dumas')
+        ->name('kategori_dumas.')
+        ->group(function () {
+            Route::get('/', [KategoriDumasController::class, 'index'])->name('index');
+            Route::get('/create', [KategoriDumasController::class, 'create'])->name('create');
+            Route::post('/store', [KategoriDumasController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [KategoriDumasController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [KategoriDumasController::class, 'update'])->name('update');
+            Route::delete('/{id}', [KategoriDumasController::class, 'destroy'])->name('destroy');
+        });
 
-// ----------------- KATEGORI DUMAS -----------------
-Route::prefix('kategori-dumas')
-    ->name('kategori_dumas.')
-    ->middleware(['auth:admin', 'role:superadmin|admindinas'])
-    ->group(function () {
-        Route::get('/', [KategoriDumasController::class, 'index'])->name('index');
-        Route::get('/create', [KategoriDumasController::class, 'create'])->name('create');
-        Route::post('/', [KategoriDumasController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [KategoriDumasController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [KategoriDumasController::class, 'update'])->name('update');
-        Route::delete('/{id}', [KategoriDumasController::class, 'destroy'])->name('destroy');
-    });
+    // ----------------- AKUN ADMIN -----------------
+    Route::resource('accounts', AdminAccountController::class)
+        ->middleware(['auth:admin', 'checkadmindinas']);
+    Route::get('profile', [AuthController::class, 'profile'])
+        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->name('accounts.profile');
 
-// ----------------- AKUN ADMIN -----------------
-Route::resource('accounts', AdminAccountController::class)
-    ->middleware(['auth:admin', 'role:superadmin']);
-Route::get('profile', [AuthController::class, 'profile'])
-    ->middleware(['auth:admin'])
-    ->name('accounts.profile');
+    // ----------------- MAPS WEB -----------------
+    Route::resource('maps', WebController::class)
+        ->middleware(['auth:admin', 'role:superadmin|admindinas']);
 
-// ----------------- MAPS WEB -----------------
-Route::resource('maps', WebController::class)
-    ->middleware(['auth:admin', 'role:superadmin|admindinas']);
+    Route::get('fitur', fn() => view('admin.fitur.index'))
+        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->name('fitur.index');
 
-// ----------------- FITUR -----------------
-Route::get('fitur', fn() => view('admin.fitur.index'))
-    ->middleware(['auth:admin', 'role:superadmin|admindinas'])
-    ->name('fitur.index');
+    // ----------------- NOTIFIKASI -----------------
+    Route::get('notifikasi/baca/{id}', function ($id) {
+        $user = auth('admin')->user();
+        $userData = $user->userData;
+        $notifikasi = \App\Models\NotifikasiAktivitas::findOrFail($id);
 
-// ----------------- NOTIFIKASI -----------------
-Route::get('notifikasi/baca/{id}', function ($id) {
-    $user = auth('admin')->user();
-    $userData = $user->userData;
-    $notifikasi = \App\Models\NotifikasiAktivitas::findOrFail($id);
+        if (
+            $user->role === 'superadmin' ||
+            ($user->role === 'admindinas' && $notifikasi->id_instansi == $userData?->id_instansi) ||
+            ($user->role === 'adminpuskesmas' && $notifikasi->id_puskesmas == $userData?->id_puskesmas)
+        ) {
+            $notifikasi->update(['dibaca' => true]);
+            return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
+        }
 
-    if (
-        $user->role === 'superadmin' ||
-        ($user->role === 'admindinas' && $notifikasi->id_instansi == $userData?->id_instansi) ||
-        ($user->role === 'adminpuskesmas' && $notifikasi->id_puskesmas == $userData?->id_puskesmas)
-    ) {
-        $notifikasi->update(['dibaca' => true]);
-        return redirect()->to($notifikasi->url ?? route('admin.dashboard'));
-    }
-
-    abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-})
-    ->middleware(['auth:admin'])
-    ->name('notifikasi.baca.satu');
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+    })
+        ->middleware(['auth:admin'])
+        ->name('notifikasi.baca.satu');
 });
 
 // panik botton

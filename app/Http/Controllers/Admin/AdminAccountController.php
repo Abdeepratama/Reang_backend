@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Instansi;
 use App\Models\Puskesmas;
-use App\Models\Umkm;
 use App\Models\UserData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +15,7 @@ class AdminAccountController extends Controller
     // 🔹 LIST SEMUA ADMIN
     public function index()
     {
-        $admins = Admin::with(['userData.instansi', 'userData.puskesmas', 'userData.umkm'])->get();
+        $admins = Admin::with(['userData.instansi', 'userData.puskesmas'])->get();
         return view('admin.accounts.index', compact('admins'));
     }
 
@@ -25,9 +24,8 @@ class AdminAccountController extends Controller
     {
         $instansi = Instansi::orderBy('nama')->get();
         $puskesmas = Puskesmas::orderBy('nama')->get();
-        $umkm = Umkm::orderBy('nama')->get();
 
-        return view('admin.accounts.create', compact('instansi', 'puskesmas', 'umkm'));
+        return view('admin.accounts.create', compact('instansi', 'puskesmas'));
     }
 
     // 🔹 SIMPAN AKUN BARU
@@ -36,10 +34,9 @@ class AdminAccountController extends Controller
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'password'     => 'required|string|min:6|confirmed',
-            'role'         => 'required|in:superadmin,admindinas,puskesmas,dokter,umkm',
+            'role'         => 'required|in:superadmin,admindinas,puskesmas',
             'id_instansi'  => 'nullable|exists:instansi,id',
             'id_puskesmas' => 'nullable|exists:puskesmas,id',
-            'id_umkm'      => 'nullable|exists:umkm,id',
             'email'        => 'required|email|max:255',
             'no_hp'        => 'required|string|max:20',
             'alamat'       => 'nullable|string|max:255',
@@ -57,7 +54,6 @@ class AdminAccountController extends Controller
             'id_admin'     => $admin->id,
             'id_instansi'  => $validated['id_instansi'] ?? null,
             'id_puskesmas' => $validated['id_puskesmas'] ?? null,
-            'id_umkm'      => $validated['id_umkm'] ?? null,
             'nama'         => $validated['name'],
             'email'        => $validated['email'],
             'no_hp'        => $validated['no_hp'],
@@ -72,9 +68,8 @@ class AdminAccountController extends Controller
     {
         $instansi = Instansi::orderBy('nama')->get();
         $puskesmas = Puskesmas::orderBy('nama')->get();
-        $umkm = Umkm::orderBy('nama')->get();
 
-        return view('admin.accounts.edit', compact('account', 'instansi', 'puskesmas', 'umkm'));
+        return view('admin.accounts.edit', compact('account', 'instansi', 'puskesmas'));
     }
 
     // 🔹 UPDATE AKUN
@@ -85,10 +80,9 @@ class AdminAccountController extends Controller
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'password'     => 'nullable|string|min:6|confirmed',
-            'role'         => 'required|in:superadmin,admindinas,puskesmas,dokter,umkm',
+            'role'         => 'required|in:superadmin,admindinas,puskesmas',
             'id_instansi'  => 'nullable|exists:instansi,id',
             'id_puskesmas' => 'nullable|exists:puskesmas,id',
-            'id_umkm'      => 'nullable|exists:umkm,id',
             'email'        => 'required|email|max:255',
             'no_hp'        => 'required|string|max:20',
             'alamat'       => 'nullable|string|max:255',
@@ -109,7 +103,6 @@ class AdminAccountController extends Controller
             [
                 'id_instansi'  => $validated['id_instansi'] ?? null,
                 'id_puskesmas' => $validated['id_puskesmas'] ?? null,
-                'id_umkm'      => $validated['id_umkm'] ?? null,
                 'nama'         => $validated['name'],
                 'email'        => $validated['email'],
                 'no_hp'        => $validated['no_hp'],

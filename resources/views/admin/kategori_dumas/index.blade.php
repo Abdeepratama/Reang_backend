@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-5">
     <h2 class="mb-4 text-center fw-bold text-primary">
-        Kategori DUMAS
+        Kategori Dumas
     </h2>
 
     {{-- Tombol Tambah --}}

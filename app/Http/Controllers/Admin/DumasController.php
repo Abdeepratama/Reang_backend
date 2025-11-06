@@ -90,26 +90,35 @@ class DumasController extends Controller
     // =======================================================================
 
     public function index()
-    {
-        $user = Auth::guard('admin')->user();
+{
+    $user = Auth::guard('admin')->user();
 
-        if ($user->role === 'superadmin') {
-            // Superadmin lihat semua aduan
-            $items = Dumas::with(['kategori.instansi', 'ratings'])->get();
-        } else {
-            // Admin dinas, ambil id_instansi dari user_data
-            $userData = UserData::where('id_admin', $user->id)->first();
-            $idInstansi = $userData?->id_instansi;
+    if ($user->role === 'superadmin') {
+        // Superadmin lihat semua aduan
+        $items = Dumas::with(['kategori.instansi', 'ratings'])->get();
+    } else {
+        // Admin dinas
+        $userData = UserData::where('id_admin', $user->id)->first();
+        $idInstansi = $userData?->id_instansi;
 
-            $items = Dumas::with(['kategori.instansi', 'ratings'])
-                ->whereHas('kategori', function ($q) use ($idInstansi) {
-                    $q->where('id_instansi', $idInstansi);
-                })
-                ->get();
-        }
-
-        return view('admin.dumas.aduan.index', compact('items'));
+        $items = Dumas::with(['kategori.instansi', 'ratings'])
+            ->whereHas('kategori', function ($q) use ($idInstansi) {
+                $q->where('id_instansi', $idInstansi);
+            })
+            ->get();
     }
+
+    // ⛔ Perhatikan bagian ini WAJIB ADA
+    $stats = [
+        'menunggu' => Dumas::where('status', 'menunggu')->count(),
+        'diproses' => Dumas::where('status', 'diproses')->count(),
+        'selesai'  => Dumas::where('status', 'selesai')->count(),
+        'ditolak'  => Dumas::where('status', 'ditolak')->count(),
+    ];
+
+    // ⛔ Pastikan $stats dikirim ke view
+    return view('admin.dumas.aduan.index', compact('items', 'stats'));
+}
 
     public function store(Request $request)
     {

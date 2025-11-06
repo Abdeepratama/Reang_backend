@@ -51,8 +51,14 @@ class TokoController extends Controller
             'foto' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
+        // 🔹 Ambil user yang sedang login
+        $user = $request->user();
 
+        // 🔹 Siapkan data dengan id_user otomatis
+        $data = $request->only(['nama', 'deskripsi', 'alamat', 'no_hp']);
+        $data['id_user'] = $user->id;
+
+        // 🔹 Upload foto jika ada
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('toko', 'public');
         }
@@ -60,20 +66,16 @@ class TokoController extends Controller
         // 🔹 Simpan data toko
         $toko = Toko::create($data);
 
-        // 🔹 Ambil user yang sedang login
-        $user = $request->user();
+        // 🔹 Ubah role user dari 1 (user biasa) menjadi 2 (umkm)
+        $adminUmkmRole = \App\Models\Role::where('name', 'umkm')->first();
 
-        // 🔹 Cari role admin_umkm
-        $adminUmkmRole = \App\Models\Role::where('name', 'admin_umkm')->first();
-
-        // 🔹 Jika belum punya role admin_umkm, tambahkan
         if ($adminUmkmRole && !$user->role->contains($adminUmkmRole->id)) {
             $user->role()->attach($adminUmkmRole->id);
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'Data toko berhasil ditambahkan & role admin_umkm diberikan',
+            'message' => 'Data toko berhasil ditambahkan & role umkm diberikan',
             'data' => $toko
         ], 201);
     }

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>Tambah Kategori DUMAS</h2>
+    <h2>Tambah Kategori Dumas</h2>
 
     <form action="{{ route('admin.kategori_dumas.store') }}" method="POST">
         @csrf
