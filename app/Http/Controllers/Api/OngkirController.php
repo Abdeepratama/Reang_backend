@@ -37,7 +37,7 @@ class OngkirController extends Controller
     {
         $validated = $request->validate([
             'id_toko' => 'required|integer',
-            'dareah' => 'required|string|max:255',
+            'daerah' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
         ]);
 
@@ -59,7 +59,7 @@ class OngkirController extends Controller
         }
 
         $validated = $request->validate([
-            'dareah' => 'sometimes|required|string|max:255',
+            'daerah' => 'sometimes|required|string|max:255',
             'harga' => 'sometimes|required|numeric|min:0',
         ]);
 

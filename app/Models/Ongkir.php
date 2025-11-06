@@ -13,7 +13,7 @@ class Ongkir extends Model
 
     protected $fillable = [
         'id_toko',
-        'dareah',
+        'daerah',
         'harga',
     ];
 

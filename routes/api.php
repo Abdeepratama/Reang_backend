@@ -239,7 +239,6 @@ Route::middleware('auth:sanctum')->group(function () {
 //ongkir
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ongkir/{id_toko}', [OngkirController::class, 'index']);
-    Route::get('/ongkir/detail/{id}', [OngkirController::class, 'show']);
     Route::post('/ongkir/store', [OngkirController::class, 'store']);
     Route::put('/ongkir/{id}', [OngkirController::class, 'update']);
     Route::delete('/ongkir/{id}', [OngkirController::class, 'destroy']);

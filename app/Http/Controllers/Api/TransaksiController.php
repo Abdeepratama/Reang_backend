@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage; // <-- [BARU] Tambahkan ini
-use Illuminate\Support\Str; // <-- [BARU] Tambahkan ini
+use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Str; 
 
 // Model-model yang mungkin Anda perlukan
 use App\Models\Transaksi;
@@ -20,58 +20,86 @@ use App\Models\Keranjang;
 
 class TransaksiController extends Controller
 {
-    // =======================================================================
-    // --- [BARU] FUNGSI STORE (PENGGANTI CHECKOUTCONTROLLER) ---
-    // =======================================================================
-    /**
-     * 🔹 POST: /api/transaksi/create
-     * Menerima checkout (baik dari keranjang atau beli langsung).
-     * Ini adalah FUNGSI UTAMA CHECKOUT Anda.
-     */
-   public function store(Request $request)
+
+    public function store(Request $request)
     {
+        // 1. Validasi Input Utama
         $request->validate([
             'id_user' => 'required|integer',
             'alamat' => 'required|string',
             'metode_pembayaran' => 'required|string',
-            'jasa_pengiriman' => 'required|string',
-            'catatan' => 'nullable|string',
-            'item_ids' => 'sometimes|required|array',
-            'item_ids.*' => 'integer|exists:keranjang,id',
-            'direct_item' => 'sometimes|required|array',
-            'direct_item.id_produk' => 'required_with:direct_item|integer|exists:produk,id',
-            'direct_item.id_toko' => 'required_with:direct_item|integer|exists:toko,id',
-            'direct_item.jumlah' => 'required_with:direct_item|integer|min:1',
-            'direct_item.harga' => 'required_with:direct_item|numeric',
+            'pesanan_per_toko' => 'required|array|min:1',
+            
+            // Validasi setiap item di dalam array 'pesanan_per_toko'
+            'pesanan_per_toko.*.id_toko' => 'required|integer|exists:toko,id',
+            'pesanan_per_toko.*.item_ids' => 'required|array|min:1',
+            'pesanan_per_toko..item_ids.' => 'integer|exists:keranjang,id',
+            'pesanan_per_toko.*.jasa_pengiriman' => 'required|string',
+            'pesanan_per_toko.*.ongkir' => 'required|numeric',
+            'pesanan_per_toko.*.catatan' => 'nullable|string',
         ]);
 
         try {
             DB::beginTransaction();
             
             $id_user = $request->id_user;
-            $no_transaksi = 'TRX' . strtoupper(uniqid());
             
-            $items_for_detail = [];
-            $total = 0;
-            $total_jumlah = 0;
+            // Buat SATU "Nomor Pembayaran Induk" untuk SEMUA pesanan
+            $no_pembayaran = 'PAY-' . strtoupper(uniqid());
+            
+            $total_keseluruhan = 0;
+            $daftar_no_transaksi = [];
 
-            if ($request->has('item_ids')) {
-                // --- SKENARIO A: CHECKOUT DARI KERANJANG (Logika ini sudah benar) ---
-                $keranjang = DB::table('keranjang')
+            // 2. Loop setiap pesanan (per toko) yang dikirim Flutter
+            foreach ($request->pesanan_per_toko as $pesanan_toko) {
+                
+                // --- A. Ambil Data Item dari Keranjang ---
+                $item_ids = $pesanan_toko['item_ids'];
+                $keranjang_items = DB::table('keranjang')
                     ->where('id_user', $id_user)
-                    ->whereIn('id', $request->item_ids)
+                    ->where('id_toko', $pesanan_toko['id_toko'])
+                    ->whereIn('id', $item_ids)
                     ->get();
 
-                if ($keranjang->isEmpty()) {
-                    return response()->json(['message' => 'Tidak ada item yang dipilih'], 400);
+                if ($keranjang_items->isEmpty()) {
+                    throw new \Exception('Item keranjang tidak valid untuk toko ' . $pesanan_toko['id_toko']);
                 }
+                
+                // (Anda bisa tambahkan Cek Stok di sini jika mau)
 
-                $total = $keranjang->sum('subtotal');
-                $total_jumlah = $keranjang->sum('jumlah');
+                // --- B. Hitung Total per Toko ---
+                $subtotal_toko = $keranjang_items->sum('subtotal');
+                $ongkir_toko = (float) $pesanan_toko['ongkir'];
+                $total_toko = $subtotal_toko + $ongkir_toko;
+                
+                $total_keseluruhan += $total_toko; // Tambahkan ke total induk
+                $total_jumlah_item = $keranjang_items->sum('jumlah');
 
-                foreach ($keranjang as $item) {
+                // --- C. Buat "Nota" (Transaksi) Unik per Toko ---
+                $no_transaksi_toko = 'TRX-' . strtoupper(uniqid());
+                $daftar_no_transaksi[] = $no_transaksi_toko;
+
+                DB::table('transaksi')->insert([
+                    'id_user' => $id_user,
+                    'id_toko' => $pesanan_toko['id_toko'],
+                    'no_transaksi' => $no_transaksi_toko, // <-- Nota unik toko
+                    'no_pembayaran' => $no_pembayaran, // <-- Pengikat ke Pembayaran Induk
+                    'alamat' => $request->alamat,
+                    'jumlah' => $total_jumlah_item,
+                    'total' => $total_toko,
+                    'subtotal' => $subtotal_toko,
+                    // 'ongkir' => $ongkir_toko, // (Tambahkan kolom 'ongkir' ke tabel 'transaksi' jika perlu)
+                    'catatan' => $pesanan_toko['catatan'] ?? 'Tidak ada catatan',
+                    'status' => 'menunggu_pembayaran', // Ganti status
+                    'jasa_pengiriman' => $pesanan_toko['jasa_pengiriman'],
+                    'created_at' => Carbon::now(),
+                ]);
+
+                // --- D. Siapkan Detail Item untuk Nota ini ---
+                $items_for_detail = [];
+                foreach ($keranjang_items as $item) {
                     $items_for_detail[] = [
-                        'no_transaksi' => $no_transaksi,
+                        'no_transaksi' => $no_transaksi_toko, // <-- Link ke nota unik
                         'id_produk' => $item->id_produk,
                         'id_toko' => $item->id_toko,
                         'jumlah' => $item->jumlah,
@@ -81,76 +109,34 @@ class TransaksiController extends Controller
                     ];
                 }
                 
+                // Insert detail item
+                DB::table('detail_transaksi')->insert($items_for_detail);
+
+                // Hapus item dari keranjang
                 DB::table('keranjang')
                     ->where('id_user', $id_user)
-                    ->whereIn('id', $request->item_ids)
+                    ->whereIn('id', $item_ids)
                     ->delete();
-
-            } elseif ($request->has('direct_item')) {
-                // --- SKENARIO B: BELI LANGSUNG ---
-                $item = $request->input('direct_item');
-                
-                $produk = DB::table('produk')->find($item['id_produk']);
-                if ($item['jumlah'] > $produk->stok) {
-                    return response()->json([
-                        'message' => 'Jumlah melebihi stok (Stok: ' . $produk->stok . ')'
-                    ], 422);
-                }
-
-                $subtotal = $item['harga'] * $item['jumlah'];
-                $total = $subtotal;
-                $total_jumlah = $item['jumlah'];
-
-                // --- [PERBAIKAN DI SINI] ---
-                $items_for_detail[] = [
-                    'no_transaksi' => $no_transaksi,
-                    'id_produk' => $item['id_produk'],
-                    'id_toko' => $item['id_toko'], // <-- BARIS INI DITAMBAHKAN
-                    'jumlah' => $item['jumlah'],
-                    'harga' => $item['harga'],
-                    'subtotal' => $subtotal,
-                    'created_at' => Carbon::now(),
-                ];
-                // --- [PERBAIKAN SELESAI] ---
-
-            } else {
-                DB::rollBack();
-                return response()->json(['message' => 'Data checkout tidak valid.'], 400);
             }
-
-            // 1. Simpan transaksi utama
-            DB::table('transaksi')->insert([
-                'id_user' => $id_user,
-                'no_transaksi' => $no_transaksi,
-                'alamat' => $request->alamat,
-                'jumlah' => $total_jumlah,
-                'total' => $total,
-                'subtotal' => $total,
-                'catatan' => $request->catatan ?? 'Tidak ada catatan',
-                'status' => 'menunggu',
-                'jasa_pengiriman' => $request->jasa_pengiriman,
-                'created_at' => Carbon::now(),
-            ]);
-
-            // 2. Simpan detail transaksi
-            DB::table('detail_transaksi')->insert($items_for_detail);
-
-            // 3. Simpan payment
+            
+            // --- E. Buat SATU Pembayaran Induk ---
             DB::table('payment')->insert([
-                'no_transaksi' => $no_transaksi,
+                'no_pembayaran' => $no_pembayaran, // <-- Menggunakan ID Pembayaran Induk
                 'metode_pembayaran' => $request->metode_pembayaran,
                 'status_pembayaran' => 'proses',
                 'bukti_pembayaran' => 'belum ada',
                 'tanggal_pembayaran' => Carbon::now()->format('Y-m-d'),
                 'created_at' => Carbon::now(),
+                // 'total' => $total_keseluruhan // (Tambahkan jika ada kolom total di payment)
             ]);
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Checkout berhasil',
-                'no_transaksi' => $no_transaksi,
-                'total' => $total
+                'message' => 'Checkout berhasil, ' . count($daftar_no_transaksi) . ' pesanan dibuat.',
+                'no_pembayaran' => $no_pembayaran, // Kirim ini ke Flutter
+                'no_transaksi_terbuat' => $daftar_no_transaksi,
+                'total_keseluruhan' => $total_keseluruhan
             ]);
 
         } catch (\Exception $e) {
@@ -165,11 +151,10 @@ class TransaksiController extends Controller
 
     /**
      * 🔹 GET: /api/transaksi/riwayat/{id_user}
-     * Melihat riwayat (daftar) transaksi user.
+     * (Tidak berubah)
      */
     public function riwayat($id_user)
     {
-        // (Pastikan ini sesuai dengan kebutuhan Anda)
         $riwayat = DB::table('transaksi')
             ->where('id_user', $id_user)
             ->orderBy('created_at', 'desc')
@@ -180,13 +165,12 @@ class TransaksiController extends Controller
     
     /**
      * 🔹 GET: /api/transaksi/detail/{no_transaksi}
-     * Melihat detail satu transaksi beserta item-itemnya.
+     * (Tidak berubah)
      */
     public function show($no_transaksi)
     {
         $transaksi = DB::table('transaksi')
             ->where('no_transaksi', $no_transaksi)
-            // ->where('id_user', auth()->id()) // (Pengecekan keamanan)
             ->first();
 
         if (!$transaksi) {
@@ -199,9 +183,8 @@ class TransaksiController extends Controller
             ->where('no_transaksi', $no_transaksi)
             ->get();
             
-        // (Format foto jika perlu)
         $items->transform(function ($item) {
-            $item->foto = $this->formatFotoUrl($item->foto); // Gunakan helper
+            $item->foto = $this->formatFotoUrl($item->foto);
             return $item;
         });
 
@@ -210,10 +193,11 @@ class TransaksiController extends Controller
             'items' => $items
         ]);
     }
-
-    // (Anda bisa tambahkan fungsi 'update' atau 'cancel' di sini nanti)
     
-    // (Helper formatFotoUrl - kita perlukan di 'show')
+    /**
+     * Helper formatFotoUrl
+     * (Tidak berubah)
+     */
     protected function formatFotoUrl($fotoPath)
     {
         if (empty($fotoPath)) return null;

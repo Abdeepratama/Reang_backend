@@ -49,7 +49,7 @@
                     <a href="{{ route('admin.sehat.tempat.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">Edit</a>
                     <a href="{{ route('admin.sehat.tempat.show', $item->id) }}"
                             class="btn btn-info btn-sm">
-                            <i class="bi bi-eye"></i> Detail
+                            <i></i> Detail
                         </a>
                     <form action="{{ route('admin.sehat.tempat.destroy', $item->id) }}" method="POST" style="display:inline-block;">
                         @csrf
