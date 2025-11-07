@@ -247,7 +247,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/metode', [MetodePembayaranController::class, 'index']); // semua data
-    Route::get('/metode/show/{id_toko}', [MetodePembayaranController::class, 'show']); // hanya per toko
+    Route::get('/metode/show/{id_toko}', [MetodePembayaranController::class, 'show']); // untuk per toko
     Route::post('/metode/create', [MetodePembayaranController::class, 'store']);
     Route::put('/metode/update/{id}', [MetodePembayaranController::class, 'update']);
     Route::delete('/metode/{id}', [MetodePembayaranController::class, 'destroy']);
