@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MetodePembayaran;
+use App\Models\Toko;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MetodePembayaranController extends Controller
 {
-    // 🔹 GET /api/metode
     public function index()
     {
         $data = MetodePembayaran::orderBy('id', 'asc')->get();
 
-        // Ubah path foto jadi full URL
+        // Tambahkan URL lengkap untuk foto
         $data->transform(function ($item) {
             if ($item->foto_qris) {
                 $item->foto_qris = asset('storage/' . $item->foto_qris);
@@ -29,23 +29,36 @@ class MetodePembayaranController extends Controller
         ]);
     }
 
-    // 🔹 GET /api/metode/show/{id}
-    public function show($id)
+    public function show($id_toko)
     {
-        $metode = MetodePembayaran::find($id);
-        if (!$metode) {
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+        $metode = MetodePembayaran::where('id_toko', $id_toko)
+            ->orderBy('id', 'asc')
+            ->get();
+
+        if ($metode->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Metode pembayaran untuk toko ini belum tersedia'
+            ], 404);
         }
 
-        if ($metode->foto_qris) {
-            $metode->foto_qris = asset('storage/' . $metode->foto_qris);
-        }
+        // Ubah URL foto jadi full URL
+        $metode->transform(function ($item) {
+            if ($item->foto_qris) {
+                $item->foto_qris = asset('storage/' . $item->foto_qris);
+            }
+            return $item;
+        });
 
-        return response()->json(['status' => true, 'data' => $metode]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Metode pembayaran toko berhasil diambil',
+            'data' => $metode
+        ]);
     }
 
-    // 🔹 POST /api/metode/store
-    public function store(Request $request)
+    // 🔹 POST /api/toko/{id_toko}/metode
+    public function store(Request $request, $id_toko)
     {
         $user = $request->user();
 
@@ -61,6 +74,8 @@ class MetodePembayaranController extends Controller
             'foto_qris' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'keterangan' => 'nullable|string',
         ]);
+
+        $validated['id_toko'] = $id_toko;
 
         if ($request->hasFile('foto_qris')) {
             $path = $request->file('foto_qris')->store('qris', 'public');
@@ -80,15 +95,16 @@ class MetodePembayaranController extends Controller
         ], 201);
     }
 
-    // 🔹 PUT /api/metode/update/{id}
-    public function update(Request $request, $id)
+    // 🔹 PUT /api/toko/{id_toko}/metode/{id}
+    public function update(Request $request, $id_toko, $id)
     {
         $user = $request->user();
+
         if (!$user->hasRole('umkm') && !$user->hasRole('superadmin')) {
             return response()->json(['status' => false, 'message' => 'Akses ditolak!'], 403);
         }
 
-        $metode = MetodePembayaran::find($id);
+        $metode = MetodePembayaran::where('id_toko', $id_toko)->find($id);
         if (!$metode) {
             return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
@@ -123,15 +139,16 @@ class MetodePembayaranController extends Controller
         ]);
     }
 
-    // 🔹 DELETE /api/metode/{id}
-    public function destroy(Request $request, $id)
+    // 🔹 DELETE /api/toko/{id_toko}/metode/{id}
+    public function destroy(Request $request, $id_toko, $id)
     {
         $user = $request->user();
+
         if (!$user->hasRole('umkm') && !$user->hasRole('superadmin')) {
             return response()->json(['status' => false, 'message' => 'Akses ditolak!'], 403);
         }
 
-        $metode = MetodePembayaran::find($id);
+        $metode = MetodePembayaran::where('id_toko', $id_toko)->find($id);
         if (!$metode) {
             return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
