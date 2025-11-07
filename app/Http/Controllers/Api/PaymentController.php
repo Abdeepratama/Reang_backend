@@ -20,7 +20,7 @@ class PaymentController extends Controller
         ]);
 
         $payment = Payment::create($data);
-        return response()->json($payment);
+        return response()->json($payment); 
     }
 
     public function show($noTransaksi)

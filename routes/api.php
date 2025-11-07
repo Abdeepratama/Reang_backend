@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Admin\PanikButtonController;
 use App\Http\Controllers\Api\OngkirController;
 use App\Http\Controllers\Api\TokoController;
+use App\Http\Controllers\Api\MetodePembayaranController;
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
@@ -242,4 +243,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/ongkir/store', [OngkirController::class, 'store']);
     Route::put('/ongkir/{id}', [OngkirController::class, 'update']);
     Route::delete('/ongkir/{id}', [OngkirController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/metode', [MetodePembayaranController::class, 'index']);
+    Route::get('/metode/show/{id}', [MetodePembayaranController::class, 'show']);
+    Route::post('/metode/create', [MetodePembayaranController::class, 'store']);
+    Route::put('/metode/update{id}', [MetodePembayaranController::class, 'update']);
+    Route::delete('/metode/{id}', [MetodePembayaranController::class, 'destroy']);
 });
