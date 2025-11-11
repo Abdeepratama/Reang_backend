@@ -206,7 +206,20 @@
 
             <!-- =========================================================================================================================================== -->
 
-            @if ($user && $user->role === 'superadmin'|| ($user->userData && $user->userData->instansi && strtolower($user->userData->instansi->nama) === 'pariwisata'))
+            @if (
+            $user &&
+            (
+            $user->role === 'superadmin' ||
+            (
+            $user->userData &&
+            $user->userData->instansi &&
+            (
+            strtolower($user->userData->instansi->nama) === 'pariwisata' ||
+            strtolower($user->userData->instansi->nama) === 'keagamaan'
+            )
+            )
+            )
+            )
             <p class="text-muted nav-heading mt-4 mb-1">
                 <span>Pariwisata & Keagamaan</span>
             </p>
@@ -271,7 +284,21 @@
 
             <!-- =========================================================================================================================================== -->
 
-            @if ($user && $user->role === 'superadmin')
+           @if (
+            $user &&
+            (
+            $user->role === 'superadmin' ||
+            (
+            $user->userData &&
+            $user->userData->instansi &&
+            (
+            strtolower($user->userData->instansi->nama) === 'adminduk' ||
+            strtolower($user->userData->instansi->nama) === 'renbang'  ||
+            strtolower($user->userData->instansi->nama) === 'perizinan'
+            )
+            )
+            )
+            )
             <p class="text-muted nav-heading mt-4 mb-1">
                 <span>Layanan Publik Lainnya</span>
             </p>

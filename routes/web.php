@@ -290,7 +290,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     // ----------------- SEKOLAH -----------------
     Route::prefix('sekolah')
         ->name('sekolah.')
-        ->middleware(['auth:admin', 'role:superadmin|admindinas|adminpuskesmas'])
+        ->middleware(['auth:admin', 'checkadmindinas'])
         ->group(function () {
             Route::get('tempat', [SekolahController::class, 'indexTempat'])->name('tempat.index');
             Route::get('tempat/create', [SekolahController::class, 'createTempat'])->name('tempat.create');

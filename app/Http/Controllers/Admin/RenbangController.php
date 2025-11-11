@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Renbang;
 use App\Models\RenbangAjuan;
+use App\Models\UserData;
 use App\Models\RenbangLike;
 use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
@@ -12,6 +13,7 @@ use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+
 
 class RenbangController extends Controller
 {
@@ -178,7 +180,7 @@ class RenbangController extends Controller
     // =======================
     public function index()
     {
-        $user = Auth::guard('admin')->user();
+        $user = Auth::guard('admin')->user(); // ambil admin yang sedang login
 
         if ($user->role === 'superadmin') {
             $items = RenbangAjuan::with('user')
@@ -186,15 +188,14 @@ class RenbangController extends Controller
                 ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
                 ->latest()
                 ->get();
-        } else {
+        } elseif ($user->userData && $user->userData->id_instansi == 12) {
             $items = RenbangAjuan::with('user')
                 ->withCount('likes')
-                ->whereHas('user.userData', function ($q) use ($user) {
-                    $q->where('id_admin', $user->id);
-                })
                 ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
                 ->latest()
                 ->get();
+        } else {
+            $items = collect(); // kosongkan hasil
         }
 
         return view('admin.renbang.ajuan.index', compact('items'));

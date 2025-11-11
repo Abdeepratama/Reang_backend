@@ -17,7 +17,7 @@
                 <tr>
                     <th>No</th>
                     <th>kategori</th>
-                    <th>Judul Laporan</th>
+                    <th>Jenis Laporan</th>
                     <th>Alamat</th>
                     <th>Status</th>
                     <th>Bukti</th>

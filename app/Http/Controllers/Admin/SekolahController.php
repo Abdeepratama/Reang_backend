@@ -10,6 +10,7 @@ use App\Models\Aktivitas;
 use App\Models\NotifikasiAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class SekolahController extends Controller
 {
@@ -181,7 +182,7 @@ class SekolahController extends Controller
             if ($request->has('fitur') && !empty($request->query('fitur'))) {
                 // Ambil string dari URL, misal: "sekolah dasar,sd"
                 $fiturString = $request->query('fitur');
-                
+
                 // Pecah string menjadi array berdasarkan koma
                 // Hasilnya: ['sekolah dasar', 'sd']
                 $fiturArray = explode(',', $fiturString);
@@ -235,23 +236,22 @@ class SekolahController extends Controller
 
     public function infostore(Request $request)
     {
-        $data = $request->validate([
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
-            'judul' => 'required|string|max:255',
+        $validated = $request->validate([
+            'judul' => 'required|string|max:500',
             'deskripsi' => 'required|string',
+            'foto' => 'required|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
         ]);
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('foto_sekolah', 'public');
+            $validated['foto'] = $request->file('foto')->store('foto_sekolah', 'public');
         }
 
-        InfoSekolah::create($data);
+        InfoSekolah::create($validated);
 
-        $this->logAktivitas("Info Sekolah telah ditambahkan");
-        $this->logNotifikasi("Info Sekolah telah ditambahkan");
-
-        return redirect()->route('admin.sekolah.info.index')->with('success', 'Info sekolah berhasil ditambahkan.');
+        return redirect()->route('admin.sekolah.info.index')
+            ->with('success', 'Info Sekolah berhasil ditambahkan.');
     }
+
 
     public function infoedit($id)
     {
@@ -267,7 +267,7 @@ class SekolahController extends Controller
         $data = $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+            'foto' => 'required|image|mimes:jpeg,jpg,png,gif,webp,bmp|max:5120',
         ]);
 
         if ($request->hasFile('foto')) {

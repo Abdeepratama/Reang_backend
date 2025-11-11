@@ -25,6 +25,7 @@
             <!-- Deskripsi -->
             <div class="form-group mb-3">
                 <label>Deskripsi</label>
+                <small class="text-muted">Maksimal 255 karakter.</small>
                 <textarea name="deskripsi" id="editor" class="form-control" rows="5"></textarea>
             </div>
 
@@ -35,49 +36,64 @@
         </div>
     </form>
 </div>
+@endsection
 
-{{-- CKEditor Script --}}
+
+{{-- Semua script diletakkan di bawah agar CKEditor dimuat setelah halaman siap --}}
+@section('scripts')
+<!-- Load CKEditor -->
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+
 <script>
-let editor;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inisialisasi CKEditor
+        let editorInstance;
 
-ClassicEditor
-.create(document.querySelector('#editor'), {
-    ckfinder: {
-        uploadUrl: "{{ route('admin.sekolah.info.upload.image') }}?_token={{ csrf_token() }}"
-    }
-})
-.then(instance => {
-    editor = instance;
-})
-.catch(error => {
-    console.error(error);
-});
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                ckfinder: {
+                    uploadUrl: "{{ route('admin.sekolah.info.upload.image') }}?_token={{ csrf_token() }}"
+                }
+            })
+            .then(instance => {
+                editorInstance = instance;
+            })
+            .catch(error => {
+                console.error('CKEditor error:', error);
+            });
 
-document.getElementById('infoForm').addEventListener('submit', function(e) {
-    if (editor && editor.getData().trim() === '') {
-        e.preventDefault();
-        alert('Deskripsi harus diisi');
-        return false;
-    }
+        // Validasi form sebelum submit
+        document.getElementById('infoForm').addEventListener('submit', function(e) {
+            if (!editorInstance) {
+                e.preventDefault();
+                alert('Editor belum siap. Silakan tunggu beberapa detik dan coba lagi.');
+                return false;
+            }
 
-    // Tambahkan atribut border, cellpadding, cellspacing di <table>
-    if (editor) {
-        let content = editor.getData();
-        content = content.replace(/<table(?![^>]*border)/g, '<table border="1" cellpadding="8" cellspacing="0"');
-        document.querySelector('#editor').value = content;
-    }
+            const deskripsi = editorInstance.getData().trim();
 
-    const fileInput = document.querySelector('input[name="foto"]');
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        if (!validTypes.includes(file.type)) {
-            e.preventDefault();
-            alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
-            return false;
-        }
-    }
-});
+            // kalau kosong, stop
+            if (deskripsi === '') {
+                e.preventDefault();
+                alert('Deskripsi harus diisi');
+                return false;
+            }
+
+            // simpan isi CKEditor ke textarea supaya terkirim ke Laravel
+            document.querySelector('textarea[name="deskripsi"]').value = deskripsi;
+
+            // validasi file
+            const fileInput = document.querySelector('input[name="foto"]');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                if (!validTypes.includes(file.type)) {
+                    e.preventDefault();
+                    alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
+                    return false;
+                }
+            }
+        });
+    });
 </script>
 @endsection

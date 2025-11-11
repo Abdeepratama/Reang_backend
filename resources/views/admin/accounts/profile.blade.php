@@ -91,13 +91,13 @@
                         <div class="col-sm-6 mb-2">
                             @if(!empty($admin->userData->instansi))
                             <p class="mb-1 text-muted fw-semibold">
-                                <i class="bi bi-envelope me-2"></i><strong>Dinas</strong>
+                                <i class="bi me-2"></i><strong>Dinas</strong>
                             </p>
                             <h6>{{ $admin->userData->instansi->nama }}</h6>
                             @endif
                             @if(!empty($admin->userData->puskesmas))
                             <p class="mb-1 text-muted fw-semibold">
-                                <i class="bi bi-envelope me-2"></i><strong>Puskesmas</strong>
+                                <i class="bi me-2"></i><strong>Puskesmas</strong>
                             </p>
                             <h6>{{ $admin->userData->puskesmas->nama }}</h6>
                             @endif

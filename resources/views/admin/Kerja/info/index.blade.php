@@ -1,102 +1,101 @@
 @extends('admin.partials.app')
 
-@section('title', 'Info Kerja')
+@section('title', 'Daftar Info Kerja')
 
 @section('content')
 <div class="container mt-4">
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <h2 class="mb-2 page-title">Info Kerja</h2>
-                <div class="row my-4">
-                    <div class="col-md-12">
-                        <div class="card shadow">
-                            <div class="card-body">
-                                <a href="{{ route('admin.kerja.info.create') }}" class="btn btn-primary mb-3">Tambah Info Kerja</a>
+    <h2>Daftar Info Kerja</h2>
 
-                                @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
-                                @endif
+    <a href="{{ route('admin.kerja.info.create') }}" class="btn btn-primary mb-3">
+        Tambah Info Kerja
+    </a>
 
-                                <div class="table-responsive">
-                                    <table class="table datatables" id="infoTable">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Nama Perusahaan</th>
-                                                <th>Foto</th>
-                                                <th>Posisi</th>
-                                                <th>Alamat</th>
-                                                <th>Nomor telepon</th>
-                                                <th>Gaji</th>
-                                                <th>Waktu Kerja</th>
-                                                <th>Jenis Kerja</th>
-                                                <th>Kategori</th>
-                                                <th>Deskripsi</th>
-                                                <th>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($infoItems as $info)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $info->name }}</td>
-                                                <td>
-                                                    @if($info->foto)
-                                                    <img src="{{ Storage::url($info->foto) }}" width="100" alt="Foto">
-                                                    @else
-                                                    <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $info->judul }}</td>
-                                                <td>{{ $info->alamat }}</td>
-                                                <td>{{ $info->nomor_telepon ?? '-' }}</td>
-                                                <td>{{ $info->gaji ?? '-' }}</td>
-                                                <td>{{ $info->waktu_kerja ?? '-' }}</td>
-                                                <td>{{ $info->jenis_kerja ?? '-' }}</td>
-                                                <td>{{ $info->fitur }}</td>
-                                                <td>{{ Str::limit($info->deskripsi, 50) }}</td>
-                                                <td>
-                                                    <a href="{{ route('admin.kerja.info.edit', $info->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                                    <a href="{{ route('admin.kerja.info.show', $info->id) }}" class="btn btn-info btn-sm">Detail</a>
-                                                    <form action="{{ route('admin.kerja.info.destroy', $info->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" class="btn btn-danger btn-sm">Hapus</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="10" class="text-center">Belum ada info kerja.</td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-                            </div>
-                        </div>
-                    </div> <!-- col-md-12 -->
-                </div> <!-- row -->
-            </div> <!-- col-12 -->
-        </div> <!-- row -->
-    </div>
+    <table class="table datatables" id="infoTable">
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>Nama Perusahaan</th>
+                <th>Posisi</th>
+                <th>Alamat</th>
+                <th>Gaji</th>
+                <th>Nomor Telepon</th>
+                <th>Kategori</th>
+                <th>Foto</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($infoItems as $item)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->judul }}</td>
+                    <td>{{ $item->alamat }}</td>
+                    <td>{{ $item->gaji ?? '-' }}</td>
+                    <td>{{ $item->nomor_telepon ?? '-' }}</td>
+                    <td>{{ $item->kategori->nama ?? $item->fitur }}</td>
+                    <td>
+                        @if($item->foto)
+                            <img src="{{ asset('storage/'.$item->foto) }}" 
+                                 alt="Foto {{ $item->judul }}" 
+                                 width="80" height="80"
+                                 onerror="this.onerror=null; this.src='/images/placeholder.png';">
+                        @else
+                            <span class="text-muted">Tidak ada foto</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.kerja.info.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                            Edit
+                        </a>
+                        <a href="{{ route('admin.kerja.info.show', $item->id) }}" class="btn btn-info btn-sm" title="Detail">
+                            Detail
+                        </a>
+                        <form action="{{ route('admin.kerja.info.destroy', $item->id) }}" 
+                              method="POST" 
+                              style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    onclick="return confirm('Yakin ingin menghapus info kerja ini?')" 
+                                    class="btn btn-danger btn-sm" 
+                                    title="Hapus">
+                                Hapus
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="9" class="text-center">Belum ada data info kerja.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 @endsection
 
 @section('scripts')
 <script>
     $(document).ready(function() {
-        $('#infoKerjaTable').DataTable({
+        $('#infoTable').DataTable({
             autoWidth: true,
             "lengthMenu": [
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]
             ],
-            "order": [
-                [0, "asc"]
-            ] // urut No dari kecil ke besar
+            "language": {
+                "search": "Cari:",
+                "lengthMenu": "Tampilkan _MENU_ data per halaman",
+                "zeroRecords": "Tidak ditemukan data yang cocok",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                "infoEmpty": "Tidak ada data tersedia",
+                "infoFiltered": "(difilter dari total _MAX_ data)"
+            }
         });
     });
 </script>
