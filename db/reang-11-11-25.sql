@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 11, 2025 at 10:35 AM
+-- Generation Time: Nov 11, 2025 at 12:07 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.16
 
@@ -1925,8 +1925,11 @@ CREATE TABLE `password_reset_tokens` (
 
 CREATE TABLE `payment` (
   `id` int NOT NULL,
-  `no_pembayaran` varchar(255) NOT NULL,
+  `no_transaksi` varchar(255) NOT NULL,
   `metode_pembayaran` varchar(255) NOT NULL,
+  `nomor_tujuan` varchar(255) DEFAULT NULL,
+  `nama_penerima` varchar(255) DEFAULT NULL,
+  `foto_qris` varchar(255) DEFAULT NULL,
   `status_pembayaran` varchar(255) NOT NULL,
   `bukti_pembayaran` varchar(255) NOT NULL,
   `tanggal_pembayaran` varchar(255) NOT NULL,
@@ -1938,12 +1941,12 @@ CREATE TABLE `payment` (
 -- Dumping data for table `payment`
 --
 
-INSERT INTO `payment` (`id`, `no_pembayaran`, `metode_pembayaran`, `status_pembayaran`, `bukti_pembayaran`, `tanggal_pembayaran`, `created_at`, `updated_at`) VALUES
-(1, '32187948', 'bank bni', 'proses', 'belum ada', '28 oktober 2025', NULL, NULL),
-(2, 'TRX001', 'Bank BNI', 'proses', 'belum ada', '2025-10-23', '2025-10-23 08:13:01', NULL),
-(3, 'TRX001', 'Bank BNI', 'proses', 'belum ada', '2025-10-23', '2025-10-23 08:37:21', NULL),
-(4, 'TRX68FAF167E4E71', 'Bank BNI', 'proses', 'belum ada', '2025-10-24', '2025-10-23 20:24:24', NULL),
-(5, 'TRX68FAF167E4E71', 'Bank BNI', 'proses', 'belum ada', '2025-10-24', '2025-10-23 20:34:33', '2025-10-23 20:34:33');
+INSERT INTO `payment` (`id`, `no_transaksi`, `metode_pembayaran`, `nomor_tujuan`, `nama_penerima`, `foto_qris`, `status_pembayaran`, `bukti_pembayaran`, `tanggal_pembayaran`, `created_at`, `updated_at`) VALUES
+(1, '32187948', 'bank bni', NULL, NULL, NULL, 'proses', 'belum ada', '28 oktober 2025', NULL, NULL),
+(2, 'TRX001', 'Bank BNI', NULL, NULL, NULL, 'proses', 'belum ada', '2025-10-23', '2025-10-23 08:13:01', NULL),
+(3, 'TRX001', 'Bank BNI', NULL, NULL, NULL, 'proses', 'belum ada', '2025-10-23', '2025-10-23 08:37:21', NULL),
+(4, 'TRX68FAF167E4E71', 'Bank BNI', NULL, NULL, NULL, 'proses', 'belum ada', '2025-10-24', '2025-10-23 20:24:24', NULL),
+(5, 'TRX68FAF167E4E71', 'Bank BNI', NULL, NULL, NULL, 'proses', 'belum ada', '2025-10-24', '2025-10-23 20:34:33', '2025-10-23 20:34:33');
 
 -- --------------------------------------------------------
 
@@ -2515,7 +2518,6 @@ CREATE TABLE `transaksi` (
   `id_user` int NOT NULL,
   `id_produk` int DEFAULT NULL,
   `no_transaksi` varchar(255) NOT NULL,
-  `no_pembayaran` varchar(255) DEFAULT NULL,
   `no_resi` varchar(255) DEFAULT NULL,
   `alamat` varchar(255) NOT NULL,
   `id_ongkir` int DEFAULT NULL,
@@ -2523,6 +2525,7 @@ CREATE TABLE `transaksi` (
   `harga` bigint DEFAULT NULL,
   `total` int NOT NULL,
   `subtotal` int NOT NULL,
+  `ongkir` bigint DEFAULT '0',
   `catatan` varchar(255) NOT NULL,
   `status` varchar(255) NOT NULL,
   `jasa_pengiriman` varchar(255) NOT NULL,
@@ -2534,11 +2537,11 @@ CREATE TABLE `transaksi` (
 -- Dumping data for table `transaksi`
 --
 
-INSERT INTO `transaksi` (`id`, `id_toko`, `id_user`, `id_produk`, `no_transaksi`, `no_pembayaran`, `no_resi`, `alamat`, `id_ongkir`, `jumlah`, `harga`, `total`, `subtotal`, `catatan`, `status`, `jasa_pengiriman`, `created_at`, `updated_at`) VALUES
-(1, 1, 2, 1, '32187948', NULL, NULL, 'jl.indomaret blok mangga indramayu', 0, 1, 15000, 15000, 15000, 'berikan nota didalamnya', 'menunggu', 'jnt', NULL, NULL),
-(2, 1, 2, 3, 'TRX20251105051324503', NULL, NULL, 'Jl. Merdeka No. 10, Bandung', 1, 2, 200000, 400000, 400000, 'Tolong bungkus dengan rapi', 'pending', 'JNE', '2025-11-04 22:13:24', '2025-11-04 22:13:24'),
-(21, NULL, 17, NULL, 'TRX690B06686BA1C', NULL, NULL, 'Jl. Sudirman No. 123 (Dummy)', NULL, 1, NULL, 200000, 200000, 'Tidak ada catatan', 'menunggu', 'JNE REG', '2025-11-05 01:10:16', NULL),
-(22, NULL, 17, NULL, 'TRX690B06C7AE6BD', NULL, NULL, 'Jl. Sudirman No. 123 (Dummy)', NULL, 3, NULL, 415000, 415000, 'Tidak ada catatan', 'menunggu', 'JNE REG', '2025-11-05 01:11:51', NULL);
+INSERT INTO `transaksi` (`id`, `id_toko`, `id_user`, `id_produk`, `no_transaksi`, `no_resi`, `alamat`, `id_ongkir`, `jumlah`, `harga`, `total`, `subtotal`, `ongkir`, `catatan`, `status`, `jasa_pengiriman`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 1, '32187948', NULL, 'jl.indomaret blok mangga indramayu', 0, 1, 15000, 15000, 15000, 0, 'berikan nota didalamnya', 'menunggu', 'jnt', NULL, NULL),
+(2, 1, 2, 3, 'TRX20251105051324503', NULL, 'Jl. Merdeka No. 10, Bandung', 1, 2, 200000, 400000, 400000, 0, 'Tolong bungkus dengan rapi', 'pending', 'JNE', '2025-11-04 22:13:24', '2025-11-04 22:13:24'),
+(21, NULL, 17, NULL, 'TRX690B06686BA1C', NULL, 'Jl. Sudirman No. 123 (Dummy)', NULL, 1, NULL, 200000, 200000, 0, 'Tidak ada catatan', 'menunggu', 'JNE REG', '2025-11-05 01:10:16', NULL),
+(22, NULL, 17, NULL, 'TRX690B06C7AE6BD', NULL, 'Jl. Sudirman No. 123 (Dummy)', NULL, 3, NULL, 415000, 415000, 0, 'Tidak ada catatan', 'menunggu', 'JNE REG', '2025-11-05 01:11:51', NULL);
 
 -- --------------------------------------------------------
 
