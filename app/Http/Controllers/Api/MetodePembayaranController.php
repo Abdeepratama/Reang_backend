@@ -58,7 +58,7 @@ class MetodePembayaranController extends Controller
     }
 
     // 🔹 POST /api/toko/{id_toko}/metode
-    public function store(Request $request, $id_toko)
+    public function store(Request $request)
     {
         $user = $request->user();
 
@@ -67,6 +67,7 @@ class MetodePembayaranController extends Controller
         }
 
         $validated = $request->validate([
+            'id_toko' => 'required|integer',
             'nama_metode' => 'required|string|max:255',
             'jenis' => 'required|in:bank,qris',
             'nama_penerima' => 'nullable|string|max:255',
@@ -75,11 +76,8 @@ class MetodePembayaranController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        $validated['id_toko'] = $id_toko;
-
         if ($request->hasFile('foto_qris')) {
-            $path = $request->file('foto_qris')->store('qris', 'public');
-            $validated['foto_qris'] = $path;
+            $validated['foto_qris'] = $request->file('foto_qris')->store('qris', 'public');
         }
 
         $metode = MetodePembayaran::create($validated);

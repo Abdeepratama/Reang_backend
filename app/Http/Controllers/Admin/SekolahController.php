@@ -267,12 +267,12 @@ class SekolahController extends Controller
         $data = $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'foto' => 'required|image|mimes:jpeg,jpg,png,gif,webp,bmp|max:5120',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,bmp|max:5120', // <--- tidak wajib
         ]);
 
         if ($request->hasFile('foto')) {
             // hapus foto lama bila ada
-            $oldPath = $this->getStoragePathFromFoto($info->foto);
+            $oldPath = $info->foto;
             if ($oldPath && Storage::disk('public')->exists($oldPath)) {
                 Storage::disk('public')->delete($oldPath);
             }
@@ -284,7 +284,8 @@ class SekolahController extends Controller
         $this->logAktivitas("Info Sekolah telah diupdate");
         $this->logNotifikasi("Info Sekolah telah diupdate");
 
-        return redirect()->route('admin.sekolah.info.index')->with('success', 'Info sekolah berhasil diperbarui.');
+        return redirect()->route('admin.sekolah.info.index')
+            ->with('success', 'Info sekolah berhasil diperbarui.');
     }
 
     public function infodestroy($id)

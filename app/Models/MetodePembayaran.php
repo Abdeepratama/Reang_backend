@@ -12,6 +12,7 @@ class MetodePembayaran extends Model
     protected $table = 'metode_pembayaran';
 
     protected $fillable = [
+        'id_toko',
         'nama_metode',
         'jenis',
         'nama_penerima',
