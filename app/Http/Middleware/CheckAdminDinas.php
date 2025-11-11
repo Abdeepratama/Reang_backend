@@ -20,8 +20,8 @@ class CheckAdminDinas
 
         // Superadmin bebas akses ke semua
         if (optional($user)->role === 'superadmin') {
-    return $next($request);
-}
+            return $next($request);
+        }
 
         // Admin Dinas → cek akses berdasar id_instansi
         if ($user->role === 'admindinas') {

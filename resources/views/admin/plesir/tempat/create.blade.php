@@ -57,7 +57,7 @@
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoriPlesir as $kategori)
-                        <option value="{{ $kategori->id }}" {{ old('fitur') == $kategori->id ? 'selected' : '' }}>
+                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
                             {{ $kategori->nama }}
                         </option>
                         @endforeach

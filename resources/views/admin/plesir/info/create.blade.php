@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2><i class="bi bi-briefcase"></i> Tambah Tempat Plesir</h2>
+    <h2><i class="bi bi-briefcase"></i> Tambah Info Plesir</h2>
 
     <form action="{{ route('admin.plesir.info.store') }}" method="POST" enctype="multipart/form-data">
         @csrf

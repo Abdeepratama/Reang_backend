@@ -49,7 +49,7 @@ Route::prefix('admin')->group(function () {
 });
 
 // ----------------- ROUTE ADMIN -----------------
-Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindinas'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
     // dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/info', [InfoController::class, 'index'])->name('info.index');
@@ -79,6 +79,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ----------------- PASAR -----------------
     Route::middleware('auth:admin')->prefix('pasar')->name('pasar.')->group(function () {
+
+        // Tambahan (HARUS DILETAKKAN DI ATAS)
+        Route::get('tempat/map', [PasarController::class, 'map'])->name('tempat.map');
+        Route::post('tempat/simpan-lokasi', [PasarController::class, 'simpanLokasi'])->name('tempat.simpan');
+        Route::post('tempat/upload-image', [PasarController::class, 'upload'])->name('tempat.upload');
+
         // CRUD Tempat
         Route::get('tempat', [PasarController::class, 'tempat'])->name('tempat.index');
         Route::get('tempat/create', [PasarController::class, 'create'])->name('tempat.create');
@@ -87,13 +93,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
         Route::put('tempat/{id}', [PasarController::class, 'update'])->name('tempat.update');
         Route::delete('tempat/{id}', [PasarController::class, 'destroy'])->name('tempat.destroy');
         Route::get('tempat/{id}', [PasarController::class, 'showTempatWeb'])->name('tempat.show');
-
-        // Tambahan
-        Route::get('tempat/map', [PasarController::class, 'map'])->name('tempat.map');
-        Route::post('tempat/simpan-lokasi', [PasarController::class, 'simpanLokasi'])->name('tempat.simpan');
-        Route::post('tempat/upload-image', [PasarController::class, 'upload'])->name('tempat.upload');
     });
-
 
     // ----------------- PLESIR -----------------
     Route::middleware('auth:admin')->prefix('plesir')->name('plesir.')->group(function () {
@@ -263,7 +263,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     // ----------------- SLIDER -----------------
     Route::prefix('admin/slider')
         ->name('slider.')
-        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->middleware(['auth:admin'])
         ->group(function () {
             Route::get('/', [DashboardController::class, 'sliderIndex'])->name('index');
             Route::get('/create', [DashboardController::class, 'sliderCreate'])->name('create');
@@ -276,7 +276,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
     // ------------------ BANNER -------------------
     Route::prefix('admin/banner')
         ->name('banner.')
-        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->middleware(['auth:admin'])
         ->group(function () {
             Route::get('/banner', [DashboardController::class, 'bannerIndex'])->name('index');
             Route::get('/banner/create', [DashboardController::class, 'bannerCreate'])->name('create');
@@ -285,12 +285,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
             Route::put('/banner/{id}', [DashboardController::class, 'bannerUpdate'])->name('update');
             Route::delete('/banner/{id}', [DashboardController::class, 'bannerDestroy'])->name('destroy');
             Route::post('info/upload-image', [DashboardController::class, 'uploadBanner'])->name('upload.image');
-    });
+        });
 
     // ----------------- SEKOLAH -----------------
     Route::prefix('sekolah')
         ->name('sekolah.')
-        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->middleware(['auth:admin'])
         ->group(function () {
             Route::get('tempat', [SekolahController::class, 'indexTempat'])->name('tempat.index');
             Route::get('tempat/create', [SekolahController::class, 'createTempat'])->name('tempat.create');
@@ -333,17 +333,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'checkadmindin
 
     // ----------------- AKUN ADMIN -----------------
     Route::resource('accounts', AdminAccountController::class)
-        ->middleware(['auth:admin', 'checkadmindinas']);
+        ->middleware(['auth:admin']);
     Route::get('profile', [AuthController::class, 'profile'])
-        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->middleware(['auth:admin'])
         ->name('accounts.profile');
 
     // ----------------- MAPS WEB -----------------
     Route::resource('maps', WebController::class)
-        ->middleware(['auth:admin', 'role:superadmin|admindinas']);
+        ->middleware(['auth:admin']);
 
     Route::get('fitur', fn() => view('admin.fitur.index'))
-        ->middleware(['auth:admin', 'checkadmindinas'])
+        ->middleware(['auth:admin'])
         ->name('fitur.index');
 
     // ----------------- NOTIFIKASI -----------------

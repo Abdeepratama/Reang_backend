@@ -22,7 +22,7 @@ class Plesir extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id');
+        return $this->belongsTo(Kategori::class, 'fitur', 'id');
     }
 
     public function getPhotoUrlAttribute()
