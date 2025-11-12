@@ -232,9 +232,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Payment
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/payment', [PaymentController::class, 'store']);
-    Route::get('/payment/{noTransaksi}', [PaymentController::class, 'show']);
-    Route::get('/payment/user/{id_user}', [PaymentController::class, 'riwayat']);
+Route::post('/payment/upload/{no_transaksi}', [PaymentController::class, 'uploadBukti']);
 });
 
 //ongkir
