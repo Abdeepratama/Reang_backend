@@ -88,8 +88,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Ibadah-yu
 Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']); // tempat ibadah
-Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  event agama
+// HARUS diletakkan di atas route dengan parameter
 Route::get('/tempat-ibadah/all', [IbadahController::class, 'showtempatAll']);
+
+// baru setelah itu
+Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']);
 
 // sekolah-yu
 Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);

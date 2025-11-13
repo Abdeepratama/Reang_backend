@@ -130,7 +130,21 @@
 
             <!-- =========================================================================================================================================== -->
 
-            @if ($user->role === 'superadmin')
+            @if (
+            $user &&
+            (
+            $user->role === 'superadmin' ||
+            (
+            $user->userData &&
+            $user->userData->instansi &&
+            (
+            strtolower($user->userData->instansi->nama) === 'pajak' ||
+            strtolower($user->userData->instansi->nama) === 'perdagangan' ||
+            strtolower($user->userData->instansi->nama) === 'kerja'
+            )
+            )
+            )
+            )
             <p class="text-muted nav-heading mt-4 mb-1">
                 <span>Layanan Publik & Ekonomi</span>
             </p>

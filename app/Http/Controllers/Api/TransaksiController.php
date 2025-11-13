@@ -30,8 +30,11 @@ class TransaksiController extends Controller
             'pesanan_per_toko.*.ongkir' => 'required_with:pesanan_per_toko|numeric',
             'pesanan_per_toko.*.catatan' => 'nullable|string',
             'pesanan_per_toko.*.metode_pembayaran' => 'required_with:pesanan_per_toko|string',
-            'pesanan_per_toko.*.nomor_tujuan' => 'required_with:pesanan_per_toko|string',
-            'pesanan_per_toko.*.nama_penerima' => 'required_with:pesanan_per_toko|string', // <-- [BARU]
+            
+            // [PERBAIKAN KRITIS A]: Diganti dari 'required_with' menjadi 'nullable|string'
+            'pesanan_per_toko.*.nomor_tujuan' => 'nullable|string', 
+            
+            'pesanan_per_toko.*.nama_penerima' => 'required_with:pesanan_per_toko|string',
             'pesanan_per_toko.*.foto_qris' => 'nullable|string|url',
 
             // Skenario B (Beli Langsung)
@@ -44,8 +47,11 @@ class TransaksiController extends Controller
             'direct_item.ongkir' => 'required_with:direct_item|numeric',
             'direct_item.catatan' => 'nullable|string',
             'direct_item.metode_pembayaran' => 'required_with:direct_item|string',
-            'direct_item.nomor_tujuan' => 'required_with:direct_item|string',
-            'direct_item.nama_penerima' => 'required_with:direct_item|string', // <-- [BARU]
+            
+            // [PERBAIKAN KRITIS B]: Diganti dari 'required_with' menjadi 'nullable|string'
+            'direct_item.nomor_tujuan' => 'nullable|string',
+            
+            'direct_item.nama_penerima' => 'required_with:direct_item|string',
             'direct_item.foto_qris' => 'nullable|string|url',
         ]);
 
@@ -105,8 +111,9 @@ class TransaksiController extends Controller
                     DB::table('payment')->insert([
                         'no_transaksi' => $no_transaksi_toko,
                         'metode_pembayaran' => $pesanan_toko['metode_pembayaran'],
-                        'nomor_tujuan' => $pesanan_toko['nomor_tujuan'],
-                        'nama_penerima' => $pesanan_toko['nama_penerima'], // <-- [PERBAIKAN] Simpan
+                        // Masukkan 'nomor_tujuan'. Ini akan null jika QRIS, dan itu OK sekarang.
+                        'nomor_tujuan' => $pesanan_toko['nomor_tujuan'] ?? null, 
+                        'nama_penerima' => $pesanan_toko['nama_penerima'],
                         'foto_qris' => $pesanan_toko['foto_qris'] ?? null,
                         'status_pembayaran' => 'menunggu',
                         'bukti_pembayaran' => 'belum ada',
@@ -122,8 +129,8 @@ class TransaksiController extends Controller
                         'no_transaksi' => $no_transaksi_toko,
                         'total_bayar' => $total_toko,
                         'metode_pembayaran' => $pesanan_toko['metode_pembayaran'],
-                        'nomor_tujuan' => $pesanan_toko['nomor_tujuan'],
-                        'nama_penerima' => $pesanan_toko['nama_penerima'], // <-- [PERBAIKAN] Kirim
+                        'nomor_tujuan' => $pesanan_toko['nomor_tujuan'] ?? null, // Kirim null jika QRIS
+                        'nama_penerima' => $pesanan_toko['nama_penerima'], 
                         'foto_qris' => $pesanan_toko['foto_qris'] ?? null,
                     ];
                 } // End foreach
@@ -175,8 +182,9 @@ class TransaksiController extends Controller
                 DB::table('payment')->insert([
                     'no_transaksi' => $no_transaksi_toko,
                     'metode_pembayaran' => $item['metode_pembayaran'],
-                    'nomor_tujuan' => $item['nomor_tujuan'],
-                    'nama_penerima' => $item['nama_penerima'], // <-- [PERBAIKAN] Simpan
+                    // Masukkan 'nomor_tujuan'. Ini akan null jika QRIS.
+                    'nomor_tujuan' => $item['nomor_tujuan'] ?? null, 
+                    'nama_penerima' => $item['nama_penerima'],
                     'foto_qris' => $item['foto_qris'] ?? null,
                     'status_pembayaran' => 'menunggu',
                     'bukti_pembayaran' => 'belum ada',
@@ -188,8 +196,8 @@ class TransaksiController extends Controller
                     'no_transaksi' => $no_transaksi_toko,
                     'total_bayar' => $total_toko,
                     'metode_pembayaran' => $item['metode_pembayaran'],
-                    'nomor_tujuan' => $item['nomor_tujuan'],
-                    'nama_penerima' => $item['nama_penerima'], // <-- [PERBAIKAN] Kirim
+                    'nomor_tujuan' => $item['nomor_tujuan'] ?? null, // Kirim null jika QRIS
+                    'nama_penerima' => $item['nama_penerima'], 
                     'foto_qris' => $item['foto_qris'] ?? null,
                 ];
                 
