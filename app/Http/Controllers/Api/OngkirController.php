@@ -50,10 +50,11 @@ class OngkirController extends Controller
         ], 201);
     }
 
-    // PUT /api/ongkir/{id}
-    public function update(Request $request, $id)
+  // PUT /api/ongkir/{id_toko}/{id}
+    public function update(Request $request, $id_toko, $id)
     {
-        $ongkir = Ongkir::find($id);
+        // [PERBAIKAN] Cek $id_toko dulu
+        $ongkir = Ongkir::where('id_toko', $id_toko)->find($id);
         if (!$ongkir) {
             return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
@@ -71,11 +72,11 @@ class OngkirController extends Controller
             'data' => $ongkir
         ]);
     }
-
     // DELETE /api/ongkir/{id}
-    public function destroy($id)
+   public function destroy($id_toko, $id)
     {
-        $ongkir = Ongkir::find($id);
+        // [PERBAIKAN] Cek $id_toko dulu
+        $ongkir = Ongkir::where('id_toko', $id_toko)->find($id);
         if (!$ongkir) {
             return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
         }

@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <h2><i class="bi bi-moon-stars"></i> Tambah Info Keagamaan</h2>
 
-    <form action="{{ route('admin.ibadah.info.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="infoForm" action="{{ route('admin.ibadah.info.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="d-flex gap-4">
@@ -25,6 +25,11 @@
                 <div class="form-group mb-3 position-relative">
                     <label>Waktu</label>
                     <input type="text" id="waktu" name="waktu" class="form-control" placeholder="Klik untuk pilih waktu" readonly required>
+                    @error('waktu')
+                    <div class="invalid-feedback" style="display:block;">
+                        {{ $message }}
+                    </div>
+                    @enderror
 
                     <div id="jam-popup"
                         style="display:none; position:absolute; background:white; border-radius:12px;
@@ -106,11 +111,11 @@
         <div class="form-group mb-3">
             <label>Alamat</label>
             <input type="text" id="alamat" name="alamat"
-                        class="form-control @error('alamat') is-invalid @enderror"
-                        value="{{ old('alamat', $alamat ?? '') }}" required>
-                    @error('alamat')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                class="form-control @error('alamat') is-invalid @enderror"
+                value="{{ old('alamat', $alamat ?? '') }}" required>
+            @error('alamat')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group mb-3">
@@ -130,9 +135,14 @@
             </select>
         </div>
 
-        <div class="form-group mb-3">
-            <label>Foto</label>
-            <input type="file" name="foto" class="form-control" required>
+        <div class="mb-3">
+            <label for="foto">Foto</label>
+            <input type="file" name="foto" id="fotoInput"
+                class="form-control @error('foto') is-invalid @enderror"
+                accept="image/*"> {{-- filter hanya foto --}}
+            @error('foto')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
@@ -189,6 +199,17 @@
             waktuInput.value = `${selectedHour}:${minute}`;
             popup.style.display = 'none';
         });
+    });
+</script>
+
+<script>
+    document.getElementById('infoForm').addEventListener('submit', function(e) {
+        const waktuInput = document.getElementById('waktu');
+        if (!waktuInput.value.trim()) {
+            e.preventDefault();
+            waktuInput.classList.add('is-invalid');
+            alert('Silakan pilih waktu terlebih dahulu!');
+        }
     });
 </script>
 
@@ -326,6 +347,30 @@
                 alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
                 return false;
             }
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('fotoInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Tipe file yang diperbolehkan
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+        // Validasi tipe file
+        if (!allowedTypes.includes(file.type)) {
+            alert('File harus berupa gambar');
+            this.value = ""; // reset input
+            return;
+        }
+
+        // Validasi ukuran maksimal 2MB (opsional)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2MB.');
+            this.value = "";
+            return;
         }
     });
 </script>

@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\PanikButtonController;
 use App\Http\Controllers\Api\OngkirController;
 use App\Http\Controllers\Api\TokoController;
 use App\Http\Controllers\Api\MetodePembayaranController;
+use App\Http\Controllers\Api\AdminPesananController;
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
@@ -90,9 +91,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']); // tempat ibadah
 // HARUS diletakkan di atas route dengan parameter
 Route::get('/tempat-ibadah/all', [IbadahController::class, 'showtempatAll']);
-
 // baru setelah itu
 Route::get('/tempat-ibadah/{id?}', [IbadahController::class, 'showtempat']);
+//event agama
+Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  event agama
 
 // sekolah-yu
 Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);
@@ -214,7 +216,7 @@ Route::get('/produk/suggestions', [ProdukController::class, 'getSuggestions']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/produk/store', [ProdukController::class, 'store']);      // POST tambah produk
     Route::put('/produk/update/{id}', [ProdukController::class, 'update']);  // PUT edit produk
-    Route::delete('/produk/{id}', [ProdukController::class, 'destroy']); // DELETE produk
+    Route::delete('/produk/{id}', [ProdukController::class, 'destroy']); // DELETE produk
 });
 
 
@@ -231,6 +233,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transaksi/create', [TransaksiController::class, 'store']);
     Route::get('/transaksi/riwayat/{id_user}', [TransaksiController::class, 'riwayat']);
     Route::get('/transaksi/detail/{no_transaksi}', [TransaksiController::class, 'show']);
+    Route::post('/transaksi/batalkan/{no_transaksi}', [TransaksiController::class, 'batalkan']);
 });
 
 //Payment
@@ -242,14 +245,27 @@ Route::post('/payment/upload/{no_transaksi}', [PaymentController::class, 'upload
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ongkir/{id_toko}', [OngkirController::class, 'index']);
     Route::post('/ongkir/store', [OngkirController::class, 'store']);
-    Route::put('/ongkir/{id}', [OngkirController::class, 'update']);
-    Route::delete('/ongkir/{id}', [OngkirController::class, 'destroy']);
+    Route::put('/ongkir/{id_toko}/{id}', [OngkirController::class, 'update']);
+    Route::delete('/ongkir/{id_toko}/{id}', [OngkirController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/metode', [MetodePembayaranController::class, 'index']); // semua data
-    Route::get('/metode/show/{id_toko}', [MetodePembayaranController::class, 'show']); // untuk per toko
+    Route::get('/metode', [MetodePembayaranController::class, 'index']);
+    Route::get('/metode/show/{id_toko}', [MetodePembayaranController::class, 'show']);
     Route::post('/metode/create', [MetodePembayaranController::class, 'store']);
-    Route::put('/metode/update/{id}', [MetodePembayaranController::class, 'update']);
-    Route::delete('/metode/{id}', [MetodePembayaranController::class, 'destroy']);
+    Route::put('/metode/update/{id_toko}/{id}', [MetodePembayaranController::class, 'update']);
+    Route::delete('/metode/{id_toko}/{id}', [MetodePembayaranController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+    // 1. Mengambil semua pesanan toko
+    Route::get('/pesanan/{id_toko}', [AdminPesananController::class, 'index']);
+    // 2. Aksi Konfirmasi (Lunas)
+    Route::post('/pesanan/konfirmasi/{no_transaksi}', [AdminPesananController::class, 'konfirmasiPembayaran']);
+    // 3. Aksi Tolak Bukti Bayar
+    Route::post('/pesanan/tolak/{no_transaksi}', [AdminPesananController::class, 'tolakPembayaran']);
+    // 4. Aksi Kirim (Input Resi)
+    Route::post('/pesanan/kirim/{no_transaksi}', [AdminPesananController::class, 'kirimPesanan']);
+    // 5. Aksi Selesai
+    Route::post('/pesanan/selesai/{no_transaksi}', [AdminPesananController::class, 'tandaiSelesai']);
 });

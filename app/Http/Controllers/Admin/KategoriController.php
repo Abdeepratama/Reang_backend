@@ -31,6 +31,23 @@ class KategoriController extends Controller
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
+    public function edit(Kategori $kategori)
+    {
+        return view('admin.kategori.edit', compact('kategori'));
+    }
+
+    public function update(Request $request, Kategori $kategori)
+    {
+        $request->validate([
+            'fitur' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
+        ]);
+
+        $kategori->update($request->all());
+
+        return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil diperbarui.');
+    }
+
     public function destroy(Kategori $kategori)
     {
         $kategori->delete();

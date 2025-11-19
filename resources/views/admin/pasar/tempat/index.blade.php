@@ -22,7 +22,7 @@
                 <th>Alamat</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th>Fitur</th>
+                <th>Kategori</th>
                 <th>Foto</th>
                 <th>Aksi</th>
             </tr>

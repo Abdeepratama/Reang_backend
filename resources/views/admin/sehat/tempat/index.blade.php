@@ -4,11 +4,11 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>Daftar Tempat Sehat</h2>
+    <h2>Daftar Lokasi Kesehatan</h2>
 
     <a href="{{ route('admin.sehat.tempat.map') }}"class="btn btn-primary mb-3">Lihat Peta</a>
 
-    <a href="{{ route('admin.sehat.tempat.create') }}" class="btn btn-primary mb-3">Tambah Tempat Sehat</a>
+    <a href="{{ route('admin.sehat.tempat.create') }}" class="btn btn-primary mb-3">Tambah Lokasi kesehatan</a>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>

@@ -69,7 +69,7 @@ class MetodePembayaranController extends Controller
         $validated = $request->validate([
             'id_toko' => 'required|integer',
             'nama_metode' => 'required|string|max:255',
-            'jenis' => 'required|in:bank,qris',
+            'jenis' => 'required|in:bank,qris,cod',
             'nama_penerima' => 'nullable|string|max:255',
             'nomor_tujuan' => 'nullable|string|max:255',
             'foto_qris' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -109,7 +109,7 @@ class MetodePembayaranController extends Controller
 
         $validated = $request->validate([
             'nama_metode' => 'sometimes|required|string|max:255',
-            'jenis' => 'sometimes|required|in:bank,qris',
+            'jenis' => 'sometimes|required|in:bank,qris,cod',
             'nama_penerima' => 'nullable|string|max:255',
             'nomor_tujuan' => 'nullable|string|max:255',
             'foto_qris' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

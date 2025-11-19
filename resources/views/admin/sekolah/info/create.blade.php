@@ -17,15 +17,22 @@
             </div>
 
             <!-- Foto -->
-            <div class="form-group mb-3">
-                <label>Foto</label>
-                <input type="file" name="foto" class="form-control" required>
+            <div class="mb-3">
+                <label for="foto">Foto</label>
+                <input type="file"
+                    name="foto"
+                    id="fotoInput"
+                    class="form-control @error('foto') is-invalid @enderror"
+                    accept="image/*"> {{-- Hanya bisa pilih gambar --}}
+
+                @error('foto')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <!-- Deskripsi -->
             <div class="form-group mb-3">
                 <label>Deskripsi</label>
-                <small class="text-muted">Maksimal 255 karakter.</small>
                 <textarea name="deskripsi" id="editor" class="form-control" rows="5"></textarea>
             </div>
 
@@ -36,64 +43,72 @@
         </div>
     </form>
 </div>
-@endsection
 
 
-{{-- Semua script diletakkan di bawah agar CKEditor dimuat setelah halaman siap --}}
-@section('scripts')
-<!-- Load CKEditor -->
+{{-- CKEditor Script --}}
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inisialisasi CKEditor
-        let editorInstance;
+    // Inisialisasi CKEditor
+    let editor;
 
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                ckfinder: {
-                    uploadUrl: "{{ route('admin.sekolah.info.upload.image') }}?_token={{ csrf_token() }}"
-                }
-            })
-            .then(instance => {
-                editorInstance = instance;
-            })
-            .catch(error => {
-                console.error('CKEditor error:', error);
-            });
-
-        // Validasi form sebelum submit
-        document.getElementById('infoForm').addEventListener('submit', function(e) {
-            if (!editorInstance) {
-                e.preventDefault();
-                alert('Editor belum siap. Silakan tunggu beberapa detik dan coba lagi.');
-                return false;
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: "{{ route('admin.sehat.info.upload.image') }}?_token={{ csrf_token() }}"
             }
-
-            const deskripsi = editorInstance.getData().trim();
-
-            // kalau kosong, stop
-            if (deskripsi === '') {
-                e.preventDefault();
-                alert('Deskripsi harus diisi');
-                return false;
-            }
-
-            // simpan isi CKEditor ke textarea supaya terkirim ke Laravel
-            document.querySelector('textarea[name="deskripsi"]').value = deskripsi;
-
-            // validasi file
-            const fileInput = document.querySelector('input[name="foto"]');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-                if (!validTypes.includes(file.type)) {
-                    e.preventDefault();
-                    alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
-                    return false;
-                }
-            }
+        })
+        .then(instance => {
+            editor = instance;
+        })
+        .catch(error => {
+            console.error(error);
         });
+
+    // Validasi manual sebelum submit
+    document.getElementById('infoForm').addEventListener('submit', function(e) {
+        // Validasi CKEditor content
+        if (editor && editor.getData().trim() === '') {
+            e.preventDefault();
+            alert('Deskripsi harus diisi');
+            return false;
+        }
+
+        // Validasi file type
+        const fileInput = document.querySelector('input[name="foto"]');
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                e.preventDefault();
+                alert('Hanya file JPEG, PNG, dan JPG yang diizinkan');
+                return false;
+            }
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('fotoInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Tipe file yang diperbolehkan
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+        // Validasi tipe file
+        if (!allowedTypes.includes(file.type)) {
+            alert('File harus berupa gambar');
+            this.value = ""; // reset input
+            return;
+        }
+
+        // Validasi ukuran maksimal 2MB (opsional)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2MB.');
+            this.value = "";
+            return;
+        }
     });
 </script>
 @endsection

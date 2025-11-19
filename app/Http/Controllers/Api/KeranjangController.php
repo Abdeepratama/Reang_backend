@@ -32,90 +32,88 @@ class KeranjangController extends Controller
      * Menambah/Update produk ke keranjang (Smart Logic).
      */
     public function tambah(Request $request)
-    {
-        $request->validate([
-            'id_user' => 'required|integer|exists:users,id',
-            'id_toko' => 'required|integer|exists:toko,id',
-            'id_produk' => 'required|integer|exists:produk,id',
-            'jumlah' => 'required|integer|min:1',
-            'variasi' => 'nullable|string', // <-- [BARU] Menerima variasi
-        ]);
+{
+    $data = $request->validate([
+        'id_user'   => 'required|integer|exists:users,id',
+        'id_toko'   => 'required|integer|exists:toko,id',
+        'id_produk' => 'required|integer|exists:produk,id',
+        'id_varian' => 'required|integer|exists:produk_varian,id',
+        'jumlah'    => 'required|integer|min:1',
+        'variasi'   => 'nullable|string',
+    ]);
 
-        $id_user = $request->id_user;
-        $id_produk = $request->id_produk;
-        $jumlah_baru = $request->jumlah;
-        $variasi = $request->variasi;
+    $id_user     = $data['id_user'];
+    $id_produk   = $data['id_produk'];
+    $id_varian   = $data['id_varian'];
+    $jumlah_baru = $data['jumlah'];
+    $nama_variasi = $data['variasi'] ?? null;
 
-        // 1. Cek Produk & Stok
-        $produk = DB::table('produk')->where('id', $id_produk)->first();
-        if (!$produk) {
-            return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+    // Ambil varian
+    $varian = DB::table('produk_varian')
+        ->where('id', $id_varian)
+        ->where('id_produk', $id_produk)
+        ->first();
+
+    if (!$varian) {
+        return response()->json(['message' => 'Varian produk tidak ditemukan'], 404);
+    }
+
+    // Cek item keranjang yang sama (produk + varian)
+    $item_keranjang = DB::table('keranjang')
+        ->where('id_user', $id_user)
+        ->where('id_produk', $id_produk)
+        ->where('id_varian', $id_varian)
+        ->first();
+
+    // Jika item sudah ada → Update
+    if ($item_keranjang) {
+
+        $jumlah_total = $item_keranjang->jumlah + $jumlah_baru;
+
+        if ($jumlah_total > $varian->stok) {
+            return response()->json([
+                'message' => 'Jumlah melebihi stok yang tersedia (Stok: ' . $varian->stok . ')'
+            ], 422);
         }
 
-        // 2. Cari item yang SAMA PERSIS (produk + variasi) di keranjang
-        $item_keranjang = DB::table('keranjang')
-            ->where('id_user', $id_user)
-            ->where('id_produk', $id_produk)
-            ->where('variasi', $variasi) // <-- [BARU] Cek variasinya juga
-            ->first();
+        $subtotal_baru = $varian->harga * $jumlah_total;
 
-        if ($item_keranjang) {
-            // --- [LOGIKA UPDATE] ---
-            // Barang sudah ada, kita update jumlahnya
-            
-            $jumlah_total = $item_keranjang->jumlah + $jumlah_baru;
-
-            // 3. Validasi Stok (Gabungan)
-            if ($jumlah_total > $produk->stok) {
-                return response()->json([
-                    'message' => 'Jumlah melebihi stok yang tersedia (Stok: ' . $produk->stok . ')'
-                ], 422); // Error 422 Unprocessable Entity
-            }
-
-            // 4. Update Jumlah & Subtotal
-            $subtotal_baru = $produk->harga * $jumlah_total;
-            DB::table('keranjang')
-                ->where('id', $item_keranjang->id)
-                ->update([
-                    'jumlah' => $jumlah_total,
-                    'subtotal' => $subtotal_baru,
-                    'stok' => $produk->stok, // Update info stok
-                    'updated_at' => Carbon::now(),
-                ]);
-            
-            return response()->json(['message' => 'Kuantitas produk diperbarui di keranjang']);
-
-        } else {
-            // --- [LOGIKA INSERT] ---
-            // Ini barang baru (atau variasi baru), kita insert
-            
-            // 3. Validasi Stok (Awal)
-            if ($jumlah_baru > $produk->stok) {
-                return response()->json([
-                    'message' => 'Jumlah melebihi stok yang tersedia (Stok: ' . $produk->stok . ')'
-                ], 422);
-            }
-
-            // 4. Insert data baru
-            $subtotal = $produk->harga * $jumlah_baru;
-            DB::table('keranjang')->insert([
-                'id_toko' => $request->id_toko,
-                'id_user' => $id_user,
-                'id_produk' => $id_produk,
-                'variasi' => $variasi, // <-- [BARU] Simpan variasinya
-                'harga' => $produk->harga,
-                'stok' => $produk->stok,
-                'jumlah' => $jumlah_baru,
-                'subtotal' => $subtotal,
-                'created_at' => Carbon::now(),
+        DB::table('keranjang')
+            ->where('id', $item_keranjang->id)
+            ->update([
+                'jumlah'     => $jumlah_total,
+                'subtotal'   => $subtotal_baru,
+                'stok'       => $varian->stok,
+                'updated_at' => Carbon::now(),
             ]);
 
-            return response()->json(['message' => 'Produk ditambahkan ke keranjang']);
-        }
+        return response()->json(['message' => 'Kuantitas produk diperbarui di keranjang']);
     }
-    // =======================================================================
-    // --- [PEROMBAKAN SELESAI] ---
-    // =======================================================================
+
+    // Jika belum ada → Insert item baru
+    if ($jumlah_baru > $varian->stok) {
+        return response()->json([
+            'message' => 'Jumlah melebihi stok yang tersedia (Stok: ' . $varian->stok . ')'
+        ], 422);
+    }
+
+    $subtotal = $varian->harga * $jumlah_baru;
+
+    DB::table('keranjang')->insert([
+        'id_toko'   => $data['id_toko'],
+        'id_user'   => $id_user,
+        'id_produk' => $id_produk,
+        'id_varian' => $id_varian,
+        'variasi'   => $nama_variasi,
+        'harga'     => $varian->harga,
+        'stok'      => $varian->stok,
+        'jumlah'    => $jumlah_baru,
+        'subtotal'  => $subtotal,
+        'created_at'=> Carbon::now(),
+    ]);
+
+    return response()->json(['message' => 'Produk ditambahkan ke keranjang']);
+}
 
 
     /**
@@ -149,42 +147,71 @@ class KeranjangController extends Controller
     }
 
 
-    /**
-     * 🔹 PUT: /api/keranjang/update/{id}
-     * (Fungsi 'update' Anda sudah benar, tidak diubah)
-     * (Validasi stok di sini sudah menangani stok jebol dari CartScreen)
-     */
-    public function update(Request $request, $id)
-    {
-        // ... (Fungsi 'update' Anda sudah benar dan aman) ...
-        $request->validate([
-            'jumlah' => 'required|integer|min:1',
-        ]);
-        $id_user = $request->user()->id;
-        $item = DB::table('keranjang')
-            ->where('id', $id)
-            ->where('id_user', $id_user)
-            ->first();
-        if (!$item) {
-            return response()->json(['message' => 'Item keranjang tidak ditemukan'], 404);
-        }
-        $produk = DB::table('produk')->find($item->id_produk);
-        if ($request->jumlah > $produk->stok) {
-            return response()->json([
-                'message' => 'Jumlah melebihi stok yang tersedia (Stok: ' . $produk->stok . ')'
-            ], 422);
-        }
-        $subtotal = $item->harga * $request->jumlah;
-        DB::table('keranjang')
-            ->where('id', $id)
-            ->update([
-                'jumlah' => $request->jumlah,
-                'subtotal' => $subtotal,
-                'stok' => $produk->stok,
-                'updated_at' => Carbon::now(),
-            ]);
-        return response()->json(['message' => 'Jumlah produk diperbarui']);
+  // =======================================================================
+// --- [PERBAIKAN TOTAL] FUNGSI UPDATE (LOGIKA VARIAN) ---
+// =======================================================================
+public function update(Request $request, $id)
+{
+    // 1. Validasi jumlah
+    $request->validate([
+        'jumlah' => 'required|integer|min:1',
+    ]);
+
+    $id_user = $request->user()->id;
+
+    // 2. Ambil item keranjang berdasarkan ID & user
+    $item = DB::table('keranjang')
+        ->where('id', $id)
+        ->where('id_user', $id_user)
+        ->first();
+
+    if (!$item) {
+        return response()->json([
+            'message' => 'Item keranjang tidak ditemukan'
+        ], 404);
     }
+
+    // 3. Pastikan item keranjang punya varian
+    if (empty($item->id_varian)) {
+        return response()->json([
+            'message' => 'Data keranjang lama tidak valid. Hapus dan tambahkan ulang.'
+        ], 422);
+    }
+
+    // 4. Ambil varian dari tabel produk_varian
+    $varian = DB::table('produk_varian')->find($item->id_varian);
+
+    if (!$varian) {
+        return response()->json([
+            'message' => 'Varian produk ini sudah tidak ada'
+        ], 404);
+    }
+
+    // 5. Cek stok varian
+    if ($request->jumlah > $varian->stok) {
+        return response()->json([
+            'message' => 'Jumlah melebihi stok yang tersedia (Stok: ' . $varian->stok . ')'
+        ], 422);
+    }
+
+    // 6. Hitung subtotal baru
+    $subtotal = $item->harga * $request->jumlah;
+
+    // 7. Update keranjang
+    DB::table('keranjang')
+        ->where('id', $id)
+        ->update([
+            'jumlah'      => $request->jumlah,
+            'subtotal'    => $subtotal,
+            'stok'        => $varian->stok, // simpan stok terbaru
+            'updated_at'  => Carbon::now(),
+        ]);
+
+    return response()->json([
+        'message' => 'Jumlah produk berhasil diperbarui'
+    ]);
+}
+
 
     /**
      * 🔹 DELETE: /api/keranjang/hapus/{id}

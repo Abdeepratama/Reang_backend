@@ -3,31 +3,60 @@
 @section('title', 'Tambah Kategori DUMAS')
 
 @section('content')
-<div class="container mt-4">
-    <h2>Tambah Kategori Dumas</h2>
+<div class="container mt-5">
 
-    <form action="{{ route('admin.kategori_dumas.store') }}" method="POST">
-        @csrf
+    <div class="row justify-content-center">
+        <div class="col-md-7">
 
-        {{-- Pilih Instansi --}}
-        <div class="mb-3">
-            <label for="id_instansi" class="form-label">Instansi</label>
-            <select class="form-select" id="id_instansi" name="id_instansi" required>
-                <option value="" selected disabled>Pilih Instansi</option>
-                @foreach($instansis as $instansi)
-                    <option value="{{ $instansi->id }}">{{ $instansi->nama }}</option>
-                @endforeach
-            </select>
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0 text-center">Tambah Kategori DUMAS</h4>
+                </div>
+
+                <div class="card-body px-4 py-4">
+
+                    <form action="{{ route('admin.kategori_dumas.store') }}" method="POST">
+                        @csrf
+
+                        {{-- Pilih Instansi --}}
+                        <div class="mb-4">
+                            <label for="id_instansi" class="form-label fw-semibold">Instansi</label>
+                            <select class="form-select shadow-sm" id="id_instansi" name="id_instansi" required>
+                                <option value="" selected disabled>Pilih Instansi</option>
+                                @foreach($instansis as $instansi)
+                                    <option value="{{ $instansi->id }}">{{ $instansi->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Nama Kategori --}}
+                        <div class="mb-4">
+                            <label for="nama_kategori" class="form-label fw-semibold">Nama Kategori</label>
+                            <input type="text"
+                                   class="form-control shadow-sm"
+                                   id="nama_kategori"
+                                   name="nama_kategori"
+                                   required
+                                   placeholder="Contoh: Kesehatan, Kependudukan, Pendidikan">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('admin.kategori_dumas.index') }}" class="btn btn-secondary px-4">
+                                <i class="fe fe-arrow-left"></i> Kembali
+                            </a>
+
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fe fe-save"></i> Simpan
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
         </div>
+    </div>
 
-        {{-- Nama Kategori --}}
-        <div class="mb-3">
-            <label for="nama_kategori" class="form-label">Nama Kategori</label>
-            <input type="text" class="form-control" id="nama_kategori" name="nama_kategori" required placeholder="Contoh: Jalan Rusak, Banjir, Sampah">
-        </div>
-
-        <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('admin.kategori_dumas.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
 </div>
 @endsection

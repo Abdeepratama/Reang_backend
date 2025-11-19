@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-5">
-    <h2 class="mb-5 text-center fw-bold text-primary">
+    <h2 class="mb-5 text-center fw-bold">
         Dashboard Settings
     </h2>
 

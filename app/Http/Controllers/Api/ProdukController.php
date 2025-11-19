@@ -7,15 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ProdukController extends Controller
 {
     /**
-     * Format path foto menjadi URL penuh (mengikuti domain).
+     * Format path foto menjadi URL penuh.
      *
-     * - Jika foto kosong -> null
-     * - Jika sudah URL (http/https) -> kembalikan apa adanya
-     * - Lainnya -> gunakan Storage::url() lalu url() agar mengikuti APP_URL
+     * @param string|null $fotoPath
+     * @return string|null
      */
     protected function formatFotoUrl($fotoPath)
     {
@@ -23,22 +23,47 @@ class ProdukController extends Controller
             return null;
         }
 
-        // Jika sudah URL, kembalikan apa adanya
+        // Jika sudah URL penuh, kembalikan apa adanya
         if (Str::startsWith($fotoPath, ['http://', 'https://'])) {
             return $fotoPath;
         }
 
-        // Jika path relatif, gunakan Storage::url() lalu url() untuk mendapatkan domain penuh
         try {
-            $storageUrl = Storage::url($fotoPath); // -> '/storage/produk/xxx.jpg'
-            return url($storageUrl); // -> 'https://domain.com/storage/produk/xxx.jpg'
+            // Storage::url mengembalikan path publik (mis. /storage/...)
+            $storageUrl = Storage::url($fotoPath);
+            return url($storageUrl);
         } catch (\Throwable $e) {
+            // Jika ada kesalahan, fallback ke path aslinya
             return $fotoPath;
         }
     }
 
+    /**
+     * Helper internal untuk menghapus file dari storage.
+     * Menerima baik URL penuh maupun path relatif.
+     *
+     * @param string|null $path
+     * @return void
+     */
+    protected function hapusFileStorage($path)
+    {
+        if (empty($path)) {
+            return;
+        }
 
-
+        try {
+            // Jika path mengandung '/storage/', ekstrak path relatif setelah itu
+            if (Str::contains($path, '/storage/')) {
+                $relativePath = preg_replace('#^https?://[^/]+/storage/#', '', $path);
+                Storage::disk('public')->delete($relativePath);
+            } else {
+                // Anggap sudah path relatif (mis. 'produk/xxx.jpg' atau 'produk_galeri/yyy.jpg')
+                Storage::disk('public')->delete($path);
+            }
+        } catch (\Exception $e) {
+            // Abaikan error saat menghapus file (mis. file tidak ada)
+        }
+    }
 
     // 🔹 GET: /api/produk/{id}
     public function show($id)
@@ -49,10 +74,21 @@ class ProdukController extends Controller
             return response()->json(['message' => 'Produk tidak ditemukan'], 404);
         }
 
+        // Ambil varian
+        $produk->varians = DB::table('produk_varian')->where('id_produk', $id)->get();
+
+        // Ambil galeri foto (jika ada) dan format URL
+        $produk->galeri_foto = DB::table('produk_foto')
+            ->where('id_produk', $id)
+            ->get()
+            ->map(function ($foto) {
+                $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
+                return $foto;
+            });
+
+        // Format foto utama jika ada
         if (isset($produk->foto)) {
             $produk->foto = $this->formatFotoUrl($produk->foto);
-        } else {
-            $produk->foto = null;
         }
 
         return response()->json($produk);
@@ -61,6 +97,7 @@ class ProdukController extends Controller
     // 🔹 GET: /api/produk/toko/{id_toko}
     public function showByToko($id_toko)
     {
+        // 1. Ambil semua produk milik toko
         $produk = DB::table('produk')
             ->where('id_toko', $id_toko)
             ->orderBy('created_at', 'desc')
@@ -73,12 +110,28 @@ class ProdukController extends Controller
             ], 404);
         }
 
-        $produk->transform(function ($item) {
-            if (isset($item->foto)) {
-                $item->foto = $this->formatFotoUrl($item->foto);
-            } else {
-                $item->foto = null;
-            }
+        // Kumpulkan semua ID produk
+        $produkIds = $produk->pluck('id');
+
+        // Eager load varian dan galeri
+        $allVarians = DB::table('produk_varian')
+            ->whereIn('id_produk', $produkIds)
+            ->get()
+            ->groupBy('id_produk');
+
+        $allGaleri = DB::table('produk_foto')
+            ->whereIn('id_produk', $produkIds)
+            ->get()
+            ->groupBy('id_produk');
+
+        // Lampirkan varian dan galeri ke setiap produk
+        $produk->transform(function ($item) use ($allVarians, $allGaleri) {
+            $item->foto = isset($item->foto) ? $this->formatFotoUrl($item->foto) : null;
+            $item->varians = $allVarians[$item->id] ?? [];
+            $item->galeri_foto = collect($allGaleri[$item->id] ?? [])->map(function ($foto) {
+                $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
+                return $foto;
+            });
             return $item;
         });
 
@@ -89,266 +142,360 @@ class ProdukController extends Controller
         ]);
     }
 
-    // 🔹 POST: /api/produk
+    // 🔹 POST: /api/produk/store
     public function store(Request $request)
     {
-        // Terima 'foto' sebagai nullable (bisa file atau string)
-        $data = $request->validate([
+        // Validasi input
+        $dataProduk = $request->validate([
             'id_toko' => 'required|integer|exists:toko,id',
             'nama' => 'required|string|max:255',
-            'foto' => 'nullable', // tidak dipaksakan string di sini
-            'harga' => 'required|numeric',
-            'variasi' => 'nullable|string',
+            'foto' => 'nullable|file|image|max:2048',
             'deskripsi' => 'nullable|string',
             'spesifikasi' => 'nullable|string',
             'fitur' => 'nullable|string',
-            'stok' => 'required|integer',
+
+            'varians' => 'required|array|min:1',
+            'varians.*.nama_varian' => 'required|string|max:100',
+            'varians.*.harga' => 'required|numeric|min:0',
+            'varians.*.stok' => 'required|integer|min:0',
+
+            'galeri_foto' => 'nullable|array',
+            'galeri_foto.*' => 'file|image|max:2048',
         ]);
 
-        // Jika ada file upload pada key 'foto', simpan ke disk public
+        $fotoPath = null;
+        $galeriPaths = [];
+
+        // Simpan foto utama jika ada
         if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            if ($file->isValid()) {
-                // Simpan di storage/app/public/produk
-                $path = $file->store('produk', 'public'); // ex: 'produk/abcd.jpg'
-                $data['foto'] = $path;
-            }
-        } else {
-            // Jika frontend mengirim 'foto' sebagai string path/URL, biarkan apa adanya
-            if (isset($data['foto']) && is_string($data['foto']) && $data['foto'] !== '') {
-                // tetap simpan string tersebut (mis. 'produk/abc.jpg' atau full URL)
-            } else {
-                $data['foto'] = null;
-            }
+            $fotoPath = $request->file('foto')->store('produk', 'public');
         }
 
-        $data['created_at'] = now();
-        $data['updated_at'] = now();
+        DB::beginTransaction();
+        try {
+            // Simpan produk induk
+            $produkId = DB::table('produk')->insertGetId([
+                'id_toko' => $dataProduk['id_toko'],
+                'nama' => $dataProduk['nama'],
+                'deskripsi' => $dataProduk['deskripsi'] ?? null,
+                'spesifikasi' => $dataProduk['spesifikasi'] ?? null,
+                'fitur' => $dataProduk['fitur'] ?? null,
+                'foto' => $fotoPath,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        $id = DB::table('produk')->insertGetId($data);
+            // Simpan varian
+            $varianData = [];
+            foreach ($request->varians as $varian) {
+                $varianData[] = [
+                    'id_produk' => $produkId,
+                    'nama_varian' => $varian['nama_varian'],
+                    'harga' => $varian['harga'],
+                    'stok' => $varian['stok'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('produk_varian')->insert($varianData);
 
-        return response()->json([
-            'message' => 'Produk berhasil ditambahkan',
-            'id' => $id
-        ]);
+            // Simpan galeri foto (jika ada)
+            $galeriInsertData = [];
+            if ($request->hasFile('galeri_foto')) {
+                foreach ($request->file('galeri_foto') as $file) {
+                    if ($file->isValid()) {
+                        $path = $file->store('produk_galeri', 'public');
+                        $galeriPaths[] = $path;
+                        $galeriInsertData[] = [
+                            'id_produk' => $produkId,
+                            'path_foto' => $path,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+                if (!empty($galeriInsertData)) {
+                    DB::table('produk_foto')->insert($galeriInsertData);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Produk dan varian berhasil ditambahkan',
+                'id' => $produkId
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Hapus file yang sudah tersimpan (rollback storage)
+            if ($fotoPath) {
+                $this->hapusFileStorage($fotoPath);
+            }
+            foreach ($galeriPaths as $p) {
+                $this->hapusFileStorage($p);
+            }
+
+            return response()->json(['error' => 'Gagal menyimpan produk: ' . $e->getMessage()], 500);
+        }
     }
+
+    // 🔹 GET: /api/produk/show (paginate)
     public function index(Request $request)
     {
-        // 1. Mulai query builder
         $query = DB::table('produk')
-            // --- TAMBAHKAN JOIN INI ---
             ->join('toko', 'produk.id_toko', '=', 'toko.id')
-            // --- TAMBAHKAN SELECT INI ---
-            ->select(
-                'produk.*', // Ambil semua kolom dari tabel 'produk'
-                'toko.alamat as lokasi' // Ambil 'alamat' dari 'toko' dan namai 'lokasi'
-            )
-            // --- PERBAIKI INI (Tambahkan 'produk.') ---
+            ->select('produk.*', 'toko.alamat as lokasi', 'toko.nama as nama_toko')
             ->orderBy('produk.created_at', 'desc');
 
-        // 3. Tambahkan filter Kategori (fitur) jika ada
+        // Filter fitur (kategori)
         if ($request->has('fitur') && $request->input('fitur') != 'Semua') {
-            // --- PERBAIKI INI (Tambahkan 'produk.') ---
             $query->where('produk.fitur', $request->input('fitur'));
         }
 
-        // 4. Tambahkan filter Search (q) jika ada
+        // Search q
         if ($request->has('q') && $request->input('q') != '') {
             $searchText = $request->input('q');
             $query->where(function ($q) use ($searchText) {
-                // --- PERBAIKI INI (Tambahkan 'produk.') ---
                 $q->where('produk.nama', 'like', '%' . $searchText . '%')
-                  ->orWhere('produk.deskripsi', 'like', '%' . $searchText . '%');
+                    ->orWhere('produk.deskripsi', 'like', '%' . $searchText . '%');
             });
         }
 
-        // 5. Eksekusi query dengan paginasi (tidak berubah)
-        $produk = $query->paginate(15)
-                        ->appends($request->query());
-
-        // 6. Format foto (tidak berubah)
-        $produk->getCollection()->transform(function ($item) {
-            if (isset($item->foto)) {
-                $item->foto = $this->formatFotoUrl($item->foto);
-            } else {
-                $item->foto = null;
-            }
-            return $item;
-        });
-
-        return response()->json($produk);
-    }
-// =======================================================================
-    // --- TAMBAHKAN METODE BARU DI SINI ---
-    // =======================================================================
-    /**
-     * 🔹 GET: /api/produk/kategori/{kategori}
-     * Menampilkan produk berdasarkan kategori (fitur) dengan paginasi.
-     * Mendukung: /api/produk/kategori/baju?page=2
-     * Mendukung: /api/produk/kategori/baju?q=kaos
-     */
-    public function showByKategori(Request $request, $kategori)
-    {
-        // 1. Mulai query builder dan FILTER berdasarkan parameter URL
-        $query = DB::table('produk')
-            ->where('fitur', $kategori) // <-- INI LOGIKA UTAMANYA
-            ->orderBy('created_at', 'desc');
-
-        // 2. (BONUS) Tambahkan filter Search (q) jika ada
-        if ($request->has('q') && $request->input('q') != '') {
-            $searchText = $request->input('q');
-            $query->where(function ($q) use ($searchText) {
-                $q->where('nama', 'like', '%' . $searchText . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $searchText . '%');
-            });
-        }
-
-        // 3. Eksekusi query dengan paginasi
         $produk = $query->paginate(15)->appends($request->query());
 
-        // 4. Format foto
-        $produk->getCollection()->transform(function ($item) {
-            if (isset($item->foto)) {
-                $item->foto = $this->formatFotoUrl($item->foto);
-            } else {
-                $item->foto = null;
-            }
+        // Eager load varian & galeri untuk collection hasil paginate
+        $produkIds = $produk->pluck('id');
+        $allVarians = DB::table('produk_varian')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
+        $allGaleri = DB::table('produk_foto')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
+
+        $produk->getCollection()->transform(function ($item) use ($allVarians, $allGaleri) {
+            $item->foto = isset($item->foto) ? $this->formatFotoUrl($item->foto) : null;
+            $item->varians = $allVarians[$item->id] ?? [];
+            $item->galeri_foto = collect($allGaleri[$item->id] ?? [])->map(function ($foto) {
+                $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
+                return $foto;
+            });
             return $item;
         });
 
         return response()->json($produk);
     }
-    ///serch suggestions
+
+    // 🔹 GET: /api/produk/kategori/{kategori}
+    public function showByKategori(Request $request, $kategori)
+    {
+        $query = DB::table('produk')
+            ->join('toko', 'produk.id_toko', '=', 'toko.id')
+            ->select('produk.*', 'toko.alamat as lokasi', 'toko.nama as nama_toko')
+            ->where('fitur', $kategori)
+            ->orderBy('produk.created_at', 'desc');
+
+        // optional search 'q'
+        if ($request->has('q') && $request->input('q') != '') {
+            $searchText = $request->input('q');
+            $query->where(function ($q) use ($searchText) {
+                $q->where('produk.nama', 'like', '%' . $searchText . '%')
+                    ->orWhere('produk.deskripsi', 'like', '%' . $searchText . '%');
+            });
+        }
+
+        $produk = $query->paginate(15)->appends($request->query());
+
+        // Eager load varian & galeri
+        $produkIds = $produk->pluck('id');
+        $allVarians = DB::table('produk_varian')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
+        $allGaleri = DB::table('produk_foto')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
+
+        $produk->getCollection()->transform(function ($item) use ($allVarians, $allGaleri) {
+            $item->foto = isset($item->foto) ? $this->formatFotoUrl($item->foto) : null;
+            $item->varians = $allVarians[$item->id] ?? [];
+            $item->galeri_foto = collect($allGaleri[$item->id] ?? [])->map(function ($foto) {
+                $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
+                return $foto;
+            });
+            return $item;
+        });
+
+        return response()->json($produk);
+    }
+
+    // 🔹 GET: suggestions (placeholder)
     public function getSuggestions(Request $request)
     {
-        // 1. Validasi input: kita butuh parameter 'q' (query)
         if (!$request->has('q') || $request->input('q') == '') {
-            // Jika tidak ada query, kembalikan array kosong
             return response()->json([]);
         }
 
-        $query = $request->input('q');
-        
-        // Kita cari kata yang 'dimulai dengan' query. Misal: "g%"
-        $searchQuery = $query . '%';
+        // Implementasi suggestions sesuai kebutuhan (mis. query ke produk.nama)
+        // Contoh singkat (bisa diubah sesuai kebutuhan):
+        $q = $request->input('q');
+        $results = DB::table('produk')
+            ->select('id', 'nama')
+            ->where('nama', 'like', '%' . $q . '%')
+            ->limit(10)
+            ->get();
 
-        // 2. Cari 7 nama produk unik yang cocok
-        $namaSuggestions = DB::table('produk')
-            ->where('nama', 'like', $searchQuery)
-            ->distinct()
-            ->limit(7) // Ambil 7 dari nama
-            ->pluck('nama'); // -> ["gitar listrik", "gitar akustik", "gelang pria"]
-
-        // 3. Cari 3 nama kategori (fitur) unik yang cocok
-        $fiturSuggestions = DB::table('produk')
-            ->where('fitur', 'like', $searchQuery)
-            ->distinct()
-            ->limit(3) // Ambil 3 dari kategori
-            ->pluck('fitur'); // -> ["gelang", "gantungan"]
-
-        // 4. Gabungkan keduanya, pastikan unik, dan ambil total 10
-        $allSuggestions = $namaSuggestions->merge($fiturSuggestions)
-                                         ->unique() // Hapus duplikat (misal 'baju' ada di nama & fitur)
-                                         ->values() // Reset keys array
-                                         ->take(10); // Batasi total 10 sugesti
-
-        // 5. Kembalikan sebagai JSON array of strings
-        return response()->json($allSuggestions);
+        return response()->json($results);
     }
-    
 
-    // 🔹 PUT: /api/produk/{id}
+    // 🔹 PUT: /api/produk/update/{id}
     public function update(Request $request, $id)
     {
         $produk = DB::table('produk')->where('id', $id)->first();
-
         if (!$produk) {
             return response()->json(['message' => 'Produk tidak ditemukan'], 404);
         }
 
-        $data = $request->validate([
-            'id_toko' => 'sometimes|integer|exists:toko,id',
+        $dataProduk = $request->validate([
             'nama' => 'sometimes|string|max:255',
             'foto' => 'nullable',
-            'harga' => 'sometimes|numeric',
-            'variasi' => 'nullable|string',
             'deskripsi' => 'nullable|string',
             'spesifikasi' => 'nullable|string',
             'fitur' => 'nullable|string',
-            'stok' => 'sometimes|integer',
+
+            'varians' => 'sometimes|array',
+            'varians.*.id' => 'nullable|integer',
+            'varians.*.nama_varian' => 'required|string|max:100',
+            'varians.*.harga' => 'required|numeric|min:0',
+            'varians.*.stok' => 'required|integer|min:0',
+
+            'galeri_foto' => 'nullable|array',
+            'galeri_foto.*' => 'file|image|max:2048',
+            'hapus_galeri_ids' => 'nullable|array',
+            'hapus_galeri_ids.*' => 'integer',
         ]);
 
-        // Jika ada file upload baru pada key 'foto', simpan dan hapus file lama jika ada
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            if ($file->isValid()) {
-                // simpan file baru
-                $path = $file->store('produk', 'public'); // 'produk/xxx.jpg'
-                $data['foto'] = $path;
+        $updateDataProduk = [];
+        $newGaleriPaths = [];
 
-                // hapus file lama jika ada
-                if (!empty($produk->foto)) {
-                    // Produk->foto mungkin berisi full URL atau path relatif.
-                    $old = $produk->foto;
+        DB::beginTransaction();
+        try {
+            // Update foto utama: jika ada file baru, hapus file lama lalu simpan yang baru
+            if ($request->hasFile('foto')) {
+                $this->hapusFileStorage($produk->foto);
+                $updateDataProduk['foto'] = $request->file('foto')->store('produk', 'public');
+            } elseif ($request->filled('foto') && $request->input('foto') === '') {
+                // Jika klien mengirim foto = '' artinya ingin menghapus foto utama
+                $this->hapusFileStorage($produk->foto);
+                $updateDataProduk['foto'] = null;
+            }
 
-                    // Jika full URL yang mengandung '/storage/', ambil bagian setelah '/storage/'
-                    if (Str::contains($old, '/storage/')) {
-                        $relative = preg_replace('#^https?://[^/]+/storage/#', '', $old);
-                        Storage::disk('public')->delete($relative);
+            // Update field produk lain (jika ada)
+                if (array_key_exists('nama', $dataProduk)) $updateDataProduk['nama'] = $dataProduk['nama'];
+                if (array_key_exists('deskripsi', $dataProduk)) $updateDataProduk['deskripsi'] = $dataProduk['deskripsi'];
+                if (array_key_exists('spesifikasi', $dataProduk)) $updateDataProduk['spesifikasi'] = $dataProduk['spesifikasi'];
+                if (array_key_exists('fitur', $dataProduk)) $updateDataProduk['fitur'] = $dataProduk['fitur'];
+
+                if (!empty($updateDataProduk))
+                {
+                $updateDataProduk['updated_at'] = now();
+                DB::table('produk')->where('id', $id)->update($updateDataProduk);
+            }
+
+            // Sinkronisasi varian
+            if ($request->has('varians')) {
+                $varianBaruIds = [];
+                foreach ($request->varians as $varian) {
+                    $varianPayload = [
+                        'nama_varian' => $varian['nama_varian'],
+                        'harga' => $varian['harga'],
+                        'stok' => $varian['stok'],
+                        'updated_at' => now(),
+                    ];
+
+                    if (isset($varian['id']) && $varian['id'] != null) {
+                        $varianId = $varian['id'];
+                        DB::table('produk_varian')->where('id', $varianId)->update($varianPayload);
+                        $varianBaruIds[] = $varianId;
                     } else {
-                        // Anggap sudah relatif seperti 'produk/xxx.jpg'
-                        Storage::disk('public')->delete($old);
+                        $varianPayload['id_produk'] = $id;
+                        $varianPayload['created_at'] = now();
+                        $newId = DB::table('produk_varian')->insertGetId($varianPayload);
+                        $varianBaruIds[] = $newId;
                     }
                 }
+
+                // Hapus varian yang tidak ada di payload
+                DB::table('produk_varian')
+                    ->where('id_produk', $id)
+                    ->whereNotIn('id', $varianBaruIds)
+                    ->delete();
             }
-        } else {
-            // jika frontend memberi 'foto' string baru (misal mengganti path), simpan string itu
-            if (array_key_exists('foto', $data)) {
-                if ($data['foto'] === null || $data['foto'] === '') {
-                    // jika ingin mengosongkan foto, hapus file lama juga jika ada
-                    if (!empty($produk->foto)) {
-                        $old = $produk->foto;
-                        if (Str::contains($old, '/storage/')) {
-                            $relative = preg_replace('#^https?://[^/]+/storage/#', '', $old);
-                            Storage::disk('public')->delete($relative);
-                        } else {
-                            Storage::disk('public')->delete($old);
-                        }
+
+            // Hapus foto galeri yang diminta
+            if ($request->has('hapus_galeri_ids')) {
+                $idsToHapus = $request->input('hapus_galeri_ids');
+                if (!empty($idsToHapus)) {
+                    $fotoLama = DB::table('produk_foto')
+                        ->where('id_produk', $id)
+                        ->whereIn('id', $idsToHapus)
+                        ->get();
+
+                    foreach ($fotoLama as $foto) {
+                        $this->hapusFileStorage($foto->path_foto);
                     }
-                    $data['foto'] = null;
-                } else {
-                    // simpan string yang diberikan (asumsikan path relatif atau URL)
+
+                    DB::table('produk_foto')->whereIn('id', $idsToHapus)->delete();
                 }
             }
+
+            // Tambah foto galeri baru (jika ada)
+            if ($request->hasFile('galeri_foto')) {
+                $galeriInsertData = [];
+                foreach ($request->file('galeri_foto') as $file) {
+                    if ($file->isValid()) {
+                        $path = $file->store('produk_galeri', 'public');
+                        $newGaleriPaths[] = $path;
+                        $galeriInsertData[] = [
+                            'id_produk' => $id,
+                            'path_foto' => $path,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+                if (!empty($galeriInsertData)) {
+                    DB::table('produk_foto')->insert($galeriInsertData);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Produk berhasil diperbarui']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Hapus foto baru/galeri yang sudah tersimpan saat gagal
+            if (isset($updateDataProduk['foto']) && $updateDataProduk['foto']) {
+                $this->hapusFileStorage($updateDataProduk['foto']);
+            }
+            foreach ($newGaleriPaths as $p) {
+                $this->hapusFileStorage($p);
+            }
+
+            return response()->json(['error' => 'Gagal memperbarui produk: ' . $e->getMessage()], 500);
         }
-
-        $data['updated_at'] = now();
-
-        DB::table('produk')->where('id', $id)->update($data);
-
-        return response()->json(['message' => 'Produk berhasil diperbarui']);
     }
 
     // 🔹 DELETE: /api/produk/{id}
     public function destroy($id)
     {
         $produk = DB::table('produk')->where('id', $id)->first();
-
         if (!$produk) {
             return response()->json(['message' => 'Produk tidak ditemukan'], 404);
         }
 
-        // Hapus file foto dari storage jika ada
+        // Hapus foto utama jika ada
         if (!empty($produk->foto)) {
-            $old = $produk->foto;
-            if (Str::contains($old, '/storage/')) {
-                $relative = preg_replace('#^https?://[^/]+/storage/#', '', $old);
-                Storage::disk('public')->delete($relative);
-            } else {
-                Storage::disk('public')->delete($old);
-            }
+            $this->hapusFileStorage($produk->foto);
         }
 
+        // Hapus semua foto galeri dari storage
+        $galeri = DB::table('produk_foto')->where('id_produk', $id)->get();
+        foreach ($galeri as $foto) {
+            $this->hapusFileStorage($foto->path_foto);
+        }
+
+        // Hapus record produk (produk_varian & produk_foto diasumsikan ON DELETE CASCADE)
         DB::table('produk')->where('id', $id)->delete();
 
         return response()->json(['message' => 'Produk berhasil dihapus']);

@@ -236,18 +236,32 @@ class SekolahController extends Controller
 
     public function infostore(Request $request)
     {
+        // 1️⃣ Validasi data lengkap
         $validated = $request->validate([
-            'judul' => 'required|string|max:500',
-            'deskripsi' => 'required|string',
-            'foto' => 'required|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+            'judul'      => 'required|string|max:500',
+            'deskripsi'  => 'required|string',
+            'foto'       => 'required|image|mimes:jpeg,jpg,png,gif,webp,svg,bmp|max:5120',
+        ], [
+            // Custom error message
+            'judul.required'        => 'Judul wajib diisi.',
+            'judul.max'             => 'Judul maksimal 500 karakter.',
+            'deskripsi.required'    => 'Deskripsi wajib diisi.',
+
+            'foto.required'         => 'Foto wajib diunggah.',
+            'foto.image'            => 'File harus berupa gambar.',
+            'foto.mimes'            => 'Format foto harus jpeg, jpg, png, gif, webp, svg, atau bmp.',
+            'foto.max'              => 'Ukuran foto maksimal 5MB.',
         ]);
 
+        // 2️⃣ Jika ada foto → simpan
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('foto_sekolah', 'public');
         }
 
+        // 3️⃣ Simpan data ke database
         InfoSekolah::create($validated);
 
+        // 4️⃣ Redirect sukses
         return redirect()->route('admin.sekolah.info.index')
             ->with('success', 'Info Sekolah berhasil ditambahkan.');
     }

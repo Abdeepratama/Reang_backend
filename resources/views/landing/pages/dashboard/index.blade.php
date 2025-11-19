@@ -4,7 +4,8 @@
 <section id="hero" class="hero section dark-background">
   <!-- <img src="assets/img/hero-bg-2.jpg" alt="" class="hero-bg"> -->
   <video autoplay muted loop playsinline class="hero-bg">
-    <source src="https://jaki.jakarta.go.id/static/jaki-video-a857b6f40ae2aab3d9bd1a2b531e016b.mp4" type="video/mp4">
+  <!--  <source src="https://jaki.jakarta.go.id/static/jaki-video-a857b6f40ae2aab3d9bd1a2b531e016b.mp4" type="video/mp4"> -->
+  <source src="https://wongreang.indramayukab.go.id/landing/alun-alun.mp4" type="video/mp4">
   </video>
   <!-- <div class="hero-bg youtube-bg">
         <iframe

@@ -46,16 +46,22 @@
                 </div>
 
                 <div class="form-group mb-3">
-                <label>Foto</label>
-                <input type="file" name="foto" class="form-control">
+                <label for="foto">Foto</label><br>
+                <small class="text-muted d-block">Kosongkan jika tidak ingin mengganti foto</small>
+
+                <input type="file" name="foto" id="fotoInput"
+                    class="form-control @error('foto') is-invalid @enderror"
+                    accept="image/*">
+
+                @error('foto')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
 
                 @if($info->foto)
-                <small>Foto saat ini:</small><br>
-                <img src="{{ asset('storage/' . $info->foto) }}"
-                    alt="Foto"
-                    width="150"
-                    style="border-radius:8px; margin-top:5px;">
-                @endif
+<div class="mt-3">
+    <img src="{{ Storage::url($info->foto) }}" width="150" class="rounded">
+</div>
+@endif
             </div>
 
                 <div class="mb-3">
@@ -186,5 +192,29 @@ ClassicEditor
 })
 .then(instance => { editor = instance; })
 .catch(error => { console.error(error); });
+</script>
+
+<script>
+    document.getElementById('fotoInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Tipe file yang diperbolehkan
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+        // Validasi tipe file
+        if (!allowedTypes.includes(file.type)) {
+            alert('File harus berupa gambar');
+            this.value = ""; // reset input
+            return;
+        }
+
+        // Validasi ukuran maksimal 2MB (opsional)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2MB.');
+            this.value = "";
+            return;
+        }
+    });
 </script>
 @endsection

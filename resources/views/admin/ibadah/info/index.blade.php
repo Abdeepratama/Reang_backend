@@ -83,16 +83,17 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        $('#infoTable').DataTable({
-            autoWidth: true,
-            "lengthMenu": [
-                [10, 25, 50, -1],
-                [10, 25, 50, "All"]
-            ],
-            "order": [
-                [0, "desc"]
-            ]
-        });
+        // Cegah reinitialisasi jika sudah diinisialisasi
+        if (!$.fn.DataTable.isDataTable('#infoTable')) {
+            $('#infoTable').DataTable({
+                autoWidth: true,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "All"]
+                ],
+                order: [[0, 'asc']]
+            });
+        }
     });
 </script>
 @endsection

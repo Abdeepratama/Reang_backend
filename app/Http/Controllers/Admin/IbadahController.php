@@ -25,12 +25,9 @@ class IbadahController extends Controller
 
     public function createTempat(Request $request)
     {
-        $kategoriIbadah = Kategori::where('fitur', 'lokasi ibadah')->orderBy('nama')->get();
-        $lokasi = Ibadah::all();
-
         return view('admin.ibadah.tempat.create', [
-            'kategoriIbadah' => $kategoriIbadah,
-            'lokasi' => $lokasi,
+            'kategoriIbadah' => kategori_by_fitur('lokasi ibadah'),
+            'lokasi' => Ibadah::all(),
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'address' => $request->address,
@@ -611,6 +608,7 @@ class IbadahController extends Controller
             'longitude' => 'required|numeric',
         ], [
             'alamat.required'   => 'Alamat wajib diisi.',
+            'waktu.required'     => 'Waktu wajib diisi',
             'latitude.required'  => 'Latitude wajib diisi.',
             'latitude.numeric'   => 'Latitude harus berupa angka.',
             'latitude.between'   => 'Latitude harus di antara -90 sampai 90.',

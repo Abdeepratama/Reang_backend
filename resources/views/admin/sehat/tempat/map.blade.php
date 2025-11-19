@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Peta Fasilitas Kesehatan</title>
+    <title>Peta Lokasi Kesehatan</title>
 
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -23,7 +23,7 @@
 <body>
 <div id="mapContainer">
     <div id="overlay">
-        <input type="text" id="searchInput" placeholder="Cari fasilitas kesehatan...">
+        <input type="text" id="searchInput" placeholder="Cari Lokasi kesehatan...">
         <div id="resultList"></div>
     </div>
     <div id="peta"></div>

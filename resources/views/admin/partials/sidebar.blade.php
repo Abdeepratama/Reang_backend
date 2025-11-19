@@ -90,7 +90,7 @@
                     <li>
                         <a class="nav-link pl-3 {{ request()->routeIs('admin.sehat.info.*') ? 'text-primary bg-light' : '' }}"
                             href="{{ route('admin.sehat.info.index') }}">
-                            Info Sehat
+                            Info Kesehatan
                         </a>
                     </li>
 
@@ -252,12 +252,6 @@
                     </a>
 
                     <ul class="collapse list-unstyled pl-4 {{ request()->routeIs('admin.plesir.*') ? 'show' : '' }}" id="submenu-plesir">
-                        <li class="nav-item">
-                            <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.tempat.*') ? 'text-primary bg-light' : '' }}"
-                                href="{{ route('admin.plesir.tempat.index') }}">
-                                Lokasi Plesir
-                            </a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link pl-3 {{ request()->routeIs('admin.plesir.info.*') ? 'text-primary bg-light' : '' }}"
                                 href="{{ route('admin.plesir.info.index') }}">

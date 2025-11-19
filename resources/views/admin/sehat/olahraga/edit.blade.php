@@ -76,15 +76,11 @@
 </div>
 
 <script>
-    const map = L.map('peta').setView([{
-        {
-            $olahraga - > latitude
-        }
-    }, {
-        {
-            $olahraga - > longitude
-        }
-    }], 15);
+    const map = L.map('peta').setView(
+        [{{ $olahraga->latitude }}, {{ $olahraga->longitude }}],
+        15
+    );
+
     let clickMarker = null;
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -92,61 +88,62 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // icon olahraga
     const olahragaIcon = L.divIcon({
         html: `
-        <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="#2A9D8F" viewBox="0 0 24 24">
-            <path d="M12 2C6.49 2 2 6.49 2 12c0 5.52 
-                     4.49 10 10 10s10-4.48 10-10C22 6.49 
-                     17.51 2 12 2zm0 2c4.42 0 8 3.58 
-                     8 8s-3.58 8-8 8-8-3.58-8-8 
-                     3.58-8 8-8z"/>
-        </svg>`,
-        className: '',
+            <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="#2A9D8F" viewBox="0 0 24 24">
+                <path d="M12 2C6.49 2 2 6.49 
+                         2 12c0 5.52 4.49 10 
+                         10 10s10-4.48 10-10C22 
+                         6.49 17.51 2 12 2zm0 2c4.42 
+                         0 8 3.58 8 8s-3.58 8-8 8-8-3.58-8-8 
+                         3.58-8 8-8z"/>
+            </svg>
+        `,
+        className: "",
         iconSize: [42, 42],
         iconAnchor: [21, 42],
         popupAnchor: [0, -42]
     });
 
-    // tampilkan marker default
-    clickMarker = L.marker([{
-            {
-                $olahraga - > latitude
-            }
-        }, {
-            {
-                $olahraga - > longitude
-            }
-        }], {
-            icon: olahragaIcon
-        }).addTo(map)
-        .bindPopup(`<b>{{ $olahraga->name }}</b><br>{{ $olahraga->address }}`)
-        .openPopup();
+    // Marker awal
+    clickMarker = L.marker(
+        [{{ $olahraga->latitude }}, {{ $olahraga->longitude }}],
+        { icon: olahragaIcon }
+    ).addTo(map)
+    .bindPopup(`<b>{{ $olahraga->name }}</b><br>{{ $olahraga->address }}`)
+    .openPopup();
 
-    // Event klik pada peta
-    map.on('click', async function(e) {
+    // Klik peta -> update marker + input
+    map.on('click', async function (e) {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
+
         document.getElementById('latitude').value = lat;
         document.getElementById('longitude').value = lng;
 
         let alamat = 'Alamat tidak ditemukan';
         let namaTempat = '';
+
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const data = await res.json();
+
+            if (data.display_name) alamat = data.display_name;
+
             if (data.address) {
-                namaTempat = data.address.stadium ||
-                    data.address.sports_centre ||
-                    data.address.building ||
-                    data.address.amenity || '';
+                namaTempat = data.address.sports_centre ||
+                             data.address.stadium ||
+                             data.address.building ||
+                             data.address.amenity ||
+                             '';
             }
+
             if (!namaTempat && data.display_name) {
                 namaTempat = data.display_name.split(',')[0];
             }
-            alamat = data.display_name || alamat;
+
         } catch (err) {
-            console.error('Gagal ambil alamat:', err);
+            console.error('Gagal mengambil alamat:', err);
         }
 
         document.getElementById('address').value = alamat;
@@ -154,11 +151,34 @@
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], {
-                icon: olahragaIcon
-            }).addTo(map)
+        clickMarker = L.marker([lat, lng], { icon: olahragaIcon })
+            .addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
+</script>
+
+<script>
+document.getElementById('fotoInput').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    // Tipe file yang diperbolehkan
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+    // Validasi tipe file
+    if (!allowedTypes.includes(file.type)) {
+        alert('File harus berupa gambar');
+        this.value = ""; // reset input
+        return;
+    }
+
+    // Validasi ukuran maksimal 2MB (opsional)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Ukuran gambar maksimal 2MB.');
+        this.value = "";
+        return;
+    }
+});
 </script>
 @endsection

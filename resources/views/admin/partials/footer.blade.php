@@ -237,6 +237,19 @@
         });
     });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const activeItem = document.querySelector(".nav-link.text-primary, .nav-link.active");
+
+    if (activeItem) {
+        activeItem.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+});
+</script>
 </body>
 
 </html>

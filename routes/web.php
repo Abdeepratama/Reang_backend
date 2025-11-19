@@ -144,7 +144,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
 
     // ----------------- OLAHRAGA -----------------
     Route::middleware('auth:admin')->prefix('olahraga')->name('sehat.olahraga.')->group(function () {
-        Route::get('/olahraga', [SehatController::class, 'indexolahraga'])->name('index');
+        Route::get('/', [SehatController::class, 'indexolahraga'])->name('index');
         Route::get('/tempat/create', [SehatController::class, 'createolahraga'])->name('create');
         Route::post('/tempat/store', [SehatController::class, 'storeolahraga'])->name('store');
         Route::get('/tempat/edit/{id}', [SehatController::class, 'editolahraga'])->name('edit');
@@ -316,8 +316,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
         ->name('setting.index');
 
     // ----------------- KATEGORI -----------------
-    Route::resource('kategori', KategoriController::class)
-        ->except(['show', 'edit', 'update']);
+    Route::prefix('kategori')->name('kategori.')->group(function () {
+        Route::get('/', [KategoriController::class, 'index'])->name('index');
+        Route::get('/create', [KategoriController::class, 'create'])->name('create');
+        Route::post('/store', [KategoriController::class, 'store'])->name('store');
+
+        Route::get('/edit/{kategori}', [KategoriController::class, 'edit'])->name('edit');
+        Route::put('/update/{kategori}', [KategoriController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{kategori}', [KategoriController::class, 'destroy'])->name('destroy');
+    });
 
     // ----------------- KATEGORI DUMAS -----------------
     Route::prefix('kategori-dumas')

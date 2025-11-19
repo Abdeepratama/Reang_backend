@@ -23,63 +23,67 @@
     </div>
     @endif
 
-    {{-- Daftar kategori per fitur --}}
+    {{-- Tabel per fitur --}}
     @forelse($kategoris->groupBy('fitur') as $fitur => $grouped)
+
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-primary text-white fw-semibold d-flex justify-content-between align-items-center rounded-top">
+        <div class="card-header bg-primary text-white fw-semibold rounded-top">
             <h5 class="mb-0 text-uppercase fw-semibold text-white">
-                <i class="bi bi-grid-3x3-gap-fill me-2 text-white"></i>{{ $fitur }}
+                <i class="bi me-2"></i>{{ $fitur }}
+                <span class="badge bg-light text-primary ms-2">{{ $grouped->count() }} Kategori</span>
             </h5>
-            <span class="badge bg-light text-primary">{{ $grouped->count() }} Kategori</span>
         </div>
 
-        <ul class="list-group list-group-flush">
-            @foreach($grouped as $kategori)
-            <li class="list-group-item d-flex justify-content-between align-items-center hover-list-item">
-                <div>
-                    <i class="bi bi-tag-fill text-secondary me-2"></i>
-                    <span class="fw-semibold">{{ $kategori->nama }}</span>
-                </div>
-                <form action="{{ route('admin.kategori.destroy', $kategori->id) }}"
-                    method="POST"
-                    onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-sm btn-outline-danger px-3">
-                        <i class="bi bi-trash3-fill me-1"></i> Hapus
-                    </button>
-                </form>
-            </li>
-            @endforeach
-        </ul>
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-light">
+                    <tr class="text-center">
+                        <tr class="text-center">
+                        <th style="width:60px; color:#000; font-weight:450;">No</th>
+                        <th style="color:#000; font-weight:450;">Nama Kategori</th>
+                        <th style="width:150px; color:#000; font-weight:450;">Aksi</th>
+                    </tr>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($grouped as $index => $kategori)
+                    <tr>
+                         <td class="text-center" style="color:#000; font-weight:450;">
+                            {{ $loop->iteration }}
+                        </td>
+
+                        <td style="color:#000; font-weight:450;">
+                            {{ $kategori->nama }}
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ route('admin.kategori.edit', $kategori->id) }}"
+                                class="btn btn-sm btn-outline-warning px-3 me-2">
+                                <i class="bi bi-pencil-square me-1"></i> Edit
+                            </a>
+                            <form action="{{ route('admin.kategori.destroy', $kategori->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger px-3">
+                                    <i class="bi bi-trash3-fill me-1"></i> Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
+
     @empty
     <div class="text-center text-muted mt-5">
         <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
         <p class="fw-semibold">Belum ada kategori yang ditambahkan.</p>
     </div>
     @endforelse
+
 </div>
 
-{{-- Style tambahan --}}
-<style>
-    .hover-list-item {
-        transition: background-color 0.2s ease, transform 0.1s ease;
-        border-left: 4px solid transparent;
-    }
-
-    .hover-list-item:hover {
-        background-color: #f8f9fa;
-        transform: translateX(3px);
-        border-left: 4px solid #0d6efd;
-    }
-
-    .card-header {
-        border-radius: 10px 10px 0 0;
-    }
-
-    .card {
-        border-radius: 15px;
-    }
-</style>
 @endsection

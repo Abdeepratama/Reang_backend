@@ -9,57 +9,55 @@
     <form action="{{ route('admin.plesir.info.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div class="d-flex gap-4">
-            <!-- Bagian Form Input -->
-            <div style="flex: 1; max-width: 400px;">
-                <div class="form-group mb-3">
+        <div class="row">
+            <!-- FORM -->
+            <div class="col-md-4">
+                <div class="mb-3">
                     <label>Judul</label>
                     <input type="text" name="judul" id="judul" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
+                <div class="mb-3">
                     <label>Latitude</label>
                     <input type="text" name="latitude" id="latitude" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
+                <div class="mb-3">
                     <label>Longitude</label>
                     <input type="text" name="longitude" id="longitude" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
+                <div class="mb-3">
                     <label>Alamat</label>
                     <input type="text" name="alamat" id="alamat" class="form-control" required>
                 </div>
 
-                <div class="form-group mb-3">
+                <div class="mb-3">
                     <label>Kategori</label>
                     <select name="fitur" class="form-control" required>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoriPlesir as $kategori)
-                        <option value="{{ $kategori->nama }}" {{ old('fitur') == $kategori->nama ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
+                        <option value="{{ $kategori->nama }}">{{ $kategori->nama }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label>Foto</label>
-                    <input type="file" name="foto" class="form-control" required>
+                <div class="mb-3">
+                    <label for="foto">Foto</label>
+                    <input type="file" name="foto" id="fotoInput" class="form-control">
                 </div>
 
                 <div class="mb-3">
-                    <label for="deskripsi" class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" id="editor">{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
+                    <label>Deskripsi</label>
+                    <textarea name="deskripsi" id="editor" class="form-control">{{ old('deskripsi') }}</textarea>
                 </div>
 
-                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>
+                <button class="btn btn-success"><i class="bi bi-save"></i> Simpan Data</button>
             </div>
 
-            <!-- Bagian Peta -->
-            <div style="flex: 1; min-width: 400px;">
-                <label class="form-label mb-2">Klik pada Peta atau isi manual koordinat</label>
+            <!-- MAP -->
+            <div class="col-md-8">
+                <label class="form-label">Klik pada peta untuk menentukan lokasi</label>
                 <div id="peta" style="height: 400px; border-radius: 10px; border: 1px solid #ccc;"></div>
             </div>
         </div>
@@ -152,4 +150,27 @@
         });
 </script>
 
+<script>
+    document.getElementById('fotoInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Tipe file yang diperbolehkan
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+        // Validasi tipe file
+        if (!allowedTypes.includes(file.type)) {
+            alert('File harus berupa gambar');
+            this.value = ""; // reset input
+            return;
+        }
+
+        // Validasi ukuran maksimal 2MB (opsional)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2MB.');
+            this.value = "";
+            return;
+        }
+    });
+</script>
 @endsection

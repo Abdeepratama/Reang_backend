@@ -20,7 +20,7 @@
                                 @endif
 
                                 <div class="table-responsive">
-                                    <table class="table datatables" id="plesirTable">
+                                    <table class="table datatables" id="infoTable">
                                         <thead class="table-dark">
                                             <tr>
                                                 <th>No</th>
@@ -86,15 +86,17 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        $('#plesirTable').DataTable({
+        if ($.fn.DataTable.isDataTable('#infoTable')) {
+            $('#infoTable').DataTable().destroy();
+        }
+
+        $('#infoTable').DataTable({
             autoWidth: true,
-            "lengthMenu": [
+            lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]
             ],
-            "order": [
-                [0, "asc"]
-            ] // urut No dari kecil ke besar (baru di bawah)
+            order: [[0, "asc"]]
         });
     });
 </script>
