@@ -10,8 +10,8 @@
         <h2 class="fw-bold text-success mb-0">
             <i class="bi bi-tags-fill me-2"></i> Daftar Kategori DUMAS
         </h2>
-        <a href="{{ route('admin.kategori_dumas.create') }}" class="btn btn-success shadow-sm px-4 py-2">
-            <i class="bi bi-plus-circle me-1"></i> Tambah Kategori
+        <a href="{{ route('admin.kategori_dumas.create') }}" class="btn btn-success shadow-sm px-4 py-2 text-white">
+            <i class="bi bi-plus-circle me-1 text-white"></i> Tambah Kategori
         </a>
     </div>
 

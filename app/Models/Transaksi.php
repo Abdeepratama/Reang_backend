@@ -11,14 +11,29 @@ class Transaksi extends Model
     protected $table = 'transaksi';
 
     protected $fillable = [
-        'id_user', 'no_transaksi', 'no_resi',
-        'alamat', 'id_ongkir', 'jumlah', 'harga', 'total', 'subtotal', 'catatan',
-        'status', 'jasa_pengiriman'
+        'id_user',
+        'id_toko', 
+        'no_transaksi', 
+        'alamat', 
+        'id_ongkir', 
+        'jumlah', 
+        'harga', 
+        'total', 
+        'subtotal', 
+        'catatan',
+        'status', 
+        'jasa_pengiriman', 
+        'nomor_resi' 
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function toko()
+    {
+        return $this->belongsTo(Toko::class, 'id_toko');
     }
 
     public function payment()
@@ -27,7 +42,7 @@ class Transaksi extends Model
     }
 
     public function items()
-    {
-        return $this->hasMany(DetailTransaksi::class, 'id_transaksi', 'id');
+    {         
+        return $this->hasMany(DetailTransaksi::class, 'no_transaksi', 'no_transaksi');
     }
 }

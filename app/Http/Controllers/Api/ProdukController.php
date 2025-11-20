@@ -97,9 +97,20 @@ class ProdukController extends Controller
     // 🔹 GET: /api/produk/toko/{id_toko}
     public function showByToko($id_toko)
     {
-        // 1. Ambil semua produk milik toko
         $produk = DB::table('produk')
             ->where('id_toko', $id_toko)
+            ->select(
+                'produk.*',
+                // [PERBAIKAN: GUNAKAN COLLATE AGAR JOIN TIDAK ERROR]
+                DB::raw('(
+                    SELECT COALESCE(SUM(dt.jumlah), 0)
+                    FROM detail_transaksi dt
+                    JOIN transaksi t 
+                        ON dt.no_transaksi = t.no_transaksi COLLATE utf8mb4_unicode_ci
+                    WHERE dt.id_produk = produk.id
+                    AND t.status = "selesai"
+                ) as terjual')
+            )
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -110,10 +121,9 @@ class ProdukController extends Controller
             ], 404);
         }
 
-        // Kumpulkan semua ID produk
+        // ... (Sisa logika untuk varian dan galeri TETAP SAMA) ...
         $produkIds = $produk->pluck('id');
 
-        // Eager load varian dan galeri
         $allVarians = DB::table('produk_varian')
             ->whereIn('id_produk', $produkIds)
             ->get()
@@ -124,7 +134,6 @@ class ProdukController extends Controller
             ->get()
             ->groupBy('id_produk');
 
-        // Lampirkan varian dan galeri ke setiap produk
         $produk->transform(function ($item) use ($allVarians, $allGaleri) {
             $item->foto = isset($item->foto) ? $this->formatFotoUrl($item->foto) : null;
             $item->varians = $allVarians[$item->id] ?? [];
@@ -132,12 +141,16 @@ class ProdukController extends Controller
                 $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
                 return $foto;
             });
+            
+            // Pastikan terjual dikirim sebagai integer
+            $item->terjual = (int) $item->terjual; 
+            
             return $item;
         });
 
         return response()->json([
             'status' => true,
-            'message' => 'Daftar produk berdasarkan toko',
+            'message' => 'Daftar produk berhasil diambil',
             'data' => $produk
         ]);
     }

@@ -42,24 +42,30 @@ class AppServiceProvider extends ServiceProvider
                     ->take(10)
                     ->get();
 
+                // hitung jumlah belum dibaca
+                $belumDibaca = $notifikasiAktivitas->count();
+
                 // 🔐 Tentukan allowed routes berdasarkan id_instansi
                 $allowedRoutes = $this->getAllowedRoutesByInstansi($admin->id_instansi ?? 0);
 
                 // Kirim ke semua view
                 $view->with([
                     'notifikasiAktivitas' => $notifikasiAktivitas,
+                    'belumDibaca' => $belumDibaca,
                     'allowedRoutes' => $allowedRoutes,
                     'user' => $admin,
                 ]);
             } else {
                 $view->with([
                     'notifikasiAktivitas' => collect(),
+                    'belumDibaca' => 0,
                     'allowedRoutes' => [],
                     'user' => null,
                 ]);
             }
         });
     }
+
 
     /**
      * 🔐 Mapping route berdasarkan id_instansi

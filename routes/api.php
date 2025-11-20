@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\OngkirController;
 use App\Http\Controllers\Api\TokoController;
 use App\Http\Controllers\Api\MetodePembayaranController;
 use App\Http\Controllers\Api\AdminPesananController;
+use App\Http\Controllers\Api\AdminAnalitikController;
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
@@ -234,6 +235,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transaksi/riwayat/{id_user}', [TransaksiController::class, 'riwayat']);
     Route::get('/transaksi/detail/{no_transaksi}', [TransaksiController::class, 'show']);
     Route::post('/transaksi/batalkan/{no_transaksi}', [TransaksiController::class, 'batalkan']);
+    Route::post('/transaksi/selesai/{no_transaksi}', [TransaksiController::class, 'selesaikanPesanan']);
+    Route::get('/transaksi/counts/{id_user}', [TransaksiController::class, 'getCounts']);
 });
 
 //Payment
@@ -268,4 +271,6 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::post('/pesanan/kirim/{no_transaksi}', [AdminPesananController::class, 'kirimPesanan']);
     // 5. Aksi Selesai
     Route::post('/pesanan/selesai/{no_transaksi}', [AdminPesananController::class, 'tandaiSelesai']);
+    Route::get('/pesanan/counts/{id_toko}', [AdminPesananController::class, 'getCounts']);
+    Route::get('/analitik/{id_toko}', [AdminAnalitikController::class, 'index']);
 });

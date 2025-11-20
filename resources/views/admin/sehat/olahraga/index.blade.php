@@ -9,6 +9,18 @@
     <a href="{{ route('admin.sehat.olahraga.map') }}" class="btn btn-primary mb-3">Lihat Peta</a>
     <a href="{{ route('admin.sehat.olahraga.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
 
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+        {{ session('error') }}
+    </div>
+    @endif
+
     <div class="table-responsive">
         <table class="table datatables" id="infoTable">
             <thead class="table-dark">

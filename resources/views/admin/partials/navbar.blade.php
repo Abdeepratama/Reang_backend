@@ -22,7 +22,10 @@
     <li class="nav-item dropdown">
       <a class="nav-link text-muted my-2 dropdown-toggle" href="#" id="notifDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="fe fe-bell fe-16"></span>
+
+        @if($belumDibaca > 0)
         <span class="dot dot-md bg-success"></span>
+        @endif
       </a>
       <ul class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="notifDropdown">
         <li>

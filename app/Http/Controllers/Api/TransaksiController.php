@@ -311,14 +311,46 @@ public function store(Request $request)
     // =======================================================================
     // --- [PERBAIKAN] FUNGSI 'riwayat' (Tambahkan nama_penerima) ---
     // =======================================================================
-    public function riwayat($id_user)
+    public function riwayat(Request $request, $id_user)
     {
-        $riwayat = DB::table('transaksi')
-            ->leftJoin('payment', 'transaksi.no_transaksi', '=', 'payment.no_transaksi')
+        // 1. Validasi User
+        if ($request->user()->id != $id_user) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // 2. Query Dasar dengan Collation Fix (Agar tidak error Illegal Mix)
+        $query = DB::table('transaksi')
+            ->leftJoin('payment', function($join) {
+                $join->on('transaksi.no_transaksi', '=', DB::raw('payment.no_transaksi COLLATE utf8mb4_unicode_ci'));
+            })
             ->join('toko', 'transaksi.id_toko', '=', 'toko.id')
-            ->where('transaksi.id_user', $id_user) // <-- Filter berdasarkan user
-            ->select(
-                // [PERBAIKAN] Jabarkan semua kolom dari 'transaksi'
+            ->where('transaksi.id_user', $id_user);
+
+        // 3. Filter Status (Sesuai Tab di Flutter)
+        if ($request->has('status') && !empty($request->status)) {
+            $filter = $request->status;
+
+            if ($filter == 'belum_dibayar') {
+                // Transaksi 'menunggu_pembayaran' DAN Payment bukan 'menunggu_konfirmasi'
+                $query->where('transaksi.status', 'menunggu_pembayaran')
+                      ->where(function($q) {
+                          $q->where('payment.status_pembayaran', '!=', 'menunggu_konfirmasi')
+                            ->orWhereNull('payment.status_pembayaran');
+                      });
+            } elseif ($filter == 'dikemas') {
+                // Gabungan 'menunggu_konfirmasi' (Payment) dan 'diproses' (Transaksi/COD)
+                $query->where(function($q) {
+                    $q->where('payment.status_pembayaran', 'menunggu_konfirmasi')
+                      ->orWhere('transaksi.status', 'diproses');
+                });
+            } else {
+                // Untuk status: dikirim, selesai, dibatalkan
+                $query->where('transaksi.status', $filter);
+            }
+        }
+
+        // 4. Select Data
+        $riwayat = $query->select(
                 'transaksi.id',
                 'transaksi.id_user',
                 'transaksi.id_toko',
@@ -333,29 +365,29 @@ public function store(Request $request)
                 'transaksi.nomor_resi',
                 'transaksi.created_at',
                 'transaksi.updated_at',
-
-                // [LOGIKA STATUS YANG SAMA DENGAN ADMIN]
-                // Ini akan menimpa 'transaksi.status' dengan status yang benar
+                
+                // Logika Status Pintar
                 DB::raw("CASE 
                     WHEN payment.status_pembayaran = 'menunggu_konfirmasi' THEN 'menunggu_konfirmasi'
                     WHEN payment.status_pembayaran = 'ditolak' THEN 'menunggu_pembayaran' 
                     ELSE transaksi.status 
                 END as status"),
-                // [SELESAI PERBAIKAN LOGIKA STATUS]
 
-                // Kolom dari tabel lain
                 'payment.status_pembayaran',
                 'payment.metode_pembayaran',
                 'payment.nomor_tujuan',
                 'payment.nama_penerima',
                 'payment.foto_qris',
-                'toko.nama as nama_toko'
+                'payment.bukti_pembayaran', // <-- Pastikan ini ada
+                
+                'toko.nama as nama_toko',
+                'toko.no_hp as no_hp_toko'  // <-- Pastikan ini ada
             )
             ->orderBy('transaksi.created_at', 'desc')
-            ->get();
-            
-        // Bagian 'foreach' ini sudah benar dan tidak perlu diubah
-        foreach ($riwayat as $transaksi) {
+            ->paginate(10); // [PENTING] Wajib paginate(10) agar cocok dengan frontend
+
+        // 5. Transform Data (Foto Produk)
+        $riwayat->getCollection()->transform(function ($transaksi) {
             $first_item = DB::table('detail_transaksi')
                 ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id')
                 ->where('detail_transaksi.no_transaksi', $transaksi->no_transaksi)
@@ -364,7 +396,14 @@ public function store(Request $request)
 
             $transaksi->foto_produk = $this->formatFotoUrl($first_item->foto ?? null);
             $transaksi->nama_produk_utama = $first_item->nama ?? 'Produk';
-        }
+            
+            // Format URL bukti pembayaran juga
+            if (isset($transaksi->bukti_pembayaran)) {
+                $transaksi->bukti_pembayaran = $this->formatFotoUrl($transaksi->bukti_pembayaran);
+            }
+            
+            return $transaksi;
+        });
 
         return response()->json($riwayat);
     }
@@ -405,7 +444,8 @@ public function store(Request $request)
                 // [SELESAI PERBAIKAN LOGIKA STATUS]
 
                 // Kolom dari tabel lain
-                'toko.nama as nama_toko', 
+                'toko.nama as nama_toko',
+                'toko.no_hp as no_hp_toko', 
                 'payment.status_pembayaran', 
                 'payment.metode_pembayaran', 
                 'payment.nomor_tujuan',
@@ -513,4 +553,87 @@ public function store(Request $request)
             return response()->json(['error' => 'Gagal membatalkan pesanan: ' . $e->getMessage()], 500);
         }
     }
+    public function selesaikanPesanan(Request $request, $no_transaksi)
+    {
+        $id_user = $request->user()->id;
+
+        // 1. Cek apakah transaksi ini milik user yang login
+        $transaksi = DB::table('transaksi')
+            ->where('no_transaksi', $no_transaksi)
+            ->where('id_user', $id_user)
+            ->first();
+
+        if (!$transaksi) {
+            return response()->json(['message' => 'Pesanan tidak ditemukan.'], 404);
+        }
+
+        // 2. Hanya boleh selesai jika status 'dikirim'
+        if ($transaksi->status != 'dikirim') {
+             return response()->json(['message' => 'Pesanan belum dikirim, tidak bisa diselesaikan.'], 422);
+        }
+
+        // 3. Update status
+        DB::table('transaksi')
+            ->where('no_transaksi', $no_transaksi)
+            ->update([
+                'status' => 'selesai',
+                'updated_at' => Carbon::now()
+            ]);
+
+        return response()->json(['message' => 'Terima kasih! Pesanan telah diselesaikan.']);
+    }
+
+    public function getCounts(Request $request, $id_user)
+    {
+        // Validasi akses
+        if ($request->user()->id != $id_user) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $counts = DB::table('transaksi')
+            // [PERBAIKAN UTAMA: Tambahkan COLLATE agar tidak error 500]
+            ->leftJoin('payment', function($join) {
+                $join->on('transaksi.no_transaksi', '=', DB::raw('payment.no_transaksi COLLATE utf8mb4_unicode_ci'));
+            })
+            ->where('transaksi.id_user', $id_user)
+            ->select(
+                DB::raw("
+                    CASE 
+                        WHEN payment.status_pembayaran = 'menunggu_konfirmasi' THEN 'menunggu_konfirmasi'
+                        WHEN payment.status_pembayaran = 'ditolak' THEN 'menunggu_pembayaran' 
+                        ELSE transaksi.status 
+                    END as status_final
+                "),
+                DB::raw('count(*) as total')
+            )
+            ->groupBy('status_final')
+            ->get();
+
+        $result = [
+            'belum_dibayar' => 0,
+            'dikemas' => 0,
+            'dikirim' => 0,
+            'selesai' => 0,
+            'dibatalkan' => 0,
+        ];
+
+        foreach ($counts as $c) {
+            // Mapping status database ke Tab User
+            if ($c->status_final == 'menunggu_pembayaran') {
+                $result['belum_dibayar'] += $c->total;
+            } elseif ($c->status_final == 'menunggu_konfirmasi' || $c->status_final == 'diproses') {
+                $result['dikemas'] += $c->total;
+            } elseif ($c->status_final == 'dikirim') {
+                $result['dikirim'] += $c->total;
+            } elseif ($c->status_final == 'selesai') {
+                $result['selesai'] += $c->total;
+            } elseif ($c->status_final == 'dibatalkan') {
+                $result['dibatalkan'] += $c->total;
+            }
+        }
+
+        return response()->json($result);
+    }
+
+    
 }

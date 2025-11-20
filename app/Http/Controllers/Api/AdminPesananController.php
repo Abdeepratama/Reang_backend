@@ -20,16 +20,39 @@ class AdminPesananController extends Controller
     {
         $user = $request->user();
 
+        // 1. Keamanan
         $toko = DB::table('toko')->where('id', $id_toko)->first();
         if (!$toko || $toko->id_user != $user->id) { 
-            return response()->json(['message' => 'Akses ditolak. Anda bukan pemilik toko ini.'], 403);
+            return response()->json(['message' => 'Akses ditolak.'], 403);
         }
 
-        $pesanan = DB::table('transaksi')
+        // 2. Query Dasar
+        $query = DB::table('transaksi')
             ->join('users', 'transaksi.id_user', '=', 'users.id')
-            ->leftJoin('payment', 'transaksi.no_transaksi', '=', 'payment.no_transaksi')
-            ->where('transaksi.id_toko', $id_toko)
-            ->select(
+            ->leftJoin('payment', function($join) {
+                $join->on('transaksi.no_transaksi', '=', DB::raw('payment.no_transaksi COLLATE utf8mb4_unicode_ci'));
+            })
+            ->where('transaksi.id_toko', $id_toko);
+
+        // 3. Filter Status
+        if ($request->has('status') && !empty($request->status)) {
+            $filterStatus = $request->status;
+
+            if ($filterStatus == 'menunggu_konfirmasi') {
+                $query->where('payment.status_pembayaran', 'menunggu_konfirmasi');
+            } else {
+                $query->where('transaksi.status', $filterStatus);
+                if ($filterStatus == 'menunggu_pembayaran') {
+                     $query->where(function($q) {
+                        $q->where('payment.status_pembayaran', '!=', 'menunggu_konfirmasi')
+                          ->orWhereNull('payment.status_pembayaran');
+                     });
+                }
+            }
+        }
+
+        // 4. [PERBAIKAN] Gunakan Paginate, bukan Get
+        $pesanan = $query->select(
                 'transaksi.no_transaksi',
                 DB::raw("CASE 
                     WHEN payment.status_pembayaran = 'menunggu_konfirmasi' THEN 'menunggu_konfirmasi'
@@ -46,13 +69,11 @@ class AdminPesananController extends Controller
                 'payment.metode_pembayaran'
             )
             ->orderBy('transaksi.created_at', 'desc')
-            ->get();
+            ->paginate(10); // <-- Ubah get() jadi paginate(10)
 
-        if ($pesanan->isEmpty()) {
-            return response()->json([], 200); 
-        }
-
-        foreach ($pesanan as $order) {
+        // 5. Transform Data (Untuk Foto Produk)
+        // Karena pakai paginate, kita akses 'getCollection()'
+        $pesanan->getCollection()->transform(function ($order) {
             $first_item = DB::table('detail_transaksi')
                 ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id')
                 ->where('detail_transaksi.no_transaksi', $order->no_transaksi)
@@ -61,7 +82,9 @@ class AdminPesananController extends Controller
 
             $order->nama_produk_utama = $first_item->nama ?? 'Produk Dihapus';
             $order->foto_produk = $this->formatFotoUrl($first_item->foto ?? null);
-        }
+            
+            return $order;
+        });
 
         return response()->json($pesanan);
     }
@@ -189,39 +212,34 @@ class AdminPesananController extends Controller
      * [PERBAIKAN 3 - FUNGSI KIRIM]
      * POST: /api/admin/pesanan/kirim/{no_transaksi}
      */
-    public function kirimPesanan(Request $request, $no_transaksi)
+   public function kirimPesanan(Request $request, $no_transaksi)
     {
+        // [PERBAIKAN] Ubah 'required' menjadi 'nullable' agar opsional
         $validated = $request->validate([
-            'nomor_resi' => 'required|string|max:255'
+            'nomor_resi' => 'nullable|string|max:255',
+            'jasa_pengiriman' => 'nullable|string|max:255', // <-- Sekarang opsional
         ]);
         
         $user = $request->user();
 
-        // 1. Cek Transaksi
-        $transaksi = DB::table('transaksi')
-            ->where('no_transaksi', $no_transaksi)
-            ->first();
-
-        if (!$transaksi) {
-            return response()->json(['message' => 'Pesanan tidak ditemukan.'], 404);
-        }
-
-        // 2. Validasi Kepemilikan Toko
-        $toko = DB::table('toko')->where('id', $transaksi->id_toko)->first();
-        if (!$toko || $toko->id_user != $user->id) {
-            return response()->json(['message' => 'Akses ditolak.'], 403);
-        }
+        // ... (Cek Transaksi & Toko tidak berubah) ...
+        $transaksi = DB::table('transaksi')->where('no_transaksi', $no_transaksi)->first();
+        if (!$transaksi) return response()->json(['message' => 'Pesanan tidak ditemukan.'], 404);
         
-        // 3. Lanjutkan Logika (Sudah benar)
+        $toko = DB::table('toko')->where('id', $transaksi->id_toko)->first();
+        if (!$toko || $toko->id_user != $user->id) return response()->json(['message' => 'Akses ditolak.'], 403);
+        
         if ($transaksi->status != 'diproses') {
-             return response()->json(['message' => 'Pesanan ini belum siap untuk dikirim (status: '.$transaksi->status.').'], 422);
+             return response()->json(['message' => 'Pesanan ini belum siap untuk dikirim.'], 422);
         }
         
         DB::table('transaksi')
             ->where('no_transaksi', $no_transaksi)
             ->update([
                 'status' => 'dikirim',
-                'nomor_resi' => $validated['nomor_resi'],
+                // Jika kosong, isi dengan strip '-'
+                'nomor_resi' => $validated['nomor_resi'] ?? '-',
+                'jasa_pengiriman' => $validated['jasa_pengiriman'] ?? '-', // <-- Beri default '-' jika kosong
                 'updated_at' => Carbon::now()
             ]);
 
@@ -300,4 +318,50 @@ class AdminPesananController extends Controller
             // Abaikan error
         }
     }
+    public function getCounts(Request $request, $id_toko)
+{
+    $user = $request->user();
+
+    // Validasi toko milik user
+    $toko = DB::table('toko')->where('id', $id_toko)->first();
+    if (!$toko || $toko->id_user != $user->id) {
+        return response()->json([], 403);
+    }
+
+    // Hitung status pesanan
+    $counts = DB::table('transaksi')
+        ->leftJoin('payment', 'transaksi.no_transaksi', '=', 'payment.no_transaksi')
+        ->where('transaksi.id_toko', $id_toko)
+        ->select(
+            DB::raw("
+                CASE
+                    WHEN payment.status_pembayaran = 'menunggu_konfirmasi'
+                        THEN 'menunggu_konfirmasi'
+                    ELSE transaksi.status
+                END AS status_final
+            "),
+            DB::raw('COUNT(*) AS total')
+        )
+        ->groupBy('status_final')
+        ->get();
+
+    // Default hasil
+    $result = [
+        'menunggu_konfirmasi' => 0,
+        'diproses'           => 0,
+        'dikirim'            => 0,
+        'selesai'            => 0,
+        'dibatalkan'         => 0,
+    ];
+
+    // Assign result
+    foreach ($counts as $c) {
+        if (array_key_exists($c->status_final, $result)) {
+            $result[$c->status_final] = $c->total;
+        }
+    }
+
+    return response()->json($result);
+}
+
 }

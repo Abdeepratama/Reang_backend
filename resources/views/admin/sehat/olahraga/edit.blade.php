@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Form -->
         <div class="col-md-4">
-            <<form action="{{ route('admin.sehat.olahraga.update', $olahraga->id) }}"
+            <form action="{{ route('admin.sehat.olahraga.update', $olahraga->id) }}"
                 method="POST"
                 enctype="multipart/form-data">
                 @csrf

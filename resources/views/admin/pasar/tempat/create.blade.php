@@ -152,9 +152,7 @@
         }
 
         document.getElementById('address').value = alamat;
-        if (!document.getElementById('name').value) {
-            document.getElementById('name').value = namaTempat;
-        }
+        if (!document.getElementById('name').value)
 
         if (clickMarker) map.removeLayer(clickMarker);
         clickMarker = L.marker([lat, lng], { icon: houseIcon }).addTo(map)

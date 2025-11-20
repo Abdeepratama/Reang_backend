@@ -9,8 +9,8 @@
         <div class="col-md-7">
 
             <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white py-3">
-                    <h4 class="mb-0 text-center">Tambah Kategori DUMAS</h4>
+                <div class="card-header bg-success text-white py-3">
+                    <h4 class="mb-0 text-center text-white">Tambah Kategori DUMAS</h4>
                 </div>
 
                 <div class="card-body px-4 py-4">

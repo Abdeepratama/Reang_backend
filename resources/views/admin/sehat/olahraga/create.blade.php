@@ -26,7 +26,7 @@
                     <label for="latitude" class="form-label">Latitude</label>
                     <input type="text" id="latitude" name="latitude"
                         class="form-control @error('latitude') is-invalid @enderror"
-                        value="{{ old('latitude', $latitude ?? '') }}" required>
+                        value="{{ old('latitude') }}" required>
                     @error('latitude')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -36,7 +36,7 @@
                     <label for="longitude" class="form-label">Longitude</label>
                     <input type="text" id="longitude" name="longitude"
                         class="form-control @error('longitude') is-invalid @enderror"
-                        value="{{ old('longitude', $longitude ?? '') }}" required>
+                        value="{{ old('longitude') }}" required>
                     @error('longitude')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -46,7 +46,7 @@
                     <label for="address" class="form-label">Alamat</label>
                     <input type="text" id="address" name="address"
                         class="form-control @error('address') is-invalid @enderror"
-                        value="{{ old('address', $address ?? '') }}" required>
+                        value="{{ old('address') }}" required>
                     @error('address')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -56,7 +56,7 @@
                     <label for="foto">Foto</label>
                     <input type="file" name="foto" id="fotoInput"
                         class="form-control @error('foto') is-invalid @enderror"
-                        accept="image/*"> {{-- filter hanya foto --}}
+                        accept="image/*">
                     @error('foto')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -99,9 +99,6 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    const locations = @json($lokasi);
-
-    // icon olahraga (bola)
     const olahragaIcon = L.divIcon({
         html: `
         <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="#2A9D8F" viewBox="0 0 24 24">
@@ -117,27 +114,18 @@
         popupAnchor: [0, -42]
     });
 
-    // Event klik pada peta
     map.on('click', async function(e) {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
+
         document.getElementById('latitude').value = lat;
         document.getElementById('longitude').value = lng;
 
         let alamat = 'Alamat tidak ditemukan';
-        let namaTempat = '';
+
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const data = await res.json();
-            if (data.address) {
-                namaTempat = data.address.stadium ||
-                    data.address.sports_centre ||
-                    data.address.building ||
-                    data.address.amenity || '';
-            }
-            if (!namaTempat && data.display_name) {
-                namaTempat = data.display_name.split(',')[0];
-            }
             alamat = data.display_name || alamat;
         } catch (err) {
             console.error('Gagal ambil alamat:', err);
@@ -147,35 +135,31 @@
 
         if (clickMarker) map.removeLayer(clickMarker);
 
-        clickMarker = L.marker([lat, lng], {
-                icon: olahragaIcon
-            }).addTo(map)
+        clickMarker = L.marker([lat, lng], { icon: olahragaIcon })
+            .addTo(map)
             .bindPopup(`<b>Alamat:</b><br>${alamat}<br><b>Lat:</b> ${lat}<br><b>Lng:</b> ${lng}`)
             .openPopup();
     });
 </script>
 
 <script>
-document.getElementById('fotoInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
+    document.getElementById('fotoInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
 
-    // Tipe file yang diperbolehkan
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
 
-    // Validasi tipe file
-    if (!allowedTypes.includes(file.type)) {
-        alert('File harus berupa gambar');
-        this.value = ""; // reset input
-        return;
-    }
+        if (!allowedTypes.includes(file.type)) {
+            alert('File harus berupa gambar');
+            this.value = "";
+            return;
+        }
 
-    // Validasi ukuran maksimal 2MB (opsional)
-    if (file.size > 2 * 1024 * 1024) {
-        alert('Ukuran gambar maksimal 2MB.');
-        this.value = "";
-        return;
-    }
-});
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2MB.');
+            this.value = "";
+            return;
+        }
+    });
 </script>
 @endsection
