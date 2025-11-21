@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 21, 2025 at 02:28 AM
+-- Generation Time: Nov 21, 2025 at 02:34 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.16
 
@@ -648,20 +648,6 @@ CREATE TABLE `detail_transaksi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `detail_transaksi`
---
-
-INSERT INTO `detail_transaksi` (`id`, `no_transaksi`, `id_toko`, `id_produk`, `id_varian`, `jumlah`, `harga`, `subtotal`, `created_at`, `updated_at`) VALUES
-(9, 'TRX690B01FF62EE1', 5, 3, NULL, 1, 200000, 200000, '2025-11-05 00:51:27', NULL),
-(10, 'TRX690B05252ABDF', 5, 4, NULL, 1, 200000, 200000, '2025-11-05 01:04:53', NULL),
-(11, 'TRX690B054A816C4', 5, 4, NULL, 1, 200000, 200000, '2025-11-05 01:05:30', NULL),
-(12, 'TRX690B054A816C4', 5, 3, NULL, 2, 200000, 400000, '2025-11-05 01:05:30', NULL),
-(13, 'TRX690B054A816C4', 1, 1, NULL, 1, 15000, 15000, '2025-11-05 01:05:30', NULL),
-(14, 'TRX690B06686BA1C', 5, 4, NULL, 1, 200000, 200000, '2025-11-05 01:10:16', NULL),
-(15, 'TRX690B06C7AE6BD', 5, 4, NULL, 2, 200000, 400000, '2025-11-05 01:11:51', NULL),
-(16, 'TRX690B06C7AE6BD', 1, 2, NULL, 1, 15000, 15000, '2025-11-05 01:11:51', NULL);
 
 -- --------------------------------------------------------
 
@@ -2103,17 +2089,6 @@ CREATE TABLE `produk` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `produk`
---
-
-INSERT INTO `produk` (`id`, `id_toko`, `nama`, `foto`, `deskripsi`, `spesifikasi`, `fitur`, `created_at`, `updated_at`) VALUES
-(1, 1, 'baju peace', NULL, 'baju lembut dengan logo indah', 'baju terbuat dari sutra', 'baju', NULL, NULL),
-(3, 1, 'Es Cendol Dawet', 'produk/cendol.jpg', 'Minuman tradisional segar', 'Dikemas dalam cup 500ml', 'Minuman', '2025-10-23 23:48:10', '2025-10-23 23:49:54'),
-(4, 1, 'Baju muslim', 'produk/muslim.jpg', 'Baju muslim dengan bahan terbaik', 'bahan lembut', 'pakaian', '2025-10-26 20:14:28', '2025-10-26 20:14:28'),
-(5, 5, 'Baju sid', 'produk/sid.jpg', 'Baju sid dengan bahan terbaik', 'bahan lembut', 'pakaian', '2025-10-30 20:49:29', '2025-10-30 20:49:29'),
-(7, 5, 'baju renang', '[{}]', 'baju renang tahan air', 'baju renang super tebal', 'pakaian', '2025-11-03 01:45:19', '2025-11-03 01:45:19');
-
 -- --------------------------------------------------------
 
 --
@@ -2611,16 +2586,6 @@ CREATE TABLE `transaksi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `transaksi`
---
-
-INSERT INTO `transaksi` (`id`, `id_toko`, `id_user`, `id_produk`, `no_transaksi`, `no_resi`, `alamat`, `id_ongkir`, `jumlah`, `harga`, `total`, `subtotal`, `ongkir`, `catatan`, `status`, `jasa_pengiriman`, `nomor_resi`, `created_at`, `updated_at`) VALUES
-(1, 1, 2, 1, '32187948', NULL, 'jl.indomaret blok mangga indramayu', 0, 1, 15000, 15000, 15000, 0, 'berikan nota didalamnya', 'menunggu', 'jnt', NULL, NULL, NULL),
-(2, 1, 2, 3, 'TRX20251105051324503', NULL, 'Jl. Merdeka No. 10, Bandung', 1, 2, 200000, 400000, 400000, 0, 'Tolong bungkus dengan rapi', 'pending', 'JNE', NULL, '2025-11-04 22:13:24', '2025-11-04 22:13:24'),
-(21, NULL, 17, NULL, 'TRX690B06686BA1C', NULL, 'Jl. Sudirman No. 123 (Dummy)', NULL, 1, NULL, 200000, 200000, 0, 'Tidak ada catatan', 'menunggu', 'JNE REG', NULL, '2025-11-05 01:10:16', NULL),
-(22, NULL, 17, NULL, 'TRX690B06C7AE6BD', NULL, 'Jl. Sudirman No. 123 (Dummy)', NULL, 3, NULL, 415000, 415000, 0, 'Tidak ada catatan', 'menunggu', 'JNE REG', NULL, '2025-11-05 01:11:51', NULL);
 
 -- --------------------------------------------------------
 
