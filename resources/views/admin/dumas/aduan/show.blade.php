@@ -49,11 +49,11 @@
                     <th>Bukti Laporan</th>
                     <td>
                         @if($item->bukti_laporan)
-                            <img src="{{ asset('storage/' . $item->bukti_laporan) }}" 
-                                 alt="Bukti Laporan" class="img-fluid rounded" 
-                                 style="max-width: 400px;">
+                        <img src="{{ asset('storage/' . $item->bukti_laporan) }}"
+                            alt="Bukti Laporan" class="img-fluid rounded"
+                            style="max-width: 400px;">
                         @else
-                            <span class="text-muted">Tidak ada bukti laporan</span>
+                        <span class="text-muted">Tidak ada bukti laporan</span>
                         @endif
                     </td>
                 </tr>
@@ -61,9 +61,22 @@
                     <th>Tanggapan Admin</th>
                     <td>
                         @if($item->tanggapan)
-                            <div class="alert alert-success p-3">{{ $item->tanggapan }}</div>
+                        <div class="alert alert-success p-3">{{ $item->tanggapan }}</div>
                         @else
-                            <span class="text-muted">Belum ada tanggapan</span>
+                        <span class="text-muted">Belum ada tanggapan</span>
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <th>Foto Tanggapan</th>
+                    <td>
+                        @if($item->foto_tanggapan)
+                        <img src="{{ asset('storage/' . $item->foto_tanggapan) }}"
+                            alt="Foto Tanggapan"
+                            class="img-fluid rounded border"
+                            style="max-width: 400px;">
+                        @else
+                        <span class="text-muted">Belum ada foto tanggapan</span>
                         @endif
                     </td>
                 </tr>
@@ -72,16 +85,16 @@
                     <td>
                         @php $avgRating = $item->ratings->avg('rating'); @endphp
                         @if($avgRating)
-                            <p><strong>⭐ {{ number_format($avgRating, 1) }}/5</strong></p>
-                            <ul>
-                                @foreach($item->ratings as $rating)
-                                <li>
-                                    ⭐ {{ $rating->rating }} — {{ $rating->comment ?? 'Tidak ada komentar' }}
-                                </li>
-                                @endforeach
-                            </ul>
+                        <p><strong>⭐ {{ number_format($avgRating, 1) }}/5</strong></p>
+                        <ul>
+                            @foreach($item->ratings as $rating)
+                            <li>
+                                ⭐ {{ $rating->rating }} — {{ $rating->comment ?? 'Tidak ada komentar' }}
+                            </li>
+                            @endforeach
+                        </ul>
                         @else
-                            <span class="text-muted">Belum ada rating atau komentar</span>
+                        <span class="text-muted">Belum ada rating atau komentar</span>
                         @endif
                     </td>
                 </tr>

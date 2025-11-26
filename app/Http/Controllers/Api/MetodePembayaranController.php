@@ -35,13 +35,6 @@ class MetodePembayaranController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        if ($metode->isEmpty()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Metode pembayaran untuk toko ini belum tersedia'
-            ], 404);
-        }
-
         // Ubah URL foto jadi full URL
         $metode->transform(function ($item) {
             if ($item->foto_qris) {
@@ -53,7 +46,7 @@ class MetodePembayaranController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Metode pembayaran toko berhasil diambil',
-            'data' => $metode
+            'data' => $metode // Jika kosong, ini akan berisi [], dan Flutter akan senang.
         ]);
     }
 

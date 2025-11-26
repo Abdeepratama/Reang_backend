@@ -10,7 +10,7 @@
 
   <!-- Favicons -->
   <link href="{{ asset('landing/img/favicon.png') }}') }}" rel="icon">
-  <link rel="icon" href="{{ asset('landing/img/logo reang.png') }}">
+  <link rel="icon" href="{{ asset('landing/img/logo_reang.png') }}">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com') }}" rel="preconnect">

@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
 
 class AuthController extends Controller
 {
@@ -77,6 +79,84 @@ class AuthController extends Controller
             'token_type'    => 'Bearer',
         ], 201);
     }
+
+    public function googleCallback(Request $request)
+    {
+        // 1. Validasi: Pastikan Flutter mengirim token
+        $request->validate([
+            'id_token' => 'required|string',
+        ]);
+
+        $idTokenString = $request->input('id_token');
+
+        try {
+            // 2. Siapkan Firebase (Arahkan ke file JSON credentials kamu)
+            // Pastikan file 'firebase_credentials.json' ada di folder storage/app/
+            $factory = (new Factory)->withServiceAccount(storage_path('app/firebase_credentials.json'));
+            $auth = $factory->createAuth();
+
+            // 3. Verifikasi Token ke Google
+            $verifiedIdToken = $auth->verifyIdToken($idTokenString);
+            $claims = $verifiedIdToken->claims();
+
+            // Ambil data dari Google
+            $uid = $claims->get('sub');   // Google ID Unik
+            $email = $claims->get('email');
+            $name = $claims->get('name');
+
+        } catch (FailedToVerifyToken $e) {
+            return response()->json(['message' => 'Token Google tidak valid: ' . $e->getMessage()], 401);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
+        }
+
+        // 4. Cek Database: Apakah user sudah ada?
+        $user = User::where('email', $email)->first();
+
+        if ($user) {
+            // --- SKENARIO A: USER SUDAH ADA (LOGIN) ---
+            
+            // Jika kolom google_id masih kosong, kita isi sekalian (link account)
+            if (empty($user->google_id)) {
+                $user->update(['google_id' => $uid]);
+            }
+
+        } else {
+            // --- SKENARIO B: USER BARU (REGISTER OTOMATIS) ---
+            
+            $user = User::create([
+                'name'      => $name,
+                'email'     => $email,
+                'google_id' => $uid,
+                'password'  => null, // Tidak punya password
+                'phone'     => null, // Nanti diisi di Flutter
+                'no_ktp'    => null, // Nanti diisi di Flutter
+            ]);
+
+            // Beri role default 'user' (ID 1)
+            $user->role()->attach(1);
+        }
+
+        // 5. Proses Login Akhir (Sama untuk kedua skenario)
+        
+        // Refresh data user & load role
+        $user = $user->fresh(['role']);
+        
+        // Panggil helper toko yang sudah ada di kodingan Mas
+        $user = $this->attachTokoId($user);
+
+        // Buat Token Sanctum
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message'      => 'Login Google berhasil',
+            'user'         => $user,
+            'access_token' => $token,
+            'token_type'   => 'Bearer',
+        ]);
+    }
+
+    
 
     /**
      * LOGIN USER
@@ -187,11 +267,13 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        // Validasi (Pastikan no_ktp ada di sini seperti perbaikan sebelumnya)
         $validated = $request->validate([
             'name'     => 'nullable|string|max:255',
             'email'    => 'nullable|email|unique:users,email,' . $user->id,
             'alamat'   => 'nullable|string|max:255',
             'phone'    => 'nullable|string|max:20',
+            'no_ktp'   => 'nullable|string|max:20', 
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -205,9 +287,16 @@ class AuthController extends Controller
         // Tambahkan id_toko kembali
         $user = $this->attachTokoId($user);
 
+        // --- PERBAIKAN UTAMA: Generate Token Baru/Kirim Balik ---
+        // Kita buat token baru agar format responnya sama dengan login/register
+        // Sehingga Flutter tidak error "Token null"
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'message' => 'Profile updated successfully!',
-            'user'    => $user
+            'message'      => 'Profile updated successfully!',
+            'user'         => $user,
+            'access_token' => $token,  // <--- INI YANG TADI HILANG
+            'token_type'   => 'Bearer',
         ]);
     }
 }

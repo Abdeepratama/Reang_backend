@@ -19,7 +19,7 @@ class PuskesmasController extends Controller
     {
         $user = Auth::guard('admin')->user();
 
-         $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
+        $puskesmas = Puskesmas::orderBy('id', 'desc')->get();
 
         if ($user->role === 'superadmin' || $user->role === 'kesehatan') {
             // superadmin & dinas kesehatan boleh lihat semua
@@ -31,18 +31,30 @@ class PuskesmasController extends Controller
 
     public function create()
     {
-        return view('admin.sehat.puskesmas.create');
+        $lokasi = Puskesmas::all()->map(function ($item) {
+            return [
+                'name' => $item->nama,
+                'latitude' => $item->latitude,
+                'longitude' => $item->longitude,
+                'alamat' => $item->alamat,
+                'jam' => $item->jam, // kalau ada foto bisa ditambahkan
+            ];
+        });
+
+        return view('admin.sehat.puskesmas.create', compact('lokasi'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'jam' => 'required|string',
+            'nama'      => 'required|string|max:255',
+            'alamat'    => 'required|string',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'jam'       => 'required|string'
         ]);
 
-        Puskesmas::create($request->only(['nama', 'alamat', 'jam']));
+        Puskesmas::create($request->only(['nama', 'alamat', 'latitude', 'longitude', 'jam']));
 
         $this->logAktivitas("Puskesmas telah ditambahkan");
         $this->logNotifikasi("Puskesmas telah ditambahkan");
@@ -61,6 +73,8 @@ class PuskesmasController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
             'jam' => 'required|string',
         ]);
 
@@ -84,6 +98,23 @@ class PuskesmasController extends Controller
         return redirect()->route('admin.sehat.puskesmas.index')
             ->with('success', 'Data berhasil dihapus');
     }
+
+    public function map()
+    {
+        $lokasi = Puskesmas::all()->map(function ($item) {
+            return [
+                'id'        => $item->id,
+                'nama'      => $item->nama,
+                'latitude'  => $item->latitude,
+                'longitude' => $item->longitude,
+                'alamat'    => $item->alamat,
+                'jam'       => $item->jam,
+            ];
+        });
+
+        return view('admin.sehat.puskesmas.map', compact('lokasi'));
+    }
+
 
     // ==========================================================
     // 🔎 Helper: cari admin_id yang mengait ke puskesmas

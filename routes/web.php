@@ -28,6 +28,11 @@ use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\PanikButtonController;
 use App\Http\Controllers\Admin\UmkmController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\PasswordReset;
 
 // ----------------- HALAMAN DEPAN -----------------
 Route::get('/', fn() => view('landing/pages/dashboard/index'))->name('home');
@@ -159,6 +164,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
     Route::middleware('auth:admin')->prefix('puskesmas')->name('sehat.puskesmas.')->group(function () {
         Route::get('/', [PuskesmasController::class, 'index'])->name('index');
         Route::get('/create', [PuskesmasController::class, 'create'])->name('create');
+        Route::get('/map', [PuskesmasController::class, 'map'])->name('map');
         Route::post('/store', [PuskesmasController::class, 'store'])->name('store');
         Route::get('/edit/{puskesmas}', [PuskesmasController::class, 'edit'])->name('edit');
         Route::put('/update/{puskesmas}', [PuskesmasController::class, 'update'])->name('update');
@@ -238,8 +244,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
 
     // ----------------- DUMAS -----------------
     Route::middleware('auth:admin')->prefix('dumas')->name('dumas.')->group(function () {
+
+        // Resource (tanpa show, create, store)
         Route::resource('aduan', DumasController::class)->except(['show', 'create', 'store']);
+
+        // Show
         Route::get('aduan/{id}', [DumasController::class, 'show'])->name('aduan.show');
+
+        Route::post('aduan/{id}/update-status', [DumasController::class, 'updateStatus'])->name('aduan.update.status');
+
+        Route::post('/dumas/aduan/{id}/update-instansi', [DumasController::class, 'updateInstansi'])->name('aduan.update.instansi');
+
+
+        Route::post('aduan/{id}/update-tanggapan-foto', [DumasController::class, 'updateTanggapanFoto'])->name('aduan.update.tanggapan_foto');
     });
 
     // ----------------- IZIN -----------------
@@ -384,3 +401,36 @@ Route::middleware('auth:admin')->prefix('admin/panik')->name('admin.panik.')->gr
     Route::put('/{panik}', [PanikButtonController::class, 'update'])->name('update');
     Route::delete('/{panik}', [PanikButtonController::class, 'destroy'])->name('destroy');
 });
+
+// ----------------- RESET PASSWORD user -----------------
+// 1. Route untuk Menampilkan Form (Diklik dari Email)
+Route::get('/reset-password/{token}', function (Request $request, $token) {
+    return view('auth.reset-password', ['token' => $token, 'email' => $request->email]);
+})->name('password.reset');
+
+// 2. Route untuk Memproses Reset (Saat tombol 'Ubah Password' ditekan)
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill([
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            event(new PasswordReset($user));
+        }
+    );
+
+    if ($status === Password::PASSWORD_RESET) {
+        return back()->with('status', 'Password berhasil diubah! Silakan kembali ke aplikasi.');
+    }
+
+    return back()->withErrors(['email' => [($status)]]);
+})->name('password.update');

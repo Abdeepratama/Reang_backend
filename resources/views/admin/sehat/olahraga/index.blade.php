@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">Data Tempat Olahraga</h3>
+    <h3 class="mb-4">Daftar Tempat Olahraga</h3>
 
     <a href="{{ route('admin.sehat.olahraga.map') }}" class="btn btn-primary mb-3">Lihat Peta</a>
     <a href="{{ route('admin.sehat.olahraga.create') }}" class="btn btn-primary mb-3">Tambah Data</a>

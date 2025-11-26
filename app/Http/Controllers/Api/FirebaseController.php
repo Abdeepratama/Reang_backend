@@ -43,80 +43,99 @@ class FirebaseController extends Controller
 
     return response()->json(['message' => 'FCM token saved successfully.']);
 }
-public function sendChatNotification(Request $request)
-{
-    $request->validate([
-        'recipient_id' => 'required|string',
-        'recipient_role' => 'required|string|in:user,puskesmas', // Validasi role
-        'message_text' => 'required|string',
-    ]);
 
-    $sender = $request->user();
-    $recipientId = $request->recipient_id;
-    $recipientRole = $request->recipient_role;
-
-    // --- LOGIKA BARU: Cari penerima di tabel yang benar ---
-    $recipient = null;
-    if ($recipientRole === 'user') {
-        $recipient = User::find($recipientId);
-    } else if ($recipientRole === 'puskesmas') {
-        $recipient = \App\Models\Admin::find($recipientId);
-    }
-    // ----------------------------------------------------
-
-    if (!$recipient) {
-        return response()->json(['message' => 'Penerima tidak ditemukan.']);
-    }
-
-    $fcmToken = $recipient->fcm_token;
-    if (!$fcmToken) {
-        return response()->json(['message' => 'Penerima tidak memiliki FCM token.']);
-    }
-
-    // Tentukan nama pengirim
-    $senderName = 'Seseorang';
-    if ($sender instanceof \App\Models\Admin) {
-        $puskesmasId = optional($sender->userData)->id_puskesmas;
-        $puskesmas = $puskesmasId ? \App\Models\Puskesmas::find($puskesmasId) : null;
-        $senderName = $puskesmas ? $puskesmas->nama : 'Admin Puskesmas';
-    } else {
-        $senderName = $sender->name;
-    }
-
-    // Siapkan Firebase
-    $factory = (new Factory)->withServiceAccount(storage_path('app/firebase_credentials.json'));
-    $messaging = $factory->createMessaging();
-
-    // Buat notifikasi
-    $notification = Notification::create(
-        $senderName,
-        $request->message_text
-    );
-
-    $notificationTag = 'chat_' . (string) $sender->id;
-
-    $message = CloudMessage::withTarget('token', $fcmToken)
-        ->withNotification($notification)
-        ->withData([
-            'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-            'sender_id' => (string) $sender->id,
-            'type' => 'CHAT',
-        ])
-        ->withAndroidConfig([
-            'notification' => [
-                'channel_id' => 'high_importance_channel',
-                'tag' => $notificationTag,
-            ],
+ public function sendChatNotification(Request $request)
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'recipient_id'   => 'required|string',
+            'recipient_role' => 'required|string|in:user,puskesmas,umkm',
+            'message_text'   => 'required|string',
         ]);
 
-    try {
-        $messaging->send($message);
-        return response()->json(['message' => 'Notification sent successfully.']);
-    } catch (\Exception $e) {
-        Log::error('FCM Send Error: ' . $e->getMessage());
-        return response()->json(['message' => 'Failed to send notification'], 500);
+        try {
+            $sender = $request->user();
+            $recipientId = $request->recipient_id;
+            $recipientRole = $request->recipient_role;
+
+            // 2. Cari Penerima
+            $recipient = null;
+            if ($recipientRole === 'user' || $recipientRole === 'umkm') {
+                $recipient = User::find($recipientId);
+            } else if ($recipientRole === 'puskesmas') {
+                $recipient = \App\Models\Admin::find($recipientId);
+            }
+
+            if (!$recipient) {
+                return response()->json(['message' => 'Penerima tidak ditemukan.'], 404);
+            }
+
+            $fcmToken = $recipient->fcm_token;
+            if (!$fcmToken) {
+                return response()->json(['message' => 'Penerima tidak memiliki FCM token.'], 400);
+            }
+
+            // 3. Tentukan Nama Pengirim (LOGIC INI YANG DIPERBAIKI)
+            $senderName = $sender->name ?? 'Seseorang'; // Default
+
+            // Cek A: Apakah Pengirim adalah Admin Puskesmas?
+            if ($sender instanceof \App\Models\Admin) {
+                // Coba ambil ID Puskesmas (Cek 2 kemungkinan: kolom langsung atau relasi)
+                $puskesmasId = $sender->id_puskesmas ?? optional($sender->userData)->id_puskesmas;
+                
+                if ($puskesmasId) {
+                    $puskesmas = \App\Models\Puskesmas::find($puskesmasId);
+                    // Jika puskesmas ketemu, pakai namanya. Jika tidak, pakai nama admin.
+                    $senderName = $puskesmas ? $puskesmas->nama : $sender->name;
+                }
+            } 
+            // Cek B: Apakah Pengirim adalah UMKM?
+            else if ($sender instanceof User && $sender->hasRole('umkm')) {
+                $toko = \App\Models\Toko::where('id_user', $sender->id)->first();
+                if ($toko) {
+                    $senderName = $toko->nama;
+                }
+            }
+
+            // 4. Siapkan Firebase
+            $factory = (new Factory)->withServiceAccount(storage_path('app/firebase_credentials.json'));
+            $messaging = $factory->createMessaging();
+
+            // 5. Buat Notifikasi
+            $notification = Notification::create(
+                $senderName, 
+                $request->message_text
+            );
+
+            $notificationTag = 'chat_' . (string) $sender->id;
+
+            $message = CloudMessage::withTarget('token', $fcmToken)
+                ->withNotification($notification)
+                ->withData([
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                    'sender_id'    => (string) $sender->id,
+                    'sender_role'  => ($sender instanceof \App\Models\Admin) ? 'puskesmas' : 'user',
+                    'type'         => 'CHAT',
+                ])
+                ->withAndroidConfig([
+                    'notification' => [
+                        'channel_id' => 'high_importance_channel',
+                        'tag'        => $notificationTag,
+                    ],
+                ]);
+
+            $messaging->send($message);
+            return response()->json(['message' => 'Notification sent successfully.']);
+
+        } catch (\Exception $e) {
+            // TANGKAP ERROR BIAR KETAHUAN PENYEBABNYA
+            Log::error('FCM Chat Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Server Error saat kirim notifikasi',
+                'error' => $e->getMessage() // Kirim pesan error asli ke Flutter (buat debug)
+            ], 500);
+        }
     }
-}
 
 public function deleteFcmToken(Request $request)
 {

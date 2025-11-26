@@ -23,7 +23,7 @@
                     <th>Bukti</th>
                     <th>Rating</th>
                     <th>Comment</th>
-                    <th>Tanggapan</th>
+                    <th class="text-center">Tanggapan</th>
                     <th>Deskripsi</th>
                     <th>Aksi</th>
                 </tr>
@@ -32,13 +32,29 @@
                 @foreach($items as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                    <td>
+                        <form action="{{ route('admin.dumas.aduan.update.instansi', $item->id) }}" method="POST">
+                            @csrf
+
+                            <div class="d-flex">
+                                <select name="id_instansi" class="form-select form-select-sm me-1">
+                                    @foreach($instansiList as $ins)
+                                    <option value="{{ $ins->id }}"
+                                        {{ $item->kategori->id_instansi == $ins->id ? 'selected' : '' }}>
+                                        {{ $ins->nama }}
+                                    </option>
+                                    @endforeach
+                                </select>
+
+                                <button class="btn btn-primary btn-sm">✔</button>
+                            </div>
+                        </form>
+                    </td>
                     <td>{{ $item->jenis_laporan }}</td>
                     <td>{{ $item->lokasi_laporan ?? '-' }}</td>
                     <td>
-                        <form action="{{ route('admin.dumas.aduan.update', $item->id) }}" method="POST">
+                        <form action="{{ route('admin.dumas.aduan.update.status', $item->id) }}" method="POST">
                             @csrf
-                            @method('PUT')
                             <div class="d-flex">
                                 <select name="status" class="form-select form-select-sm me-1">
                                     <option value="menunggu" {{ $item->status == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
@@ -46,6 +62,7 @@
                                     <option value="selesai" {{ $item->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
                                     <option value="ditolak" {{ $item->status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                                 </select>
+
                                 <button type="submit" class="btn btn-sm btn-primary text-white">✔</button>
                             </div>
                         </form>
@@ -83,18 +100,49 @@
                         <span class="text-muted">Belum ada</span>
                         @endif
                     </td>
-                    <td>
-                        <form action="{{ route('admin.dumas.aduan.update', $item->id) }}" method="POST" class="d-flex align-items-center gap-2">
+                    <td class="align-top">
+
+                        {{-- Foto Tanggapan --}}
+                        <div class="text-center mb-3">
+                            @if($item->foto_tanggapan)
+                            <img src="{{ asset('storage/'.$item->foto_tanggapan) }}"
+                                class="rounded border"
+                                style="width: 100%; max-width: 170px;">
+                            @else
+                            <div class="text-muted small">Belum ada foto</div>
+                            @endif
+                        </div>
+
+                        {{-- Form untuk tanggapan & foto --}}
+                        <form action="{{ route('admin.dumas.aduan.update.tanggapan_foto', $item->id) }}"
+                            method="POST" enctype="multipart/form-data"
+                            class="p-2 border rounded" style="width:170px;margin:auto;">
+
                             @csrf
-                            @method('PUT')
-                            <div class="input-group w-100">
+
+                            <div class="mb-2">
                                 <input type="text" name="tanggapan"
                                     value="{{ $item->tanggapan }}"
-                                    class="form-control form-control-lg"
-                                    style="min-width: 300px; font-size: 1rem;"
+                                    class="form-control form-control-sm text-center"
                                     placeholder="Masukkan tanggapan">
-                                <button type="submit" class="btb btn-success px-6">💾</button>
                             </div>
+
+                            <div class="mb-2">
+                                <label class="form-label">Foto Tanggapan</label>
+                                <input type="file"
+                                    name="foto_tanggapan"
+                                    class="form-control form-control-sm validate-image @error('foto_tanggapan') is-invalid @enderror"
+                                    accept="image/*">
+
+                                @error('foto_tanggapan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-sm w-100 mt-2">
+                                Simpan
+                            </button>
+
                         </form>
                     </td>
                     <td>{{ \Illuminate\Support\Str::limit($item->deskripsi, 80) }}</td>
@@ -115,10 +163,33 @@
 
 @section('scripts')
 <script>
+    document.querySelectorAll('.validate-image').forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert('File harus berupa gambar (jpeg, png, jpg, atau gif).');
+                this.value = ""; // reset input
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran maksimal 2MB.');
+                this.value = "";
+                return;
+            }
+        });
+    });
+</script>
+
+<script>
     $(document).ready(function() {
         $('#infoTable').DataTable({
             autoWidth: true,
-            "lengthMenu": [
+            lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]
             ]

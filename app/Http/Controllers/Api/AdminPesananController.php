@@ -364,4 +364,53 @@ class AdminPesananController extends Controller
     return response()->json($result);
 }
 
+public function batalkanPesanan(Request $request, $no_transaksi)
+    {
+        $user = $request->user();
+
+        // 1. Cek Transaksi
+        $transaksi = DB::table('transaksi')->where('no_transaksi', $no_transaksi)->first();
+        if (!$transaksi) return response()->json(['message' => 'Pesanan tidak ditemukan.'], 404);
+
+        // 2. Validasi Kepemilikan Toko
+        $toko = DB::table('toko')->where('id', $transaksi->id_toko)->first();
+        if (!$toko || $toko->id_user != $user->id) {
+            return response()->json(['message' => 'Akses ditolak.'], 403);
+        }
+
+        // 3. Validasi Status (Hanya boleh batal jika belum dikirim/selesai)
+        $bolehBatal = ['menunggu_konfirmasi', 'diproses'];
+        if (!in_array($transaksi->status, $bolehBatal)) {
+             return response()->json(['message' => 'Pesanan sudah dikirim atau selesai, tidak bisa dibatalkan.'], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update Status Transaksi
+            DB::table('transaksi')
+                ->where('no_transaksi', $no_transaksi)
+                ->update([
+                    'status' => 'dibatalkan',
+                    'updated_at' => Carbon::now()
+                ]);
+            
+            // Update Status Payment
+            DB::table('payment')
+                ->where('no_transaksi', $no_transaksi)
+                ->update([
+                    'status_pembayaran' => 'dibatalkan',
+                    'updated_at' => Carbon::now()
+                ]);
+
+            // OPTIONAL: Di sini Anda bisa menambahkan logika mengembalikan STOK PRODUK jika perlu.
+
+            DB::commit();
+            return response()->json(['message' => 'Pesanan berhasil dibatalkan oleh Admin.']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Gagal membatalkan: ' . $e->getMessage()], 500);
+        }
+    }
+
 }

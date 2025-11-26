@@ -19,6 +19,7 @@ class User extends Authenticatable
         'no_ktp',
         'password',
         'fcm_token',
+        'google_id',
     ];
 
     protected $hidden = [

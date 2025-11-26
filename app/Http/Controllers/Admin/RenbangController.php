@@ -247,31 +247,35 @@ class RenbangController extends Controller
         $perPage = 10;
         $user = auth('sanctum')->user();
 
-        // 1. Ambil data usulan seperti biasa dengan paginasi
+        // Ambil data + hitung likes
         $data = RenbangAjuan::with(['user'])
             ->withCount('likes')
-            ->latest()
+            ->orderByRaw("CASE WHEN status = 'selesai' THEN 1 ELSE 0 END")
+            ->orderBy('likes_count', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
-        // 2. Jika user login, cari tahu usulan mana saja yang sudah di-like
-        $likedAjuanIds = collect(); // Defaultnya koleksi kosong
+        // Jika user login, cari like item yang ada di halaman ini
+        $likedAjuanIds = collect();
         if ($user) {
-            $ajuanIdsOnPage = $data->pluck('id'); // Ambil semua ID usulan di halaman ini
+            $ajuanIdsOnPage = $data->pluck('id');
             if ($ajuanIdsOnPage->isNotEmpty()) {
-                // Cari di tabel 'renbang_likes' hanya untuk ID user dan ID usulan yang ada di halaman ini
                 $likedAjuanIds = RenbangLike::where('id_user', $user->id)
                     ->whereIn('id_renbang', $ajuanIdsOnPage)
                     ->pluck('id_renbang');
             }
         }
 
-        // 3. Tambahkan properti 'is_liked_by_user' ke setiap item
+        // Tambahkan properti is_liked_by_user untuk setiap item
         $data->getCollection()->transform(function ($ajuan) use ($likedAjuanIds) {
             $ajuan->is_liked_by_user = $likedAjuanIds->contains($ajuan->id);
             return $ajuan;
         });
 
-        return response()->json(['success' => true, 'data' => $data], 200);
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
     }
 
     public function apiStore(Request $request)

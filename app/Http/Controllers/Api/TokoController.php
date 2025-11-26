@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Toko;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Ongkir; 
+use App\Models\MetodePembayaran;
+
 
 class TokoController extends Controller
 {
@@ -139,6 +142,37 @@ class TokoController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Data toko berhasil dihapus'
+        ]);
+    }
+
+    public function cekKelengkapan(Request $request, $id_toko)
+    {
+        $user = $request->user();
+
+        // 1. Validasi Pemilik Toko
+        // Menggunakan Model Toko
+        $toko = Toko::where('id', $id_toko)->first();
+        
+        if (!$toko || $toko->id_user != $user->id) {
+            return response()->json(['message' => 'Akses ditolak.'], 403);
+        }
+
+        // 2. Cek apakah sudah ada Ongkir?
+        // Menggunakan Model Ongkir
+        $hasOngkir = Ongkir::where('id_toko', $id_toko)->exists();
+
+        // 3. Cek apakah sudah ada Metode Pembayaran?
+        // Menggunakan Model MetodePembayaran
+        $hasMetode = MetodePembayaran::where('id_toko', $id_toko)->exists();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'has_ongkir' => $hasOngkir,
+                'has_metode' => $hasMetode,
+                // Toko siap JIKA ongkir ada DAN metode ada
+                'is_ready' => $hasOngkir && $hasMetode 
+            ]
         ]);
     }
 }

@@ -53,6 +53,10 @@ Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 });
+Route::post('/auth/google-callback', [App\Http\Controllers\Api\AuthController::class, 'googleCallback']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auth/update-profile', [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
+});
 
 Route::middleware('auth:sanctum')->get('/check-token', function (Request $request) {
     return response()->json([
@@ -206,6 +210,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/toko/store', [TokoController::class, 'store']);
     Route::put('/toko/{id}', [TokoController::class, 'update']);
     Route::delete('/toko/{id}', [TokoController::class, 'destroy']);
+    Route::get('/toko/cek-kelengkapan/{id_toko}', [TokoController::class, 'cekKelengkapan']);
 });
 
 //Produk
@@ -241,7 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Payment
 Route::middleware('auth:sanctum')->group(function () {
-Route::post('/payment/upload/{no_transaksi}', [PaymentController::class, 'uploadBukti']);
+    Route::post('/payment/upload/{no_transaksi}', [PaymentController::class, 'uploadBukti']);
 });
 
 //ongkir
@@ -265,6 +270,7 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::get('/pesanan/{id_toko}', [AdminPesananController::class, 'index']);
     // 2. Aksi Konfirmasi (Lunas)
     Route::post('/pesanan/konfirmasi/{no_transaksi}', [AdminPesananController::class, 'konfirmasiPembayaran']);
+    Route::post('/pesanan/batalkan/{no_transaksi}', [AdminPesananController::class, 'batalkanPesanan']);
     // 3. Aksi Tolak Bukti Bayar
     Route::post('/pesanan/tolak/{no_transaksi}', [AdminPesananController::class, 'tolakPembayaran']);
     // 4. Aksi Kirim (Input Resi)
@@ -274,3 +280,6 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::get('/pesanan/counts/{id_toko}', [AdminPesananController::class, 'getCounts']);
     Route::get('/analitik/{id_toko}', [AdminAnalitikController::class, 'index']);
 });
+
+// forgot password
+Route::post('/auth/forgot-password', [App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);

@@ -29,4 +29,13 @@ class Dumas extends Model
     {
         return $this->belongsTo(KategoriDumas::class, 'id_kategori');
     }
+
+    protected $appends = ['foto_tanggapan_url'];
+
+    public function getFotoTanggapanUrlAttribute()
+    {
+        return $this->foto_tanggapan 
+            ? asset('storage/' . $this->foto_tanggapan)
+            : null;
+    }
 }

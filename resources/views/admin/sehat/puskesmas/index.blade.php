@@ -6,6 +6,7 @@
 <div class="container mt-4">
     <h2>Daftar Puskesmas</h2>
 
+    <a href="{{ route('admin.sehat.puskesmas.map') }}" class="btn btn-primary mb-3">Lihat Peta</a>
     <a href="{{ route('admin.sehat.puskesmas.create') }}" class="btn btn-primary mb-3">Tambah Puskesmas</a>
 
     @if(session('success'))
@@ -19,6 +20,8 @@
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Jam Operasional</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -29,6 +32,8 @@
                 <td>{{ $item->nama }}</td>
                 <td>{{ $item->alamat }}</td>
                 <td>{{ $item->jam }}</td>
+                <td>{{ $item->latitude }}</td>
+                <td>{{ $item->longitude }}</td>
                 <td>
                     <a href="{{ route('admin.sehat.puskesmas.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('admin.sehat.puskesmas.destroy', $item->id) }}" method="POST" style="display:inline-block;">
@@ -40,11 +45,10 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center">Belum ada data Puskesmas.</td>
+                <td colspan="7" class="text-center">Belum ada data Puskesmas.</td>
             </tr>
             @endforelse
         </tbody>
     </table>
 </div>
 @endsection
-

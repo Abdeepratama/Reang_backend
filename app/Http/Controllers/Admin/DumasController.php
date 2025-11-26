@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dumas;
 use App\Models\UserData;
 use App\Models\KategoriDumas;
+use App\Models\Instansi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,12 @@ class DumasController extends Controller
             $data['bukti_laporan'] = url(Storage::url($dumas->bukti_laporan));
         }
 
+        if ($dumas->foto_tanggapan) {
+            $data['foto_tanggapan'] = url(Storage::url($dumas->foto_tanggapan));
+        }
+
+        $data['tanggapan_admin'] = $dumas->tanggapan;
+
         // Ambil ulasan pertama (dan satu-satunya) yang ada untuk laporan ini.
         $rating = $dumas->ratings->first();
 
@@ -90,35 +97,43 @@ class DumasController extends Controller
     // =======================================================================
 
     public function index()
-{
-    $user = Auth::guard('admin')->user();
+    {
+        $user = Auth::guard('admin')->user();
 
-    if ($user->role === 'superadmin') {
-        // Superadmin lihat semua aduan
-        $items = Dumas::with(['kategori.instansi', 'ratings'])->get();
-    } else {
-        // Admin dinas
-        $userData = UserData::where('id_admin', $user->id)->first();
-        $idInstansi = $userData?->id_instansi;
+        if ($user->role === 'superadmin') {
+            $items = Dumas::with(['kategori.instansi', 'ratings'])
+                ->orderByRaw("FIELD(status, 'selesai') ASC")
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-        $items = Dumas::with(['kategori.instansi', 'ratings'])
-            ->whereHas('kategori', function ($q) use ($idInstansi) {
-                $q->where('id_instansi', $idInstansi);
-            })
-            ->get();
+            // superadmin lihat semua instansi
+            $instansiList = Instansi::orderBy('nama')->get();
+        } else {
+            $userData = UserData::where('id_admin', $user->id)->first();
+            $idInstansi = $userData?->id_instansi;
+
+            $items = Dumas::with(['kategori.instansi', 'ratings'])
+                ->whereHas('kategori', function ($q) use ($idInstansi) {
+                    $q->where('id_instansi', $idInstansi);
+                })
+                ->orderByRaw("FIELD(status, 'selesai') ASC")
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // admin dinas hanya tampilkan instansi miliknya (atau kosongkan jika mau)
+            $instansiList = Instansi::where('id', $idInstansi)->orderBy('nama')->get();
+        }
+
+        $stats = [
+            'menunggu' => Dumas::where('status', 'menunggu')->count(),
+            'diproses' => Dumas::where('status', 'diproses')->count(),
+            'selesai'  => Dumas::where('status', 'selesai')->count(),
+            'ditolak'  => Dumas::where('status', 'ditolak')->count(),
+        ];
+
+        return view('admin.dumas.aduan.index', compact('items', 'stats', 'instansiList'));
     }
 
-    // ⛔ Perhatikan bagian ini WAJIB ADA
-    $stats = [
-        'menunggu' => Dumas::where('status', 'menunggu')->count(),
-        'diproses' => Dumas::where('status', 'diproses')->count(),
-        'selesai'  => Dumas::where('status', 'selesai')->count(),
-        'ditolak'  => Dumas::where('status', 'ditolak')->count(),
-    ];
-
-    // ⛔ Pastikan $stats dikirim ke view
-    return view('admin.dumas.aduan.index', compact('items', 'stats'));
-}
 
     public function store(Request $request)
     {
@@ -170,31 +185,86 @@ class DumasController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function updateInstansi(Request $request, $id)
+    {
+        $request->validate([
+            'id_instansi' => 'required|exists:instansi,id',
+        ]);
+
+        $dumas = Dumas::with('kategori')->findOrFail($id);
+
+        // Update kategori berdasarkan instansi baru
+        $kategoriBaru = KategoriDumas::where('id_instansi', $request->id_instansi)->first();
+
+        if (!$kategoriBaru) {
+            return back()->with('error', 'Kategori untuk instansi ini belum ada.');
+        }
+
+        $dumas->id_kategori = $kategoriBaru->id;
+        $dumas->save();
+
+        $this->logAktivitas("Kategori laporan diperbarui");
+        $this->logNotifikasi("Kategori laporan diperbarui");
+
+        return back()->with('success', 'Instansi berhasil diperbarui!');
+    }
+
+    public function updateStatus(Request $request, $id)
     {
         $dumas = Dumas::findOrFail($id);
 
         $request->validate([
-            'status'     => 'nullable|in:menunggu,diproses,selesai,ditolak',
-            'tanggapan'  => 'nullable|string',
+            'status' => 'required|in:menunggu,diproses,selesai,ditolak',
         ]);
 
-        if ($request->filled('status')) {
-            $dumas->status = $request->status;
-            $dumas->tanggapan = null;
-        }
+        $dumas->status = $request->status;
+        $dumas->save();
 
+        $this->logAktivitas("Status DUMAS diperbarui");
+        $this->logNotifikasi("Status pengaduan diperbarui");
+
+        return back()->with('success', 'Status berhasil diperbarui!');
+    }
+
+    public function updateTanggapanFoto(Request $request, $id)
+    {
+        $dumas = Dumas::findOrFail($id);
+
+        // Validasi tanggapan + foto
+        $request->validate([
+            'tanggapan'       => 'nullable|string',
+            'foto_tanggapan'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        // Update tanggapan (boleh kosong)
         if ($request->filled('tanggapan')) {
             $dumas->tanggapan = $request->tanggapan;
         }
 
+        // Kalau upload foto baru
+        if ($request->hasFile('foto_tanggapan')) {
+
+            // Hapus foto lama
+            if ($dumas->foto_tanggapan && Storage::disk('public')->exists($dumas->foto_tanggapan)) {
+                Storage::disk('public')->delete($dumas->foto_tanggapan);
+            }
+
+            // Simpan foto baru
+            $file = $request->file('foto_tanggapan');
+            $fotoName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('foto_tanggapan', $fotoName, 'public');
+
+            $dumas->foto_tanggapan = $path;
+        }
+
         $dumas->save();
 
-        $this->logAktivitas("Pengaduan telah diupdate");
-        $this->logNotifikasi("Pengaduan telah diupdate");
+        $this->logAktivitas("Tanggapan & Foto DUMAS diperbarui");
+        $this->logNotifikasi("Tanggapan dan foto pengaduan diperbarui");
 
-        return back()->with('success', 'Data berhasil diperbarui!');
+        return back()->with('success', 'Tanggapan & foto berhasil diperbarui!');
     }
+
 
     public function destroy($id)
     {

@@ -25,7 +25,7 @@
     <!-- App CSS -->
     <link rel="stylesheet" href="css/app-light.css" id="lightTheme" disabled>
     <link rel="stylesheet" href="css/app-dark.css" id="darkTheme">
-    <link rel="icon" href="{{ asset('landing/img/logo reang.png') }}">
+    <link rel="icon" href="{{ asset('landing/img/logo_reang.png') }}">
 </head>
 
 <body class="bg-light d-flex align-items-center" style="height: 100vh;">

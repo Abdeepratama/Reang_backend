@@ -11,7 +11,7 @@ class Puskesmas extends Model
 
   protected $table = 'puskesmas';
 
-  protected $fillable = ['nama', 'alamat', 'jam'];
+  protected $fillable = ['nama', 'alamat', 'latitude','longitude', 'jam'];
 
   public $timestamps = false;
 
