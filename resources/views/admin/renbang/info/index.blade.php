@@ -21,13 +21,13 @@
                                 <table class="table datatables" id="renbangTable">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>No</th>
-                                            <th>Foto</th>
-                                            <th>Judul</th>
-                                            <th>Kategori</th>
-                                            <th>Alamat</th>
-                                            <th>Deskripsi</th>
-                                            <th>Aksi</th>
+                                            <th class="text-center">No</th>
+                                            <th class="text-center">Foto</th>
+                                            <th class="text-center">Judul</th>
+                                            <th class="text-center">Kategori</th>
+                                            <th class="text-center">Alamat</th>
+                                            <th class="text-center">Deskripsi</th>
+                                            <th class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>

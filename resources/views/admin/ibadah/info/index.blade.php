@@ -25,17 +25,17 @@
                                     <table class="table datatables" id="infoTable">
                                         <thead class="table-dark">
                                             <tr>
-                                                <th>No</th>
-                                                <th>Foto</th>
-                                                <th>Judul</th>
-                                                <th>Tanggal</th>
-                                                <th>Waktu</th>
-                                                <th>Lokasi</th>
-                                                <th>Kategori</th>
-                                                <th>Deskripsi</th>
-                                                <th>Latitude</th>
-                                                <th>Longitude</th>
-                                                <th>Aksi</th>
+                                                <th class="text-center">No</th>
+                                                <th class="text-center">Foto</th>
+                                                <th class="text-center">Judul</th>
+                                                <th class="text-center">Tanggal</th>
+                                                <th class="text-center">Waktu</th>
+                                                <th class="text-center">Lokasi</th>
+                                                <th class="text-center">Kategori</th>
+                                                <th class="text-center">Deskripsi</th>
+                                                <th class="text-center">Latitude</th>
+                                                <th class="text-center">Longitude</th>
+                                                <th class="text-center">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -15,11 +15,11 @@
     <table class="table table-bordered table-striped datatables" id="infoTable">
         <thead class="table-dark">
             <tr>
-                <th width="60">No</th>
-                <th>Nama</th>
-                <th>Role</th>
-                <th>Instansi</th>
-                <th width="180">Aksi</th>
+                <th class="text-center">No</th>
+                <th class="text-center">Nama</th>
+                <th class="text-center">Role</th>
+                <th class="text-center">Instansi</th>
+                <th class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -45,7 +45,7 @@
                         Superadmin
                     @endif
                 </td>
-                <td>
+                <td class="text-center">
                     <a href="{{ route('admin.accounts.edit', $admin->id) }}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="{{ route('admin.accounts.destroy', $admin->id) }}" method="POST" style="display:inline;">
                         @csrf

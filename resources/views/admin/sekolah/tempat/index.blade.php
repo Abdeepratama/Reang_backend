@@ -17,14 +17,14 @@
     <table class="table datatables" id="infoTable">
         <thead class="table-dark">
             <tr>
-                <th>No</th>
-                <th>Nama Sekolah</th>
-                <th>Alamat</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Kategori</th>
-                <th>Foto</th>
-                <th>Aksi</th>
+                <th class="text-center">No</th>
+                <th class="text-center">Nama Sekolah</th>
+                <th class="text-center">Alamat</th>
+                <th class="text-center">Latitude</th>
+                <th class="text-center">Longitude</th>
+                <th class="text-center">Kategori</th>
+                <th class="text-center">Foto</th>
+                <th class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>

@@ -706,6 +706,15 @@ h6 {
   opacity: 1;
 }
 
+/*---posisi nyai ai---*/
+.sb-button, 
+.sb-chat-btn, 
+.sb-chat-launcher, 
+.sb-frame, 
+.sb-container iframe {
+    bottom: 70px !important;
+}
+
 /*--------------------------------------------------------------
 # Disable aos animation delay on mobile devices
 --------------------------------------------------------------*/

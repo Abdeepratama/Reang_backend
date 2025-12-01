@@ -15,17 +15,17 @@
         <table class="table datatables" id="infoTable">
             <thead class="table-dark">
                 <tr>
-                    <th>No</th>
-                    <th>kategori</th>
-                    <th>Jenis Laporan</th>
-                    <th>Alamat</th>
-                    <th>Status</th>
-                    <th>Bukti</th>
-                    <th>Rating</th>
-                    <th>Comment</th>
+                    <th class="text-center">No</th>
+                    <th class="text-center">kategori</th>
+                    <th class="text-center">Jenis Laporan</th>
+                    <th class="text-center">Alamat</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Bukti</th>
+                    <th class="text-center">Rating</th>
+                    <th class="text-center">Comment</th>
                     <th class="text-center">Tanggapan</th>
-                    <th>Deskripsi</th>
-                    <th>Aksi</th>
+                    <th class="text-center">Deskripsi</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>

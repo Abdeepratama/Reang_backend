@@ -16,15 +16,15 @@
         <table class="table table-bordered table-striped datatables" id="renbangTable">
             <thead class="table-dark">
                 <tr>
-                    <th>No</th>
-                    <th>Judul</th>
-                    <th>Kategori</th>
-                    <th>Lokasi</th>
-                    <th>Status</th>
-                    <th>Tanggapan</th>
-                    <th>Deskripsi</th>
-                    <th>like</th>
-                    <th>Aksi</th>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Judul</th>
+                    <th class="text-center">Kategori</th>
+                    <th class="text-center">Lokasi</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Tanggapan</th>
+                    <th class="text-center">Deskripsi</th>
+                    <th class="text-center">like</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>

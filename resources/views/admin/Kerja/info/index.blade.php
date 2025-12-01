@@ -17,15 +17,15 @@
     <table class="table datatables" id="infoTable">
         <thead class="table-dark">
             <tr>
-                <th>No</th>
-                <th>Nama Perusahaan</th>
-                <th>Posisi</th>
-                <th>Alamat</th>
-                <th>Gaji</th>
-                <th>Nomor Telepon</th>
-                <th>Kategori</th>
-                <th>Foto</th>
-                <th>Aksi</th>
+                <th class="text-center">No</th>
+                <th class="text-center">Nama Perusahaan</th>
+                <th class="text-center">Posisi</th>
+                <th class="text-center">Alamat</th>
+                <th class="text-center">Gaji</th>
+                <th class="text-center">Nomor Telepon</th>
+                <th class="text-center">Kategori</th>
+                <th class="text-center">Foto</th>
+                <th class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>

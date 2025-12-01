@@ -80,7 +80,7 @@
   </div>
 </div>
 
-<!-- Scroll Top -->
+<!-- Scroll ke atas -->
 <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
 <!-- Preloader -->
@@ -714,6 +714,8 @@
   }
 </script>
 
+<script src="https://nyai.indramayukab.go.id/js/min/jquery.min.js"></script>
+<script id="sbinit" src="https://nyai.indramayukab.go.id/js/main.js?lang=id"></script>
 </body>
 
 </html>
