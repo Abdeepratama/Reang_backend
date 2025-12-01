@@ -175,4 +175,55 @@ class TokoController extends Controller
             ]
         ]);
     }
+
+
+
+    // POST: /api/toko/update
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        $toko = Toko::where('id_user', $user->id)->first();
+
+        if (!$toko) {
+            return response()->json(['message' => 'Toko tidak ditemukan'], 404);
+        }
+
+        $validated = $request->validate([
+            'nama'          => 'required|string|max:255',
+            'deskripsi'     => 'nullable|string',
+            'alamat'        => 'nullable|string',
+            'no_hp'         => 'nullable|string|max:20',
+            'email_toko'    => 'nullable|email|max:255', // Baru
+            'nama_pemilik'  => 'nullable|string|max:255', // Baru
+            'tahun_berdiri' => 'nullable|string|max:4',   // Baru
+            'foto'          => 'nullable|image|max:2048',
+        ]);
+
+        // Handle Upload Foto
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($toko->foto) {
+                Storage::disk('public')->delete($toko->foto);
+            }
+            $path = $request->file('foto')->store('toko_profile', 'public');
+            $toko->foto = $path;
+        }
+
+        // Update Data Lainnya
+        $toko->update([
+            'nama'          => $validated['nama'],
+            'deskripsi'     => $validated['deskripsi'] ?? $toko->deskripsi,
+            'alamat'        => $validated['alamat'] ?? $toko->alamat,
+            'no_hp'         => $validated['no_hp'] ?? $toko->no_hp,
+            'email_toko'    => $validated['email_toko'] ?? $toko->email_toko,
+            'nama_pemilik'  => $validated['nama_pemilik'] ?? $toko->nama_pemilik,
+            'tahun_berdiri' => $validated['tahun_berdiri'] ?? $toko->tahun_berdiri,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profil toko berhasil diperbarui',
+            'data' => $toko
+        ]);
+    }
 }

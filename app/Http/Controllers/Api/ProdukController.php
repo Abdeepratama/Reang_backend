@@ -101,15 +101,28 @@ class ProdukController extends Controller
             ->where('id_toko', $id_toko)
             ->select(
                 'produk.*',
-                // [PERBAIKAN: GUNAKAN COLLATE AGAR JOIN TIDAK ERROR]
+                
+                // 1. Subquery Terjual (Tetap ada)
                 DB::raw('(
                     SELECT COALESCE(SUM(dt.jumlah), 0)
                     FROM detail_transaksi dt
-                    JOIN transaksi t 
-                        ON dt.no_transaksi = t.no_transaksi COLLATE utf8mb4_unicode_ci
-                    WHERE dt.id_produk = produk.id
-                    AND t.status = "selesai"
-                ) as terjual')
+                    JOIN transaksi t ON dt.no_transaksi = t.no_transaksi COLLATE utf8mb4_unicode_ci
+                    WHERE dt.id_produk = produk.id AND t.status = "selesai"
+                ) as terjual'),
+
+                // 2. [BARU] Hitung Rata-rata Rating
+                DB::raw('(
+                    SELECT COALESCE(AVG(rating), 0)
+                    FROM ulasan
+                    WHERE id_produk = produk.id
+                ) as rating_rata_rata'),
+
+                // 3. [BARU] Hitung Jumlah Ulasan
+                DB::raw('(
+                    SELECT COUNT(id)
+                    FROM ulasan
+                    WHERE id_produk = produk.id
+                ) as jumlah_ulasan')
             )
             ->orderBy('created_at', 'desc')
             ->get();
@@ -253,45 +266,85 @@ class ProdukController extends Controller
     }
 
     // 🔹 GET: /api/produk/show (paginate)
-    public function index(Request $request)
+public function index(Request $request)
     {
-        $query = DB::table('produk')
-            ->join('toko', 'produk.id_toko', '=', 'toko.id')
-            ->select('produk.*', 'toko.alamat as lokasi', 'toko.nama as nama_toko')
-            ->orderBy('produk.created_at', 'desc');
+        try {
+            // 1. Query Dasar
+            $query = DB::table('produk');
 
-        // Filter fitur (kategori)
-        if ($request->has('fitur') && $request->input('fitur') != 'Semua') {
-            $query->where('produk.fitur', $request->input('fitur'));
-        }
+            // Filter Kategori
+            if ($request->has('fitur') && $request->fitur != 'Semua' && $request->fitur != '') {
+                $query->where('fitur', $request->fitur);
+            }
 
-        // Search q
-        if ($request->has('q') && $request->input('q') != '') {
-            $searchText = $request->input('q');
-            $query->where(function ($q) use ($searchText) {
-                $q->where('produk.nama', 'like', '%' . $searchText . '%')
-                    ->orWhere('produk.deskripsi', 'like', '%' . $searchText . '%');
+            // Filter Pencarian
+            if ($request->has('search') && $request->search != '') {
+                $query->where('nama', 'like', '%' . $request->search . '%');
+            }
+
+            // 2. Select Data
+            $produk = $query->select(
+                'produk.*',
+
+                // Subquery Terjual
+                DB::raw('(
+                    SELECT COALESCE(SUM(dt.jumlah), 0)
+                    FROM detail_transaksi dt
+                    JOIN transaksi t ON dt.no_transaksi = t.no_transaksi COLLATE utf8mb4_unicode_ci
+                    WHERE dt.id_produk = produk.id AND t.status = "selesai"
+                ) as terjual'),
+
+                // Subquery Rating (Gunakan COLLATE jika perlu, tapi biasanya aman untuk ID)
+                DB::raw('(
+                    SELECT COALESCE(AVG(rating), 0)
+                    FROM ulasan
+                    WHERE id_produk = produk.id
+                ) as rating_rata_rata'),
+
+                // Subquery Jumlah Ulasan
+                DB::raw('(
+                    SELECT COUNT(id)
+                    FROM ulasan
+                    WHERE id_produk = produk.id
+                ) as jumlah_ulasan')
+            )
+            ->orderBy('created_at', 'desc')
+            ->paginate(10); 
+
+            // 3. Format Foto & Varian
+            // Ambil ID produk dari halaman ini saja (optimasi)
+            $produkIds = collect($produk->items())->pluck('id');
+            
+            $allVarians = DB::table('produk_varian')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
+            $allGaleri = DB::table('produk_foto')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
+
+            // Transform data
+            $produk->getCollection()->transform(function ($item) use ($allVarians, $allGaleri) {
+                $item->foto = $item->foto ? $this->formatFotoUrl($item->foto) : null;
+                $item->varians = $allVarians[$item->id] ?? [];
+                $item->galeri_foto = collect($allGaleri[$item->id] ?? [])->map(function ($foto) {
+                    $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
+                    return $foto;
+                });
+                
+                // Casting tipe data
+                $item->terjual = (int) $item->terjual;
+                $item->rating_rata_rata = (double) $item->rating_rata_rata;
+                $item->jumlah_ulasan = (int) $item->jumlah_ulasan;
+
+                return $item;
             });
+
+            // [PERBAIKAN UTAMA: RETURN LANGSUNG]
+            // Agar Flutter bisa membaca key 'data' berisi List produk
+            return response()->json($produk);
+
+        } catch (\Exception $e) {
+            // Jika error, tampilkan pesan errornya biar tau kenapa
+            return response()->json([
+                'message' => 'Error Backend: ' . $e->getMessage()
+            ], 500);
         }
-
-        $produk = $query->paginate(15)->appends($request->query());
-
-        // Eager load varian & galeri untuk collection hasil paginate
-        $produkIds = $produk->pluck('id');
-        $allVarians = DB::table('produk_varian')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
-        $allGaleri = DB::table('produk_foto')->whereIn('id_produk', $produkIds)->get()->groupBy('id_produk');
-
-        $produk->getCollection()->transform(function ($item) use ($allVarians, $allGaleri) {
-            $item->foto = isset($item->foto) ? $this->formatFotoUrl($item->foto) : null;
-            $item->varians = $allVarians[$item->id] ?? [];
-            $item->galeri_foto = collect($allGaleri[$item->id] ?? [])->map(function ($foto) {
-                $foto->path_foto = $this->formatFotoUrl($foto->path_foto);
-                return $foto;
-            });
-            return $item;
-        });
-
-        return response()->json($produk);
     }
 
     // 🔹 GET: /api/produk/kategori/{kategori}

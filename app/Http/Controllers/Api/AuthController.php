@@ -96,7 +96,7 @@ class AuthController extends Controller
             $auth = $factory->createAuth();
 
             // 3. Verifikasi Token ke Google
-            $verifiedIdToken = $auth->verifyIdToken($idTokenString);
+            $verifiedIdToken = $auth->verifyIdToken($idTokenString, false, 300);
             $claims = $verifiedIdToken->claims();
 
             // Ambil data dari Google
@@ -163,30 +163,48 @@ class AuthController extends Controller
      */
     public function signin(Request $request)
     {
+        // 1. Validasi Input
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        // 2. Cek apakah Email ada di database?
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Jika user tidak ditemukan
             return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+                'status' => false, // Tambahkan status false biar enak di cek di flutter
+                'message' => 'Email belum terdaftar' 
+            ], 404); // 404 Not Found
         }
 
-        $user = Auth::user();
+        // 3. Cek apakah Password benar?
+        // Gunakan Hash::check untuk membandingkan input dengan password di DB
+        if (!Hash::check($request->password, $user->password)) {
+            // Jika password salah
+            return response()->json([
+                'status' => false,
+                'message' => 'Password salah'
+            ], 401); // 401 Unauthorized
+        }
+
+        // 4. Jika Login Sukses
         $user->load('role');
 
-        // Tambah id_toko saat login
+        // Tambah id_toko saat login (Helper Anda)
         $user = $this->attachTokoId($user);
 
+        // Buat Token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message'       => 'Login successful!',
-            'user'          => $user,
-            'access_token'  => $token,
-            'token_type'    => 'Bearer',
+            'status'       => true,
+            'message'      => 'Login successful!',
+            'user'         => $user,
+            'access_token' => $token,
+            'token_type'   => 'Bearer',
         ]);
     }
 
@@ -298,5 +316,11 @@ class AuthController extends Controller
             'access_token' => $token,  // <--- INI YANG TADI HILANG
             'token_type'   => 'Bearer',
         ]);
+    }
+    // GET: /api/check-email?email=xxx@gmail.com
+    public function checkEmail(Request $request)
+    {
+        $exists = User::where('email', $request->email)->exists();
+        return response()->json(['exists' => $exists]);
     }
 }

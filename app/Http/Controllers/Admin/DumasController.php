@@ -10,6 +10,7 @@ use App\Models\Instansi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 class DumasController extends Controller
 {
@@ -209,7 +210,7 @@ class DumasController extends Controller
         return back()->with('success', 'Instansi berhasil diperbarui!');
     }
 
-    public function updateStatus(Request $request, $id)
+public function updateStatus(Request $request, $id)
     {
         $dumas = Dumas::findOrFail($id);
 
@@ -220,20 +221,47 @@ class DumasController extends Controller
         $dumas->status = $request->status;
         $dumas->save();
 
+        // --- [MULAI KODE NOTIFIKASI BARU] ---
+        if ($dumas->user_id) {
+            $title = "Status Laporan Diperbarui";
+            $body = "Status laporan Anda berubah menjadi: " . ucfirst($request->status);
+
+            // Custom pesan biar lebih ramah
+            if ($request->status == 'diproses') {
+                $body = "Laporan Anda sedang ditindaklanjuti oleh petugas.";
+            } elseif ($request->status == 'selesai') {
+                $title = "Laporan Selesai";
+                $body = "Laporan Anda telah selesai ditangani. Terima kasih atas informasinya.";
+            } elseif ($request->status == 'ditolak') {
+                $title = "Laporan Ditolak";
+                $body = "Mohon maaf, laporan Anda tidak dapat kami proses.";
+            }
+
+            Notification::create([
+                'id_user' => $dumas->user_id,
+                'type'    => 'dumas',       // Tipe khusus dumas
+                'data_id' => $dumas->id,    // ID Laporan untuk navigasi
+                'title'   => $title,
+                'body'    => $body,
+                'is_read' => 0,
+            ]);
+        }
+        // --- [SELESAI KODE NOTIFIKASI BARU] ---
+
         $this->logAktivitas("Status DUMAS diperbarui");
         $this->logNotifikasi("Status pengaduan diperbarui");
 
         return back()->with('success', 'Status berhasil diperbarui!');
     }
 
-    public function updateTanggapanFoto(Request $request, $id)
+public function updateTanggapanFoto(Request $request, $id)
     {
         $dumas = Dumas::findOrFail($id);
 
         // Validasi tanggapan + foto
         $request->validate([
-            'tanggapan'       => 'nullable|string',
-            'foto_tanggapan'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'tanggapan'      => 'nullable|string',
+            'foto_tanggapan' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         // Update tanggapan (boleh kosong)
@@ -258,6 +286,19 @@ class DumasController extends Controller
         }
 
         $dumas->save();
+
+        // --- [MULAI KODE NOTIFIKASI BARU] ---
+        if ($dumas->user_id) {
+            Notification::create([
+                'id_user' => $dumas->user_id,
+                'type'    => 'dumas',
+                'data_id' => $dumas->id,
+                'title'   => 'Tanggapan Baru',
+                'body'    => 'Admin telah memberikan tanggapan atau bukti tindak lanjut pada laporan Anda.',
+                'is_read' => 0,
+            ]);
+        }
+        // --- [SELESAI KODE NOTIFIKASI BARU] ---
 
         $this->logAktivitas("Tanggapan & Foto DUMAS diperbarui");
         $this->logNotifikasi("Tanggapan dan foto pengaduan diperbarui");

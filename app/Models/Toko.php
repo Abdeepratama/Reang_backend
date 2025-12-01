@@ -18,6 +18,9 @@ class Toko extends Model
         'alamat',
         'no_hp',
         'foto',
+        'email_toko',
+        'nama_pemilik',
+        'tahun_berdiri',
     ];
 
     public function user()
@@ -28,5 +31,12 @@ class Toko extends Model
     public function toko()
     {
         return $this->belongsTo(Toko::class, 'id_toko');
+    }
+        public function getFotoAttribute($value)
+    {
+        if ($value) {
+            return asset('storage/' . $value);
+        }
+        return null;
     }
 }

@@ -373,6 +373,12 @@ public function store(Request $request)
                     ELSE transaksi.status 
                 END as status"),
 
+                        DB::raw("(SELECT EXISTS(
+                            SELECT 1 FROM ulasan 
+                            WHERE ulasan.no_transaksi = transaksi.no_transaksi COLLATE utf8mb4_unicode_ci
+                            LIMIT 1
+                        )) as is_reviewed"),
+
                 'payment.status_pembayaran',
                 'payment.metode_pembayaran',
                 'payment.nomor_tujuan',
@@ -634,6 +640,4 @@ public function store(Request $request)
 
         return response()->json($result);
     }
-
-    
 }

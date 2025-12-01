@@ -13,6 +13,7 @@ use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 
 class RenbangController extends Controller
@@ -207,21 +208,61 @@ class RenbangController extends Controller
         return view('admin.renbang.ajuan.show', compact('ajuan'));
     }
 
-    public function update(Request $request, $id)
+public function update(Request $request, $id)
     {
         $ajuan = RenbangAjuan::findOrFail($id);
 
         $request->validate([
-            'status' => 'nullable|in:menunggu,diproses,selesai,ditolak',
+            'status'    => 'nullable|in:menunggu,diproses,selesai,ditolak',
             'tanggapan' => 'nullable|string|max:1000',
         ]);
 
+        // --- 1. LOGIKA UBAH STATUS & NOTIFIKASI ---
         if ($request->filled('status')) {
             $ajuan->status = $request->status;
+
+            // Kirim Notifikasi jika user_id ada
+            if ($ajuan->user_id) {
+                $title = "Status Usulan Diperbarui";
+                $body = "Status usulan Renbang Anda berubah menjadi: " . ucfirst($request->status);
+
+                // Custom pesan biar lebih jelas
+                if ($request->status == 'diproses') {
+                    $body = "Usulan Anda sedang ditinjau oleh Bappeda/Instansi terkait.";
+                } elseif ($request->status == 'selesai') {
+                    $title = "Usulan Disetujui/Selesai";
+                    $body = "Selamat! Usulan Anda telah diterima dan masuk dalam rencana pembangunan.";
+                } elseif ($request->status == 'ditolak') {
+                    $title = "Usulan Ditolak";
+                    $body = "Mohon maaf, usulan Anda belum dapat kami terima saat ini.";
+                }
+
+                Notification::create([
+                    'id_user' => $ajuan->user_id,
+                    'type'    => 'renbang',    // Tipe khusus renbang
+                    'data_id' => $ajuan->id,   // ID Usulan untuk navigasi
+                    'title'   => $title,
+                    'body'    => $body,
+                    'is_read' => 0,
+                ]);
+            }
         }
 
+        // --- 2. LOGIKA TANGGAPAN & NOTIFIKASI ---
         if ($request->filled('tanggapan')) {
             $ajuan->tanggapan = $request->tanggapan;
+
+            // Kirim Notifikasi Tanggapan
+            if ($ajuan->user_id) {
+                Notification::create([
+                    'id_user' => $ajuan->user_id,
+                    'type'    => 'renbang',
+                    'data_id' => $ajuan->id,
+                    'title'   => 'Tanggapan Baru',
+                    'body'    => 'Admin telah memberikan tanggapan pada usulan Renbang Anda.',
+                    'is_read' => 0,
+                ]);
+            }
         }
 
         $ajuan->save();

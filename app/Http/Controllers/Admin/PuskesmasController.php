@@ -140,7 +140,7 @@ class PuskesmasController extends Controller
     {
         $paginator = Puskesmas::withCount('dokter as dokter_tersedia')
             ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->paginate(60);
 
         // Tambahkan admin_id untuk setiap item di collection paginator
         $collection = $paginator->getCollection()->map(function ($item) {
@@ -167,7 +167,7 @@ class PuskesmasController extends Controller
             return response()->json($data);
         }
 
-        $paginator = Puskesmas::withCount('dokter as dokter_tersedia')->paginate(10);
+        $paginator = Puskesmas::withCount('dokter as dokter_tersedia')->paginate(60);
 
         // tambahkan admin_id untuk setiap item
         $collection = $paginator->getCollection()->map(function ($item) {

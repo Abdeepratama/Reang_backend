@@ -34,11 +34,14 @@ use App\Http\Controllers\Api\TokoController;
 use App\Http\Controllers\Api\MetodePembayaranController;
 use App\Http\Controllers\Api\AdminPesananController;
 use App\Http\Controllers\Api\AdminAnalitikController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\UlasanController;
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
 Route::get('/panik/{id}', [PanikButtonController::class, 'apiShow']);
 
+Route::get('/check-email', [AuthController::class, 'checkEmail']);
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
@@ -211,6 +214,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/toko/{id}', [TokoController::class, 'update']);
     Route::delete('/toko/{id}', [TokoController::class, 'destroy']);
     Route::get('/toko/cek-kelengkapan/{id_toko}', [TokoController::class, 'cekKelengkapan']);
+    Route::post('/toko/update', [TokoController::class, 'updateProfile']);
 });
 
 //Produk
@@ -283,3 +287,21 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
 // forgot password
 Route::post('/auth/forgot-password', [App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
+
+// notifications
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/read/{id}', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'countUnread']);
+    Route::post('/notifications/delete-all', [NotificationController::class, 'deleteAll']);
+});
+
+// 1. Route Public (Bisa diakses siapa saja untuk lihat review)
+Route::get('/ulasan/{id_produk}', [UlasanController::class, 'index']);
+
+// 2. Route Protected (Harus login untuk nulis review)
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/ulasan/store', [UlasanController::class, 'store']);
+    Route::get('/ulasan/cek/{no_transaksi}', [UlasanController::class, 'showByTransaksi']);
+});

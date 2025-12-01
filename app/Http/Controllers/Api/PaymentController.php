@@ -14,39 +14,54 @@ class PaymentController extends Controller
 
     public function uploadBukti(Request $request, $no_transaksi)
     {
-        // 1. Validasi: Pastikan 'bukti_pembayaran' adalah file gambar
+        // 1. Validasi
         $request->validate([
-            // [PERBAIKAN] Mengganti 'string' menjadi 'image'
-            'bukti_pembayaran' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Maks 2MB
+            'bukti_pembayaran' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // 2. Dapatkan ID user yang sedang login (Keamanan)
         $id_user = $request->user()->id;
 
-        // 3. Cek Keamanan:
-        // Pastikan 'no_transaksi' ini ada, dan BENAR-BENAR milik user yang login
+        // 2. Cek Keamanan & Ambil Data Lama
         $payment = DB::table('payment')
             ->join('transaksi', 'payment.no_transaksi', '=', 'transaksi.no_transaksi')
             ->where('payment.no_transaksi', $no_transaksi)
             ->where('transaksi.id_user', $id_user)
-            ->select('payment.*')
+            ->select('payment.*') // Kita butuh data payment termasuk path file lama
             ->first();
 
         if (!$payment) {
             return response()->json(['message' => 'Pesanan tidak ditemukan atau bukan milik Anda.'], 404);
         }
 
-        // 4. Cek apakah sudah lunas
-        if ($payment->status_pembayaran != 'menunggu') {
-             return response()->json(['message' => 'Pembayaran ini sudah dikonfirmasi atau sedang diproses.'], 422);
+        // 3. [PERBAIKAN UTAMA] Cek Status
+        // Kita HANYA melarang upload jika statusnya 'menunggu_konfirmasi' (sedang dicek) 
+        // atau 'lunas' (sudah selesai).
+        // Jadi status 'ditolak' akan LOLOS dan bisa upload ulang.
+        
+        if ($payment->status_pembayaran == 'menunggu_konfirmasi') {
+             return response()->json(['message' => 'Bukti pembayaran sedang diperiksa Admin. Harap tunggu.'], 422);
+        }
+        
+        if ($payment->status_pembayaran == 'lunas') {
+             return response()->json(['message' => 'Pesanan ini sudah lunas.'], 422);
         }
 
-        // 5. Simpan File Bukti Bayar
+        // 4. Proses Simpan File
         $path = null;
         if ($request->hasFile('bukti_pembayaran')) {
+            
+            // [TAMBAHAN] Hapus file lama jika ada (agar storage tidak penuh)
+            // Cek apakah ada file lama dan bukan 'ditolak' string biasa
+            if ($payment->bukti_pembayaran && $payment->bukti_pembayaran != 'ditolak' && $payment->bukti_pembayaran != 'belum ada') {
+                // Pastikan import Storage di atas: use Illuminate\Support\Facades\Storage;
+                if (Storage::disk('public')->exists($payment->bukti_pembayaran)) {
+                    Storage::disk('public')->delete($payment->bukti_pembayaran);
+                }
+            }
+
+            // Upload file baru
             $file = $request->file('bukti_pembayaran');
             if ($file->isValid()) {
-                // Simpan di: storage/app/public/bukti_bayar
                 $path = $file->store('bukti_bayar', 'public');
             }
         }
@@ -55,18 +70,26 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Gagal meng-upload file.'], 500);
         }
 
-        // 6. Update Database
+        // 5. Update Database
+        // Ubah status kembali jadi 'menunggu_konfirmasi' agar masuk notif Admin lagi
         DB::table('payment')
             ->where('no_transaksi', $no_transaksi)
             ->update([
-                'bukti_pembayaran' => $path, // Simpan path filenya
-                'status_pembayaran' => 'menunggu_konfirmasi', // Status baru
+                'bukti_pembayaran' => $path,
+                'status_pembayaran' => 'menunggu_konfirmasi', // <-- Reset status ke sini
                 'tanggal_pembayaran' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+            
+        // [OPSIONAL] Update status transaksi juga jika perlu disinkronkan
+        /*
+        DB::table('transaksi')
+            ->where('no_transaksi', $no_transaksi)
+            ->update(['status' => 'menunggu_konfirmasi', 'updated_at' => Carbon::now()]);
+        */
 
         return response()->json([
-            'message' => 'Upload bukti pembayaran berhasil. Pesanan akan segera diproses.',
+            'message' => 'Bukti pembayaran berhasil diupload. Mohon tunggu konfirmasi penjual.',
             'path' => $path
         ]);
     }
