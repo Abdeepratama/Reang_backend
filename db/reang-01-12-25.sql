@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 01, 2025 at 07:28 AM
+-- Generation Time: Dec 01, 2025 at 07:54 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.16
 
@@ -592,7 +592,22 @@ INSERT INTO `aktivitas` (`id`, `keterangan`, `role`, `id_instansi`, `id_puskesma
 (507, 'Status DUMAS diperbarui', 'superadmin', NULL, NULL, NULL, NULL, 'dumas', 0, '2025-11-25 01:28:21', '2025-11-25 01:28:21'),
 (508, 'Puskesmas telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'puskesmas', 0, '2025-11-25 01:57:43', '2025-11-25 01:57:43'),
 (509, 'Instansi laporan diubah', 'superadmin', NULL, NULL, NULL, NULL, 'dumas', 0, '2025-11-25 03:06:17', '2025-11-25 03:06:17'),
-(510, 'Kategori laporan diperbarui', 'superadmin', NULL, NULL, NULL, NULL, 'dumas', 0, '2025-11-25 05:03:47', '2025-11-25 05:03:47');
+(510, 'Kategori laporan diperbarui', 'superadmin', NULL, NULL, NULL, NULL, 'dumas', 0, '2025-11-25 05:03:47', '2025-11-25 05:03:47'),
+(511, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:37:54', '2025-12-01 07:37:54'),
+(512, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:38:07', '2025-12-01 07:38:07'),
+(513, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:38:28', '2025-12-01 07:38:28'),
+(514, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:38:44', '2025-12-01 07:38:44'),
+(515, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:39:05', '2025-12-01 07:39:05'),
+(516, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:39:18', '2025-12-01 07:39:18'),
+(517, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:39:34', '2025-12-01 07:39:34'),
+(518, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:39:52', '2025-12-01 07:39:52'),
+(519, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:40:11', '2025-12-01 07:40:11'),
+(520, 'Tempat ibadah telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:40:41', '2025-12-01 07:40:41'),
+(521, 'Info keagamaan telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:41:40', '2025-12-01 07:41:40'),
+(522, 'Info Keagamaan telah dihapus', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:41:45', '2025-12-01 07:41:45'),
+(523, 'Info keagamaan telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:42:08', '2025-12-01 07:42:08'),
+(524, 'Info keagamaan telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:42:24', '2025-12-01 07:42:24'),
+(525, 'Info keagamaan telah diupdate', 'superadmin', NULL, NULL, NULL, NULL, 'ibadah', 0, '2025-12-01 07:42:36', '2025-12-01 07:42:36');
 
 -- --------------------------------------------------------
 
@@ -818,11 +833,10 @@ CREATE TABLE `info_keagamaans` (
 --
 
 INSERT INTO `info_keagamaans` (`id`, `judul`, `tanggal`, `waktu`, `deskripsi`, `lokasi`, `alamat`, `foto`, `created_at`, `updated_at`, `fitur`, `latitude`, `longitude`) VALUES
-(20, 'Pengajian umum dan gema sholawat', '2025-11-27', '19:00:00', '<p>Pengajian di Masjid An-Nur merupakan kegiatan keagamaan yang bertujuan untuk menambah wawasan dan memperdalam pemahaman umat tentang ajaran Islam. Melalui kajian ini, jamaah diajak untuk memperkuat keimanan, memperbaiki akhlak, serta menumbuhkan semangat beribadah dalam kehidupan sehari-hari. Kegiatan ini juga menjadi sarana silaturahmi antarwarga dan media dakwah yang menyejukkan hati, sehingga diharapkan dapat membentuk pribadi yang lebih bertakwa dan berakhlakul karimah.</p>', 'Masjid An Nur', 'Jl. Let Jend. Suprapto belakang masjid annur, kampung arab, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', 'foto_ibadah/1762845501_masjid an-nur.jpg', '2025-11-11 00:18:21', '2025-11-11 00:18:21', 'Pengajian', '-6.3383685', '108.3238406'),
-(21, 'Pengajian Akbar', '2025-12-11', '20:00:00', '<p>Pengajian di Masjid Pusaka Baiturrahmah diselenggarakan sebagai upaya meningkatkan pemahaman umat terhadap nilai-nilai Islam serta mempererat ukhuwah antarjamaah. Melalui majelis ilmu ini, para peserta diajak untuk memperdalam pengetahuan agama, memperbaiki akhlak, dan menumbuhkan kecintaan kepada Allah SWT. Selain menjadi sarana menuntut ilmu, kegiatan ini juga menjadi wadah kebersamaan dan pembinaan rohani agar tercipta masyarakat yang beriman, berilmu, dan berakhlakul karimah.</p>', 'Masjid Pusaka Baiturrahmah', 'Dermayu, Kec. Sindang, Kabupaten Indramayu, Jawa Barat 45223', 'foto_ibadah/1762845802_masjid dermayu.jpg', '2025-11-11 00:23:22', '2025-11-11 00:23:22', 'Pengajian', '-6.3368330', '108.3199782'),
-(22, 'Pengajian Akbar dan Sholawat', '2025-11-15', '20:00:00', '<p>Pengajian di Masjid Al-Hidayah merupakan kegiatan pembinaan keagamaan yang bertujuan menumbuhkan semangat beribadah dan memperkuat nilai-nilai Islam di tengah masyarakat. Melalui kajian ini, jamaah diajak untuk memahami makna kehidupan sesuai tuntunan Al-Qur’an dan sunnah, serta membentuk pribadi yang sabar, ikhlas, dan berakhlak mulia. Selain sebagai tempat menimba ilmu, pengajian ini juga menjadi wadah mempererat silaturahmi dan memperkuat rasa persaudaraan antarumat.</p>', 'Masjid Al-Hidayah', 'Jl. Siapem 1, Lemahmekar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', 'foto_ibadah/1762846089_al hidayah bumek.jpg', '2025-11-11 00:28:09', '2025-11-11 00:28:09', 'Pengajian', '-6.3335486', '108.3304925'),
-(23, 'Tertibb acara perayaan natal', '2025-12-25', '09:00:00', '<p>Perayaan Natal di Gereja Katolik Santo Mikael – Paroki Indramayu diselenggarakan sebagai ungkapan syukur atas kelahiran Yesus Kristus, Sang Juru Selamat. Melalui perayaan ini, umat diajak untuk memperdalam iman, menumbuhkan kasih, dan memperkuat persaudaraan dalam semangat damai serta sukacita Natal. Kegiatan ini menjadi momen kebersamaan yang penuh berkat, di mana seluruh umat diajak untuk saling berbagi kasih, mempererat tali persaudaraan, dan menghadirkan damai Kristus dalam kehidupan sehari-hari.</p>', 'Gereja Katolik Santo Mikael - Paroki Indramayu', 'Jl. Bima Basuki, Karanganyar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', 'foto_ibadah/1762846461_gereja santo.jpg', '2025-11-11 00:34:21', '2025-11-11 00:34:21', 'Kristen', '-6.3331219', '108.3253856'),
-(24, 'Indramayu Gunakan Teknologi Digital untuk Awasi Pengobatan TBC, Dinkes Targetkan Eliminasi 2030', '2025-11-19', '05:45:00', '<p>rgraehrHatehthet</p>', 'Masjid Al-Hidayah', 'Babadan, Indramayu, West Java, Java, 45211, Indonesia', 'foto_ibadah/1763001888_polindra.jpg', '2025-11-12 19:44:49', '2025-11-12 19:44:49', 'Pengajian', '-6.3142270', '108.3241680');
+(20, 'Pengajian umum dan gema sholawat', '2025-11-27', '19:00:00', '<p>Pengajian di Masjid An-Nur merupakan kegiatan keagamaan yang bertujuan untuk menambah wawasan dan memperdalam pemahaman umat tentang ajaran Islam. Melalui kajian ini, jamaah diajak untuk memperkuat keimanan, memperbaiki akhlak, serta menumbuhkan semangat beribadah dalam kehidupan sehari-hari. Kegiatan ini juga menjadi sarana silaturahmi antarwarga dan media dakwah yang menyejukkan hati, sehingga diharapkan dapat membentuk pribadi yang lebih bertakwa dan berakhlakul karimah.</p>', 'Masjid An Nur', 'Jl. Let Jend. Suprapto belakang masjid annur, kampung arab, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', 'foto_ibadah/1762845501_masjid an-nur.jpg', '2025-11-11 00:18:21', '2025-12-01 07:42:36', 'Islam', '-6.3383685', '108.3238406'),
+(21, 'Pengajian Akbar', '2025-12-11', '20:00:00', '<p>Pengajian di Masjid Pusaka Baiturrahmah diselenggarakan sebagai upaya meningkatkan pemahaman umat terhadap nilai-nilai Islam serta mempererat ukhuwah antarjamaah. Melalui majelis ilmu ini, para peserta diajak untuk memperdalam pengetahuan agama, memperbaiki akhlak, dan menumbuhkan kecintaan kepada Allah SWT. Selain menjadi sarana menuntut ilmu, kegiatan ini juga menjadi wadah kebersamaan dan pembinaan rohani agar tercipta masyarakat yang beriman, berilmu, dan berakhlakul karimah.</p>', 'Masjid Pusaka Baiturrahmah', 'Dermayu, Kec. Sindang, Kabupaten Indramayu, Jawa Barat 45223', 'foto_ibadah/1762845802_masjid dermayu.jpg', '2025-11-11 00:23:22', '2025-12-01 07:42:24', 'Islam', '-6.3368330', '108.3199782'),
+(22, 'Pengajian Akbar dan Sholawat', '2025-11-15', '20:00:00', '<p>Pengajian di Masjid Al-Hidayah merupakan kegiatan pembinaan keagamaan yang bertujuan menumbuhkan semangat beribadah dan memperkuat nilai-nilai Islam di tengah masyarakat. Melalui kajian ini, jamaah diajak untuk memahami makna kehidupan sesuai tuntunan Al-Qur’an dan sunnah, serta membentuk pribadi yang sabar, ikhlas, dan berakhlak mulia. Selain sebagai tempat menimba ilmu, pengajian ini juga menjadi wadah mempererat silaturahmi dan memperkuat rasa persaudaraan antarumat.</p>', 'Masjid Al-Hidayah', 'Jl. Siapem 1, Lemahmekar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', 'foto_ibadah/1762846089_al hidayah bumek.jpg', '2025-11-11 00:28:09', '2025-12-01 07:42:08', 'Islam', '-6.3335486', '108.3304925'),
+(23, 'Tertibb acara perayaan natal', '2025-12-25', '09:00:00', '<p>Perayaan Natal di Gereja Katolik Santo Mikael – Paroki Indramayu diselenggarakan sebagai ungkapan syukur atas kelahiran Yesus Kristus, Sang Juru Selamat. Melalui perayaan ini, umat diajak untuk memperdalam iman, menumbuhkan kasih, dan memperkuat persaudaraan dalam semangat damai serta sukacita Natal. Kegiatan ini menjadi momen kebersamaan yang penuh berkat, di mana seluruh umat diajak untuk saling berbagi kasih, mempererat tali persaudaraan, dan menghadirkan damai Kristus dalam kehidupan sehari-hari.</p>', 'Gereja Katolik Santo Mikael - Paroki Indramayu', 'Jl. Bima Basuki, Karanganyar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', 'foto_ibadah/1762846461_gereja santo.jpg', '2025-11-11 00:34:21', '2025-11-11 00:34:21', 'Kristen', '-6.3331219', '108.3253856');
 
 -- --------------------------------------------------------
 
@@ -1903,7 +1917,22 @@ INSERT INTO `notifikasi_aktivitas` (`id`, `keterangan`, `dibaca`, `created_at`, 
 (510, 'Status pengaduan diperbarui', 0, '2025-11-25 01:28:21', '2025-11-25 01:28:21', 'http://192.168.56.1:8000/admin/dumas/aduan', 'superadmin', NULL, NULL),
 (511, 'Puskesmas telah diupdate', 0, '2025-11-25 01:57:43', '2025-11-25 01:57:43', 'http://192.168.56.1:8000/admin/puskesmas', 'superadmin', NULL, NULL),
 (512, 'Instansi laporan diperbarui', 0, '2025-11-25 03:06:17', '2025-11-25 03:06:17', 'http://192.168.56.1:8000/admin/dumas/aduan', 'superadmin', NULL, NULL),
-(513, 'Kategori laporan diperbarui', 0, '2025-11-25 05:03:48', '2025-11-25 05:03:48', 'http://192.168.56.1:8000/admin/dumas/aduan', 'superadmin', NULL, NULL);
+(513, 'Kategori laporan diperbarui', 0, '2025-11-25 05:03:48', '2025-11-25 05:03:48', 'http://192.168.56.1:8000/admin/dumas/aduan', 'superadmin', NULL, NULL),
+(514, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:37:54', '2025-12-01 07:37:54', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(515, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:38:07', '2025-12-01 07:38:07', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(516, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:38:28', '2025-12-01 07:38:28', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(517, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:38:44', '2025-12-01 07:38:44', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(518, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:39:05', '2025-12-01 07:39:05', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(519, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:39:19', '2025-12-01 07:39:19', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(520, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:39:34', '2025-12-01 07:39:34', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(521, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:39:52', '2025-12-01 07:39:52', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(522, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:40:11', '2025-12-01 07:40:11', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(523, 'Tempat ibadah telah diupdate', 0, '2025-12-01 07:40:41', '2025-12-01 07:40:41', 'http://192.168.56.1:8000/admin/ibadah/tempat', 'superadmin', NULL, NULL),
+(524, 'Info keagamaan telah diupdate', 0, '2025-12-01 07:41:40', '2025-12-01 07:41:40', 'http://192.168.56.1:8000/admin/ibadah/info', 'superadmin', NULL, NULL),
+(525, 'Info Keagamaan telah dihapus', 0, '2025-12-01 07:41:45', '2025-12-01 07:41:45', 'http://192.168.56.1:8000/admin/ibadah/info', 'superadmin', NULL, NULL),
+(526, 'Info keagamaan telah diupdate', 0, '2025-12-01 07:42:08', '2025-12-01 07:42:08', 'http://192.168.56.1:8000/admin/ibadah/info', 'superadmin', NULL, NULL),
+(527, 'Info keagamaan telah diupdate', 0, '2025-12-01 07:42:24', '2025-12-01 07:42:24', 'http://192.168.56.1:8000/admin/ibadah/info', 'superadmin', NULL, NULL),
+(528, 'Info keagamaan telah diupdate', 0, '2025-12-01 07:42:36', '2025-12-01 07:42:36', 'http://192.168.56.1:8000/admin/ibadah/info', 'superadmin', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2350,8 +2379,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('os5AvjMY5XunHMrdBHxiOchQjtFVI3Y07Q0b6ERx', NULL, '192.168.56.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoieUdDRHdTQVdySUJlTzVHZ1NVSmp3cmU5OGl5bzY1UHBVUlJRYlNIUyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly8xOTIuMTY4LjU2LjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1764573778),
 ('t4D2zc8KaeqAZxNs1ZfTvTvhZ7h3mW7QM0SVVauE', NULL, '192.168.56.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiMXpOcHJqSHRzdWlUSDV5emIxeXNscGNmbVZzZ0FZMUlXYUhKZUE3USI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly8xOTIuMTY4LjU2LjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1764557482),
+('WNo8BEQEOouliAOuxqGsWPrDmUD6rngGycTAEzcB', 1, '192.168.56.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoieUdDRHdTQVdySUJlTzVHZ1NVSmp3cmU5OGl5bzY1UHBVUlJRYlNIUyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xOTIuMTY4LjU2LjE6ODAwMC9hZG1pbi9pYmFkYWgvaW5mbyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTI6ImNhcHRjaGFfY29kZSI7czo1OiJCREQ3OCI7czo1MjoibG9naW5fYWRtaW5fNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6ODoiYWRtaW5faWQiO2k6MTtzOjQ6Im5hbWUiO3M6MTA6InN1cGVyYWRtaW4iO3M6NDoicm9sZSI7czoxMDoic3VwZXJhZG1pbiI7czo4OiJpbnN0YW5zaSI7Tjt9', 1764574956),
 ('xWpgH9xH7lSWTTM40ApehfTfN88QbjwxHBwo2ifX', NULL, '192.168.56.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiS2I5SnlyUlZnTlZmSzNpRXJwd01uNEtQczY4a1pkT1VFQ09rdmdHZCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly8xOTIuMTY4LjU2LjE6ODAwMCI7fX0=', 1764233001);
 
 -- --------------------------------------------------------
@@ -2390,16 +2419,16 @@ CREATE TABLE `tempat_ibadah` (
 --
 
 INSERT INTO `tempat_ibadah` (`id`, `fitur`, `name`, `address`, `latitude`, `longitude`, `created_at`, `updated_at`, `foto`) VALUES
-(1, 'islam', 'Masjid Agung Indramayu', 'Alun-Alun, Margadadi, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', '-6.3270090', '108.3220030', '2025-07-03 20:05:16', '2025-08-01 01:44:38', 'ibadah_foto/pBhXmKFfja2Q4gZVr7Chd0H0L2c2LOh2BMmhCa7c.jpg'),
-(2, 'kristen', 'Gereja Katolik Santo Mikael', 'Jalan Veteran, Lemahabang, Indramayu, West Java, Java, 45222, Indonesia', '-6.3287007', '108.3224380', '2025-07-04 18:30:34', '2025-10-13 00:30:46', 'ibadah_foto/eKows8thUHMz8CPy8kUANVOadQWxmG6eydLWjmD6.jpg'),
-(40, 'Buddha', 'Vihara Dharma Rahayu \"An Tjeng Bio\"', 'Jl. Cimanuk No.406, Lemahmekar, Kec. Indramayu, Jawa Barat, 45212', '-6.3310982', '108.3242677', '2025-11-11 00:03:22', '2025-11-11 00:03:22', 'ibadah_foto/PWbHptuIANOiAG0uyWe7RtDkvHZAAXSuYsfgkn6y.jpg'),
-(41, 'islam', 'Islamic Centre Indramayu', 'Jl. Soekarno Hatta No.1, Pekandangan, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45214', '-6.3519261', '108.3228109', '2025-11-11 00:06:16', '2025-11-11 00:06:16', 'ibadah_foto/MmhX6jE0s78WzhWxznhgO9CPQ113WkNLaKAdcDjN.jpg'),
-(42, 'islam', 'Masjid Pusaka Baiturrahmah&Sumur Penganten Dermayu', 'Dermayu, Kec. Sindang, Kabupaten Indramayu, Jawa Barat 45223', '-6.3368886', '108.3202612', '2025-11-11 03:16:38', '2025-11-11 03:16:38', 'ibadah_foto/zir5Am2UMhTGenLFuh74igKlnwwBDft3ZAP9HWwc.jpg'),
-(43, 'islam', 'Masjid Abdurrahman Basuri', 'Sindang, Kec. Sindang, Kabupaten Indramayu, Jawa Barat 45222', '-6.3319524', '108.3183849', '2025-11-11 03:18:09', '2025-11-11 03:18:09', 'ibadah_foto/f5tAuXSiRbYlm5TxdOWCaF6IXP9JANzkThvUmb0F.jpg'),
-(44, 'islam', 'Gereja Pantekosta Indramayu', 'Jl. Let Jend. Suprapto No.125, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', '-6.3376886', '108.3247463', '2025-11-11 03:19:36', '2025-11-11 03:19:36', 'ibadah_foto/GPvGGZfbTkIl71IXqUO24uoDtQTBXXJ82fXCTEW2.jpg'),
-(45, 'islam', 'Masjid An Nur', 'Jl. Let Jend. Suprapto,kampung arab, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', '-6.3384981', '108.3240510', '2025-11-11 03:23:28', '2025-11-11 03:23:28', 'ibadah_foto/Dx2AIRCwICEWkKXmtqQhM1NkoOGmqD804G3bez0r.jpg'),
-(46, 'islam', 'Masjid Al-Hidayah', 'Jl. Siapem 1, Lemahmekar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', '-6.3335120', '108.3306079', '2025-11-11 03:25:36', '2025-11-11 03:25:36', 'ibadah_foto/vF1oUxd8gwk5g1QvCpN0r9124prEPP0oHVaWINmR.jpg'),
-(47, 'kristen', 'GKI Indramayu', 'Jl. Cimanuk No.23G, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', '-6.3370882', '108.3242249', '2025-11-11 03:27:55', '2025-11-11 03:27:55', 'ibadah_foto/kpqfultemv0M9Z2K77eRDM98h6JnD6qDZjM7WMqf.jpg');
+(1, 'Masjid', 'Masjid Agung Indramayu', 'Alun-Alun, Margadadi, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', '-6.3270090', '108.3220030', '2025-07-03 20:05:16', '2025-12-01 07:37:53', 'ibadah_foto/pBhXmKFfja2Q4gZVr7Chd0H0L2c2LOh2BMmhCa7c.jpg'),
+(2, 'Gereja', 'Gereja Katolik Santo Mikael', 'Jalan Veteran, Lemahabang, Indramayu, West Java, Java, 45222, Indonesia', '-6.3287007', '108.3224380', '2025-07-04 18:30:34', '2025-12-01 07:38:07', 'ibadah_foto/eKows8thUHMz8CPy8kUANVOadQWxmG6eydLWjmD6.jpg'),
+(40, 'Vihara', 'Vihara Dharma Rahayu \"An Tjeng Bio\"', 'Jl. Cimanuk No.406, Lemahmekar, Kec. Indramayu, Jawa Barat, 45212', '-6.3310982', '108.3242677', '2025-11-11 00:03:22', '2025-12-01 07:38:28', 'ibadah_foto/PWbHptuIANOiAG0uyWe7RtDkvHZAAXSuYsfgkn6y.jpg'),
+(41, 'Masjid', 'Islamic Centre Indramayu', 'Jl. Soekarno Hatta No.1, Pekandangan, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45214', '-6.3519261', '108.3228109', '2025-11-11 00:06:16', '2025-12-01 07:38:43', 'ibadah_foto/MmhX6jE0s78WzhWxznhgO9CPQ113WkNLaKAdcDjN.jpg'),
+(42, 'Masjid', 'Masjid Pusaka Baiturrahmah&Sumur Penganten Dermayu', 'Dermayu, Kec. Sindang, Kabupaten Indramayu, Jawa Barat 45223', '-6.3368886', '108.3202612', '2025-11-11 03:16:38', '2025-12-01 07:39:04', 'ibadah_foto/zir5Am2UMhTGenLFuh74igKlnwwBDft3ZAP9HWwc.jpg'),
+(43, 'Masjid', 'Masjid Abdurrahman Basuri', 'Sindang, Kec. Sindang, Kabupaten Indramayu, Jawa Barat 45222', '-6.3319524', '108.3183849', '2025-11-11 03:18:09', '2025-12-01 07:39:34', 'ibadah_foto/f5tAuXSiRbYlm5TxdOWCaF6IXP9JANzkThvUmb0F.jpg'),
+(44, 'Gereja', 'Gereja Pantekosta Indramayu', 'Jl. Let Jend. Suprapto No.125, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', '-6.3376886', '108.3247463', '2025-11-11 03:19:36', '2025-12-01 07:39:18', 'ibadah_foto/GPvGGZfbTkIl71IXqUO24uoDtQTBXXJ82fXCTEW2.jpg'),
+(45, 'Masjid', 'Masjid An Nur', 'Jl. Let Jend. Suprapto,kampung arab, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45213', '-6.3384981', '108.3240510', '2025-11-11 03:23:28', '2025-12-01 07:39:51', 'ibadah_foto/Dx2AIRCwICEWkKXmtqQhM1NkoOGmqD804G3bez0r.jpg'),
+(46, 'Masjid', 'Masjid Al-Hidayah', 'Jl. Siapem 1, Lemahmekar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', '-6.3335120', '108.3306079', '2025-11-11 03:25:36', '2025-12-01 07:40:09', 'ibadah_foto/vF1oUxd8gwk5g1QvCpN0r9124prEPP0oHVaWINmR.jpg'),
+(47, 'Gereja', 'GKI Indramayu', 'Jl. Cimanuk No.23G, Karangmalang, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212', '-6.3370882', '108.3242249', '2025-11-11 03:27:55', '2025-12-01 07:40:40', 'ibadah_foto/kpqfultemv0M9Z2K77eRDM98h6JnD6qDZjM7WMqf.jpg');
 
 -- --------------------------------------------------------
 
@@ -3148,7 +3177,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `aktivitas`
 --
 ALTER TABLE `aktivitas`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=511;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=526;
 
 --
 -- AUTO_INCREMENT for table `banners`
@@ -3310,7 +3339,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `notifikasi_aktivitas`
 --
 ALTER TABLE `notifikasi_aktivitas`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=514;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=529;
 
 --
 -- AUTO_INCREMENT for table `ongkir`
