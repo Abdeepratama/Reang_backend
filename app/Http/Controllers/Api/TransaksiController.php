@@ -130,6 +130,11 @@ public function store(Request $request)
                         'subtotal'     => $item->subtotal,
                         'created_at'   => Carbon::now(),
                     ];
+                    // [TAMBAHAN BARU: KURANGI STOK OTOMATIS]
+                    DB::table('produk_varian')
+                        ->where('id', $item->id_varian)
+                        ->decrement('stok', $item->jumlah);
+                    // --------------------------------------
                 }
                 DB::table('detail_transaksi')->insert($detail_items);
 
@@ -253,6 +258,10 @@ public function store(Request $request)
                 'subtotal'     => $subtotal,
                 'created_at'   => Carbon::now(),
             ]);
+            // [TAMBAHAN BARU: KURANGI STOK OTOMATIS]
+            DB::table('produk_varian')
+                ->where('id', $item['id_varian'])
+                ->decrement('stok', $item['jumlah']);
 
             // ------------------------------------------------------------
             // INSERT PAYMENT
@@ -501,12 +510,12 @@ public function store(Request $request)
         }
     }
 
-    public function batalkan(Request $request, $no_transaksi)
+public function batalkan(Request $request, $no_transaksi)
     {
         // 1. Dapatkan ID user yang sedang login
         $id_user = $request->user()->id;
 
-        // 2. Cari transaksi
+        // 2. Cari transaksi (Pastikan milik user ini)
         $transaksi = DB::table('transaksi')
             ->where('no_transaksi', $no_transaksi)
             ->where('id_user', $id_user)
@@ -517,23 +526,19 @@ public function store(Request $request)
             return response()->json(['message' => 'Pesanan tidak ditemukan.'], 404);
         }
 
-        // 4. Logika Bisnis:
-        // User HANYA boleh membatalkan jika status masih 'menunggu_pembayaran'
-        // ATAU 'menunggu_konfirmasi' (admin belum memproses).
+        // 4. Logika Bisnis: Hanya boleh batal jika belum dikirim
         $forbidden_statuses = ['dikirim', 'selesai', 'dibatalkan'];
 
         if (in_array($transaksi->status, $forbidden_statuses)) {
             return response()->json([
-                'message' => 'Pesanan ini sudah dikirim dan tidak dapat dibatalkan.'
+                'message' => 'Pesanan ini sudah dikirim/selesai dan tidak dapat dibatalkan.'
             ], 422);
         }
-
         
-        // 5. Jika boleh dibatalkan, lakukan update
+        // 5. Proses Pembatalan
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            // Update tabel transaksi
+            // A. Update tabel transaksi
             DB::table('transaksi')
                 ->where('no_transaksi', $no_transaksi)
                 ->update([
@@ -541,7 +546,7 @@ public function store(Request $request)
                     'updated_at' => Carbon::now()
                 ]);
 
-            // Update tabel payment
+            // B. Update tabel payment
             DB::table('payment')
                 ->where('no_transaksi', $no_transaksi)
                 ->update([
@@ -549,10 +554,32 @@ public function store(Request $request)
                     'updated_at' => Carbon::now()
                 ]);
             
+            // C. [PERBAIKAN UTAMA: KEMBALIKAN STOK]
+            // Ambil semua item yang ada di transaksi ini
+            $items = DB::table('detail_transaksi')->where('no_transaksi', $no_transaksi)->get();
+
+            foreach ($items as $item) {
+                // Kembalikan stok ke varian yang sesuai
+                if ($item->id_varian) {
+                    DB::table('produk_varian')
+                        ->where('id', $item->id_varian)
+                        ->increment('stok', $item->jumlah); // <-- Stok bertambah kembali
+                }
+            }
+            // [SELESAI LOGIKA STOK]
+
+            // D. Notifikasi (Opsional: Beri tahu user bahwa berhasil batal)
+            \App\Models\Notification::create([
+                'id_user' => $id_user,
+                'title'   => 'Pesanan Dibatalkan',
+                'body'    => "Anda telah membatalkan pesanan #$no_transaksi.",
+                'type'    => 'transaksi',
+                'data_id' => $no_transaksi,
+                'is_read' => 0,
+            ]);
         
             DB::commit();
-
-            return response()->json(['message' => 'Pesanan berhasil dibatalkan.']);
+            return response()->json(['message' => 'Pesanan berhasil dibatalkan dan stok telah dikembalikan.']);
 
         } catch (\Exception $e) {
             DB::rollBack();

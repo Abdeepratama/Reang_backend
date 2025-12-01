@@ -377,53 +377,52 @@ public function batalkanPesanan(Request $request, $no_transaksi)
         $transaksi = DB::table('transaksi')->where('no_transaksi', $no_transaksi)->first();
         if (!$transaksi) return response()->json(['message' => 'Pesanan tidak ditemukan.'], 404);
 
-        // 2. Validasi Kepemilikan Toko
+        // 2. Validasi Toko
         $toko = DB::table('toko')->where('id', $transaksi->id_toko)->first();
-        if (!$toko || $toko->id_user != $user->id) {
-            return response()->json(['message' => 'Akses ditolak.'], 403);
-        }
+        if (!$toko || $toko->id_user != $user->id) return response()->json(['message' => 'Akses ditolak.'], 403);
 
         // 3. Validasi Status
         $bolehBatal = ['menunggu_konfirmasi', 'diproses'];
         if (!in_array($transaksi->status, $bolehBatal)) {
-             return response()->json(['message' => 'Pesanan sudah dikirim atau selesai, tidak bisa dibatalkan.'], 422);
+             return response()->json(['message' => 'Pesanan sudah dikirim/selesai, tidak bisa batal.'], 422);
         }
 
         DB::beginTransaction();
         try {
-            // Update Status Transaksi
-            DB::table('transaksi')
-                ->where('no_transaksi', $no_transaksi)
-                ->update([
-                    'status' => 'dibatalkan',
-                    'updated_at' => Carbon::now()
-                ]);
-            
-            // Update Status Payment
-            DB::table('payment')
-                ->where('no_transaksi', $no_transaksi)
-                ->update([
-                    'status_pembayaran' => 'dibatalkan',
-                    'updated_at' => Carbon::now()
-                ]);
+            // Update Status
+            DB::table('transaksi')->where('no_transaksi', $no_transaksi)->update(['status' => 'dibatalkan', 'updated_at' => Carbon::now()]);
+            DB::table('payment')->where('no_transaksi', $no_transaksi)->update(['status_pembayaran' => 'dibatalkan', 'updated_at' => Carbon::now()]);
 
-            // [TAMBAHAN PENTING] Buat Notifikasi Pembatalan
-            Notification::create([
-                'id_user' => $transaksi->id_user, // Kirim ke user pembeli
+            // [LOGIKA STOK] Kembalikan Stok (Increment)
+            // Ambil semua barang di transaksi ini
+            $items = DB::table('detail_transaksi')->where('no_transaksi', $no_transaksi)->get();
+
+            foreach ($items as $item) {
+                // Kembalikan stok ke varian yang sesuai
+                if ($item->id_varian) {
+                    DB::table('produk_varian')
+                        ->where('id', $item->id_varian)
+                        ->increment('stok', $item->jumlah);
+                }
+            }
+            // [SELESAI LOGIKA STOK]
+
+            // Notifikasi
+            \App\Models\Notification::create([
+                'id_user' => $transaksi->id_user,
                 'title'   => 'Pesanan Dibatalkan',
-                'body'    => "Mohon maaf, pesanan #$no_transaksi telah dibatalkan oleh penjual. Silakan hubungi toko untuk info lebih lanjut.",
+                'body'    => "Pesanan #$no_transaksi dibatalkan oleh penjual. Stok telah dikembalikan.",
                 'type'    => 'transaksi',
                 'data_id' => $no_transaksi,
                 'is_read' => 0,
             ]);
-            // [SELESAI TAMBAHAN]
 
             DB::commit();
-            return response()->json(['message' => 'Pesanan berhasil dibatalkan oleh Admin.']);
+            return response()->json(['message' => 'Pesanan dibatalkan dan stok telah dikembalikan.']);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Gagal membatalkan: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Gagal: ' . $e->getMessage()], 500);
         }
     }
 }
