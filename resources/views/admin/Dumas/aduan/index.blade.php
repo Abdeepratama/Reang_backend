@@ -33,6 +33,10 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>
+
+                        @if(auth('admin')->user()->role === 'superadmin')
+
+                        {{-- SUPERADMIN: boleh ubah kategori --}}
                         <form action="{{ route('admin.dumas.aduan.update.instansi', $item->id) }}" method="POST">
                             @csrf
 
@@ -49,6 +53,16 @@
                                 <button class="btn btn-primary btn-sm">✔</button>
                             </div>
                         </form>
+
+                        @else
+
+                        {{-- ADMIN DINAS: hanya melihat, tidak bisa mengubah --}}
+                        <span class="color:#000; font-weight:450;">
+                            {{ $item->kategori->nama_kategori }}
+                        </span>
+
+                        @endif
+
                     </td>
                     <td>{{ $item->jenis_laporan }}</td>
                     <td>{{ $item->lokasi_laporan ?? '-' }}</td>

@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between mb-3">
     <div class="mb-3 text-start">
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('admin.setting.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
         </a>
     </div>
@@ -36,7 +36,7 @@
         </div>
     </div>
     @empty
-    <p class="text-muted">Belum ada slider ditambahkan.</p>
+    <p class="text-center">Belum ada slider ditambahkan.</p>
     @endforelse
 </div>
 @endsection

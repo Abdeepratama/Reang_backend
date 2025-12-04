@@ -5,6 +5,17 @@
     <meta charset="UTF-8">
     <title>Login admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Tambahkan CSS anti copy di sini -->
+    <style>
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <head>
@@ -62,7 +73,7 @@
 
                             <div class="mb-3 text-center">
                                 <span id="captcha-text"
-                                    class="fw-bold h3 d-inline-block px-3 py-2"
+                                    class="fw-bold h3 d-inline-block px-3 py-2 no-select"
                                     style="color: #000; letter-spacing: 3px; font-weight: 700;">
                                     {{ session('captcha_code') }}
                                 </span>
@@ -87,6 +98,7 @@
             </div>
         </div>
     </div>
+
     <script src="js/jquery.min.js"></script>
     <script src="js/popper.min.js"></script>
     <script src="js/moment.min.js"></script>
@@ -97,7 +109,7 @@
     <script src="js/tinycolor-min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/apps.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -108,6 +120,7 @@
         gtag('js', new Date());
         gtag('config', 'UA-56159088-1');
     </script>
+
     <script>
         document.getElementById('refresh-captcha').addEventListener('click', function() {
             fetch("{{ route('captcha.refresh') }}")
@@ -117,12 +130,13 @@
                 });
         });
     </script>
+
     <script>
         document.getElementById('showPassword').addEventListener('change', function() {
             const passwordInput = document.getElementById('password');
             passwordInput.type = this.checked ? 'text' : 'password';
         });
     </script>
-    </script>
+
 </body>
 </html>
