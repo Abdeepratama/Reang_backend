@@ -6,7 +6,7 @@
         <!-- nav bar -->
         <div class="w-100 mb-4 mt-4 d-flex justify-content-center">
             <a href="{{ route('home') }}" class="logo d-flex align-items-center">
-                <img src="{{ asset('landing/img/logo_wongreang_apps.png') }}" alt="Logo Reang Apps" class="logo-full" style="height:30px;">
+                <img src="{{ asset('landing/img/logo_wongreang_apps.png') }}" alt="Logo Reang Apps" class="logo-full" style="height:30px;"><!-- transform: rotate(10deg); untuk miringkan logo,kalo balik logo pakai scaleX(-1); --> <!-- besar kecil logo dashboard -->
                 <img src="{{ asset('landing/img/logo_reang.png') }}" alt="Logo Icon" class="logo-mini" style="height:20px;">
             </a>
 

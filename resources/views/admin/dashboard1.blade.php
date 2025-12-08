@@ -87,9 +87,9 @@ $cards = [
 
 <div class="container-fluid">
 
-    <div class="row">
+    <div class="row my-3">  
         <div class="col-md-4">
-            <div class="card shadow bg-primary text-white border-0">
+            <div class="card shadow bg-primary text-white border-0"> <!-- style="transform: rotate(90deg);" untuk membuat kotak berdiri atau miring tinggal ubah ukuran deg nya saja  -->
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-4 text-center">
@@ -108,7 +108,7 @@ $cards = [
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-3">
             {{-- Status Menunggu --}}
             <div class="col-md-4.5 col-xl-3 mb-3">
                 <div class="card shadow border-0">
@@ -207,7 +207,7 @@ $cards = [
                             <span class="small text-muted">puskesmas</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="bi-plus-square" style="font-size: 30px;"></span>
+                            <span class="bi-plus-square" style="font-size: 30px; "></span> <!-- display:inline-block; transform: rotate(90deg); untuk memutar icon -->
                         </div>
                     </div>
                 </div>
@@ -225,7 +225,7 @@ $cards = [
                             <span class="small text-muted">rumah sakit</span>
                         </div>
                         <div class="col-4 text-right">
-                            <span class="bi-hospital" style="font-size: 30px;"></span>
+                            <span class="bi-hospital" style="font-size: 30px;"></span> <!-- display:inline-block; transform: rotate(90deg); untuk memutar icon -->
                         </div>
                     </div>
                 </div>
@@ -256,7 +256,7 @@ $cards = [
                     <div class="row align-items-center">
                         <div class="col">
                             <small class="text-muted mb-1">Jumlah Wifi</small>
-                            <h3 class="card-title mb-0">15</h3>
+                            <h3 class="card-title mb-0">20</h3>
                         </div>
                         <div class="col-4 text-right">
                             <span class="sparkline fe fe-32 fe-wifi"></span>

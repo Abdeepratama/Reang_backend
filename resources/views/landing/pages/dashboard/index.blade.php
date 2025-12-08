@@ -31,7 +31,7 @@
       </div>
       <div class="col-lg-4 order-lg-last">
         <!-- <img src="assets/img/hero-img.png" class="img-fluid animated" alt=""> -->
-        <div class="d-flex img-fluid animated">
+        <div class="d-flex img-fluid animated">  <!-- animated untuk gerak gerak,kalo mau di diamkan hapus saja -->
           <!-- <a href="#about" class="btn-get-started me-3 d-inline-flex align-items-center gap-2">
             <i class="bi bi-question-circle"></i>
             <span>Wadul Reang</span>
