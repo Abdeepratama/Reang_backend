@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\AdminPesananController;
 use App\Http\Controllers\Api\AdminAnalitikController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UlasanController;
+use App\Http\Controllers\Admin\JasaPengirimanController;
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
@@ -305,3 +306,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/ulasan/store', [UlasanController::class, 'store']);
     Route::get('/ulasan/cek/{no_transaksi}', [UlasanController::class, 'showByTransaksi']);
 });
+
+Route::get('/jasa-pengiriman', [JasaPengirimanController::class, 'apiIndex']);

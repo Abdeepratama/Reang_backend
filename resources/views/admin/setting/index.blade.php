@@ -87,6 +87,21 @@
         </div>
         @endif
 
+        @if(Auth::guard('admin')->user()->role === 'superadmin')
+        <div class="col-md-4 col-sm-6 mt-4">
+            <div class="card border-0 shadow-sm h-100 hover-card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-truck fs-1 text-secondary"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Jasa Pengiriman</h5>
+                    <p class="card-text text-muted">Tombol kelola jasa pengiriman</p>
+                    <a href="{{ route('admin.jasa.index') }}" class="btn btn-secondary w-100">Kelola</a>
+                </div>
+            </div>
+        </div>
+        @endif
+
     </div>
 </div>
 

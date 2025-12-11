@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
+use App\Http\Controllers\Admin\JasaPengirimanController;
 
 // ----------------- HALAMAN DEPAN -----------------
 Route::get('/', fn() => view('landing/pages/dashboard/index'))->name('home');
@@ -400,6 +401,16 @@ Route::middleware('auth:admin')->prefix('admin/panik')->name('admin.panik.')->gr
     Route::get('/{panik}/edit', [PanikButtonController::class, 'edit'])->name('edit');
     Route::put('/{panik}', [PanikButtonController::class, 'update'])->name('update');
     Route::delete('/{panik}', [PanikButtonController::class, 'destroy'])->name('destroy');
+});
+
+// jasa pengiriman
+Route::middleware('auth:admin')->prefix('admin/jasa')->name('admin.jasa.')->group(function () {
+    Route::get('/', [JasaPengirimanController::class, 'index'])->name('index');
+    Route::get('/create', [JasaPengirimanController::class, 'create'])->name('create');
+    Route::post('/', [JasaPengirimanController::class, 'store'])->name('store');
+    Route::get('/{jasa}/edit', [JasaPengirimanController::class, 'edit'])->name('edit');
+    Route::put('/{jasa}', [JasaPengirimanController::class, 'update'])->name('update');
+    Route::delete('/{jasa}', [JasaPengirimanController::class, 'destroy'])->name('destroy');
 });
 
 // ----------------- RESET PASSWORD user -----------------
