@@ -45,4 +45,10 @@ class User extends Authenticatable
         $role = Role::where('name', $roleName)->firstOrFail();
         $this->role()->syncWithoutDetaching([$role->id]);
     }
+
+    // 🔹relasi mitra wisata
+    public function mitraWisata()
+    {
+        return $this->hasOne(MitraWisata::class, 'user_id');
+    }
 }

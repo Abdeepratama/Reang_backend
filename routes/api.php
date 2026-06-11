@@ -37,6 +37,8 @@ use App\Http\Controllers\Api\AdminAnalitikController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UlasanController;
 use App\Http\Controllers\Admin\JasaPengirimanController;
+use App\Http\Controllers\Admin\MitraPlesirController;
+use App\Http\Controllers\MitraWisataController;
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
@@ -308,3 +310,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::get('/jasa-pengiriman', [JasaPengirimanController::class, 'apiIndex']);
+
+// rute untuk mendaftarkan mitra plesir baru
+// Pindahkan ke luar group sanctum (Bisa diakses tanpa token/login)
+Route::post('/mitra-wisata', [MitraPlesirController::class, 'store']);
+
+// Ini group route yang khusus yang sudah login saja
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/mitra-plesir', [MitraPlesirController::class, 'store']);
+    // Route internal lainnya...
+});
