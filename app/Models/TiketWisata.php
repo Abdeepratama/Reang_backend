@@ -39,4 +39,17 @@ class TiketWisata extends Model
     {
         return $this->hasMany(GaleriWisata::class, 'id_tiket_wisata');
     }
+    // Fitur Accessor: Otomatis menyulap path foto_utama menjadi URL lengkap
+    public function getFotoUtamaAttribute($value)
+    {
+        if ($value) {
+            // Ambil nama host saat ini (contoh: 5733-xxx.ngrok-free.app)
+            $host = request()->getHttpHost();
+            // Wajibkan HTTPS jika menggunakan ngrok
+            $scheme = str_contains($host, 'ngrok') ? 'https' : request()->getScheme();
+
+            return $scheme . '://' . $host . '/storage/' . $value;
+        }
+        return null;
+    }
 }

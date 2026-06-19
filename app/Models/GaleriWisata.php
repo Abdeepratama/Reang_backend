@@ -21,4 +21,16 @@ class GaleriWisata extends Model
     {
         return $this->belongsTo(TiketWisata::class, 'id_tiket_wisata');
     }
+    // Accessor untuk mengubah path foto galeri Wisata menjadi URL lengkap
+    // (Asumsi nama kolom di database adalah 'foto')
+    public function getFotoAttribute($value)
+    {
+        if ($value) {
+            $host = request()->getHttpHost();
+            $scheme = str_contains($host, 'ngrok') ? 'https' : request()->getScheme();
+
+            return $scheme . '://' . $host . '/storage/' . $value;
+        }
+        return null;
+    }
 }

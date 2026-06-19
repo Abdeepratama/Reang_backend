@@ -37,4 +37,16 @@ class TiketEvent extends Model
     {
         return $this->hasMany(VarianTiketEvent::class, 'id_tiket_event');
     }
+    // Accessor untuk mengubah path foto utama Event menjadi URL lengkap
+    public function getFotoUtamaAttribute($value)
+    {
+        if ($value) {
+            $host = request()->getHttpHost();
+            // Otomatis pakai https kalau terdeteksi pakai ngrok
+            $scheme = str_contains($host, 'ngrok') ? 'https' : request()->getScheme();
+
+            return $scheme . '://' . $host . '/storage/' . $value;
+        }
+        return null;
+    }
 }
