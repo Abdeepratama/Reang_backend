@@ -31,37 +31,45 @@ class AuthController extends Controller
             'captcha' => 'required',
         ]);
 
-        // 🧩 Validasi captcha
-        if ($request->captcha !== session('captcha_code')) {
+        // 🧩 Validasi captcha (TIDAK sensitif huruf besar/kecil)
+        if (strtolower($request->captcha) !== strtolower(session('captcha_code'))) {
             return back()->withErrors(['captcha' => 'Captcha tidak sesuai'])->withInput();
+        }
+
+        // Cek apakah akun terdaftar (Untuk membedakan error nama dan password)
+        $admin = Admin::where('name', $request->name)->first();
+
+        // JIKA NAMA TIDAK ADA DI DATABASE
+        if (!$admin) {
+            return back()->withErrors(['name' => 'Akun tidak terdaftar di sistem.'])->withInput();
         }
 
         $credentials = $request->only('name', 'password');
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            $user = Admin::find(Auth::guard('admin')->id());
-            $user->load('userData.instansi');
-
-            $instansiNama = optional($user->userData->instansi)->nama;
-
-            if ($user->role === 'admindinas' && empty(trim($instansiNama))) {
-                Auth::guard('admin')->logout();
-                return back()->with('error', 'Akun Anda belum terhubung dengan instansi manapun.');
-            }
-
-            session([
-                'admin_id' => $user->id,
-                'name' => $user->name,
-                'role' => $user->role,
-                'instansi' => $instansiNama,
-            ]);
-
-            return redirect()->route('admin.dashboard');
+        // JIKA PASSWORD SALAH
+        if (!Auth::guard('admin')->attempt($credentials)) {
+            return back()->withErrors(['password' => 'Password yang Anda masukkan salah.'])->withInput();
         }
 
-        return back()->withErrors([
-            'name' => 'Nama atau password salah.',
-        ])->withInput();
+        // --- JIKA SUKSES MASUK ---
+        $user = Admin::find(Auth::guard('admin')->id());
+        $user->load('userData.instansi');
+
+        $instansiNama = optional($user->userData->instansi)->nama;
+
+        if ($user->role === 'admindinas' && empty(trim($instansiNama))) {
+            Auth::guard('admin')->logout();
+            return back()->with('error', 'Akun Anda belum terhubung dengan instansi manapun.');
+        }
+
+        session([
+            'admin_id' => $user->id,
+            'name'     => $user->name,
+            'role'     => $user->role,
+            'instansi' => $instansiNama,
+        ]);
+
+        return redirect()->route('admin.dashboard');
     }
 
     /**
@@ -69,7 +77,10 @@ class AuthController extends Controller
      */
     public function profile()
     {
-        $admin = Auth::guard('admin')->user()->load('userData.instansi');
+        /** @var \App\Models\Admin $admin */
+        $admin = Auth::guard('admin')->user();
+        $admin->load('userData.instansi');
+
         return view('admin.accounts.profile', compact('admin'));
     }
 

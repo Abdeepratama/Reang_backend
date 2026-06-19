@@ -37,14 +37,23 @@ use App\Http\Controllers\Api\AdminAnalitikController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UlasanController;
 use App\Http\Controllers\Admin\JasaPengirimanController;
-use App\Http\Controllers\Admin\MitraPlesirController;
-use App\Http\Controllers\MitraWisataController;
+// --- [BARU] Import Controller Mitra Plesir yang baru dibuat ---
+use App\Http\Controllers\Api\Plesir\MitraPlesirController;
+use App\Http\Controllers\Api\Plesir\TiketWisataController;
+use App\Http\Controllers\Api\Plesir\TiketEventController;
+use App\Http\Controllers\Api\Plesir\UserPlesirController;
+
+// --- [OLD] Controller lama dinonaktifkan agar tidak bentrok ---
+// use App\Http\Controllers\Admin\MitraPlesirController;
+// use App\Http\Controllers\MitraWisataController;
+
 
 //panik button
 Route::get('/panik', [PanikButtonController::class, 'apiIndex']);
 Route::get('/panik/{id}', [PanikButtonController::class, 'apiShow']);
 
 Route::get('/check-email', [AuthController::class, 'checkEmail']);
+
 // 🔐 Grup untuk autentikasi
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
@@ -59,7 +68,9 @@ Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 });
+
 Route::post('/auth/google-callback', [App\Http\Controllers\Api\AuthController::class, 'googleCallback']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/update-profile', [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
 });
@@ -90,9 +101,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/dumas', [DumasController::class, 'store']);
     Route::put('/dumas/{id}', [DumasController::class, 'update']);
     Route::delete('/dumas/{id}', [DumasController::class, 'destroy']);
-});
 
-Route::middleware('auth:sanctum')->group(function () {
+    // Rating Dumas
     Route::post('/dumas/{id}/rating', [RatingDumasController::class, 'store']);
     Route::delete('/dumas/{id}/rating', [RatingDumasController::class, 'destroy']);
 });
@@ -111,10 +121,8 @@ Route::get('/event-agama/{id?}', [IbadahController::class, 'infoshow']); //  eve
 Route::get('/tempat-sekolah/{id?}', [SekolahController::class, 'showtempat']);
 Route::get('/info-sekolah/{id?}', [SekolahController::class, 'infoshow']); // info sekolah
 
-// slider
+// slider & banner
 Route::get('/slider', [DashboardController::class, 'apiSlider']);
-
-// banner
 Route::get('/banner', [DashboardController::class, 'apiBanner']);
 
 // rating
@@ -128,8 +136,6 @@ Route::put('/rating/{id}', [RatingController::class, 'update']);
 Route::delete('/rating/{id}', [RatingController::class, 'destroy']);
 // top plesir
 Route::get('plesir/top', [RatingController::class, 'topPlesir']);
-Route::get('/dumas/{id}/rating', [RatingDumasController::class, 'show']);
-
 Route::get('/info-plesir/fitur', [PlesirController::class, 'apiGetInfoFitur']);
 
 // sehat-yu
@@ -143,7 +149,7 @@ Route::get('/info-pajak/{id?}', [PajakController::class, 'show']); //info
 // Kerja-yu
 Route::get('/info-kerja/{id?}', [KerjaController::class, 'infoshow']); //info
 
-// Plesir-yu
+// Plesir-yu (Publik)
 Route::get('/tempat-plesir/{id?}', [PlesirController::class, 'showtempat']);
 Route::get('/info-plesir/{id?}', [PlesirController::class, 'infoshow']); //info
 
@@ -158,15 +164,12 @@ Route::get('/tempat-pasar/{id?}', [PasarController::class, 'show']);
 Route::get('/pasar/kategori', [PasarController::class, 'categories']);
 
 //renbang-yu
-//deskripsi
 Route::get('/renbang/fitur', [RenbangController::class, 'apiGetFitur']);
 Route::get('/renbang/{id?}', [RenbangController::class, 'apiShow']);
-
-//ajuan
 Route::get('renbang/ajuan/index', [RenbangController::class, 'apiIndex']);
 Route::get('renbang/ajuan/{id}', [RenbangController::class, 'apiajuanShow'])->where('id', '[0-9]+');
 
-// Hanya login user
+// Hanya login user renbang
 Route::prefix('renbang/ajuan')->middleware('auth:sanctum')->group(function () {
     Route::post('/', [RenbangController::class, 'apiStore']);
     Route::post('like/{id}', [RenbangController::class, 'apiToggleLike']);
@@ -179,7 +182,6 @@ Route::prefix('puskesmas')->group(function () {
     Route::middleware('auth:sanctum')->get('/profile', [PuskesmasController::class, 'apiProfile']);
     Route::middleware('auth:sanctum')->post('/logout', [PuskesmasController::class, 'apiLogout']);
 });
-
 Route::get('/puskesmas', [PuskesmasController::class, 'apiIndex']);
 Route::get('/puskesmas/search', [PuskesmasController::class, 'apiSearch']);
 Route::get('/puskesmas/{id}', [PuskesmasController::class, 'apiShow']);
@@ -190,24 +192,17 @@ Route::get('/dokter', [DokterController::class, 'apiIndex']);
 Route::get('/dokter/{id}', [DokterController::class, 'apiShow'])->where('id', '[0-9]+');
 Route::get('/dokter/by-admin/{adminId}', [DokterController::class, 'apiShowByAdmin']);
 
-
-
-// BAGIAN 3: Rute API untuk Aksi Chat
+// BAGIAN 3: Rute API untuk Aksi Chat & Firebase
 Route::middleware('auth:sanctum')->group(function () {
-    ///storage chat image
+    // storage chat image
     Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
-});
 
-// token dari firebase
-Route::middleware('auth:sanctum')->group(function () {
+    // token dari firebase
     Route::post('/firebase/token', [FirebaseController::class, 'createCustomToken']);
     Route::post('/save-fcm-token', [FirebaseController::class, 'saveFcmToken']);
     Route::post('/chat/send-notification', [FirebaseController::class, 'sendChatNotification']);
     Route::post('/delete-fcm-token', [FirebaseController::class, 'deleteFcmToken']);
 });
-
-//storage chat image
-Route::post('/chat/upload-image', [ChatImageController::class, 'upload']);
 
 //toko
 Route::middleware('auth:sanctum')->group(function () {
@@ -226,12 +221,12 @@ Route::get('/produk/show/{id}', [ProdukController::class, 'show']);
 Route::get('/produk/toko/{id_toko}', [ProdukController::class, 'showByToko']);
 Route::get('/produk/kategori/{kategori}', [ProdukController::class, 'showByKategori']);
 Route::get('/produk/suggestions', [ProdukController::class, 'getSuggestions']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/produk/store', [ProdukController::class, 'store']);      // POST tambah produk
     Route::put('/produk/update/{id}', [ProdukController::class, 'update']);  // PUT edit produk
     Route::delete('/produk/{id}', [ProdukController::class, 'destroy']); // DELETE produk
 });
-
 
 //keranjang
 Route::middleware('auth:sanctum')->group(function () {
@@ -288,9 +283,6 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::get('/analitik/{id_toko}', [AdminAnalitikController::class, 'index']);
 });
 
-// forgot password
-Route::post('/auth/forgot-password', [App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
-
 // notifications
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
@@ -300,10 +292,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/notifications/delete-all', [NotificationController::class, 'deleteAll']);
 });
 
-// 1. Route Public (Bisa diakses siapa saja untuk lihat review)
+// Ulasan Produk
 Route::get('/ulasan/{id_produk}', [UlasanController::class, 'index']);
-
-// 2. Route Protected (Harus login untuk nulis review)
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/ulasan/store', [UlasanController::class, 'store']);
     Route::get('/ulasan/cek/{no_transaksi}', [UlasanController::class, 'showByTransaksi']);
@@ -311,12 +301,31 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::get('/jasa-pengiriman', [JasaPengirimanController::class, 'apiIndex']);
 
-// rute untuk mendaftarkan mitra plesir baru
-// Pindahkan ke luar group sanctum (Bisa diakses tanpa token/login)
-Route::post('/mitra-wisata', [MitraPlesirController::class, 'store']);
-
-// Ini group route yang khusus yang sudah login saja
+// =======================================================================
+// ROUTE KHUSUS MITRA PLESIR-YU (BARU)
+// =======================================================================
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/mitra-plesir', [MitraPlesirController::class, 'store']);
-    // Route internal lainnya...
+    Route::prefix('plesir')->group(function () {
+        // Endpoint untuk daftar mitra wisata baru (otomatis dapat double role)
+        Route::post('/register-mitra', [MitraPlesirController::class, 'registerMitra']);
+        Route::get('/profil-mitra', [MitraPlesirController::class, 'getProfil']);
+        Route::post('/update-mitra', [MitraPlesirController::class, 'updateProfil']);
+        // --- ROUTE KELOLA TIKET WISATA ---
+        Route::get('/mitra/tiket-ku', [TiketEventController::class, 'getTiketKu']);
+        Route::post('/wisata', [TiketWisataController::class, 'createWisata']); // Create
+        Route::post('/wisata/update/{id}', [TiketWisataController::class, 'updateWisata']); // Update (Pakai POST karena ada upload foto)
+        Route::delete('/wisata/delete/{id}', [TiketWisataController::class, 'deleteWisata']); // Delete
+        // --- ROUTE KELOLA TIKET EVENT ---
+        Route::post('/event', [TiketEventController::class, 'createEvent']);
+        Route::post('/event/update/{id}', [TiketEventController::class, 'updateEvent']);
+        Route::delete('/event/delete/{id}', [TiketEventController::class, 'deleteEvent']);
+    });
+});
+
+// =================================================================
+// 1. ROUTE PUBLIC (TIDAK PERLU LOGIN)
+// =================================================================
+Route::prefix('plesir')->group(function () {
+    // API Explore untuk Halaman User (Bebas Akses)
+    Route::get('/explore', [UserPlesirController::class, 'explore']);
 });
