@@ -42,10 +42,10 @@ use App\Http\Controllers\Api\Plesir\MitraPlesirController;
 use App\Http\Controllers\Api\Plesir\TiketWisataController;
 use App\Http\Controllers\Api\Plesir\TiketEventController;
 use App\Http\Controllers\Api\Plesir\UserPlesirController;
+use App\Http\Controllers\Api\Plesir\TransaksiUserController;
+use App\Http\Controllers\Api\Plesir\TransaksiAdminController;
+use App\Http\Controllers\Api\Plesir\MetodePembayaranPlesirController;
 
-// --- [OLD] Controller lama dinonaktifkan agar tidak bentrok ---
-// use App\Http\Controllers\Admin\MitraPlesirController;
-// use App\Http\Controllers\MitraWisataController;
 
 
 //panik button
@@ -310,15 +310,34 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/register-mitra', [MitraPlesirController::class, 'registerMitra']);
         Route::get('/profil-mitra', [MitraPlesirController::class, 'getProfil']);
         Route::post('/update-mitra', [MitraPlesirController::class, 'updateProfil']);
+
         // --- ROUTE KELOLA TIKET WISATA ---
         Route::get('/mitra/tiket-ku', [TiketEventController::class, 'getTiketKu']);
         Route::post('/wisata', [TiketWisataController::class, 'createWisata']); // Create
         Route::post('/wisata/update/{id}', [TiketWisataController::class, 'updateWisata']); // Update (Pakai POST karena ada upload foto)
         Route::delete('/wisata/delete/{id}', [TiketWisataController::class, 'deleteWisata']); // Delete
+
         // --- ROUTE KELOLA TIKET EVENT ---
         Route::post('/event', [TiketEventController::class, 'createEvent']);
         Route::post('/event/update/{id}', [TiketEventController::class, 'updateEvent']);
         Route::delete('/event/delete/{id}', [TiketEventController::class, 'deleteEvent']);
+
+        // --- TRANSAKSI USER (PEMBELI) ---
+        Route::post('/checkout', [TransaksiUserController::class, 'checkout']);
+        Route::post('/transaksi/{id}/upload-bukti', [TransaksiUserController::class, 'uploadBukti']);
+        Route::get('/semua-tiket-ku', [TransaksiUserController::class, 'getSemuaTiketKu']);
+
+        // --- TRANSAKSI ADMIN (MITRA) ---
+        Route::get('/mitra/pesanan-masuk', [TransaksiAdminController::class, 'pesananMasuk']);
+        Route::post('/mitra/transaksi/{id}/konfirmasi', [TransaksiAdminController::class, 'konfirmasiPembayaran']);
+        Route::post('/mitra/scan-tiket', [TransaksiAdminController::class, 'scanTiket']);
+
+        // 👇 PINDAHKAN KE SINI 👇
+        // --- CRUD METODE PEMBAYARAN MITRA PLESIR ---
+        Route::get('/mitra/metode-pembayaran', [MetodePembayaranPlesirController::class, 'index']);
+        Route::post('/mitra/metode-pembayaran', [MetodePembayaranPlesirController::class, 'store']);
+        Route::post('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'update']); // Pakai POST untuk bawa form-data
+        Route::delete('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'destroy']);
     });
 });
 
