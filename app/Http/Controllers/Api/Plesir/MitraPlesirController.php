@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\Plesir;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// --- PERUBAHAN DI SINI: Panggil Model yang baru ---
 use App\Models\MitraPlesir;
 use App\Models\Role;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB; // 👇 INI OBATNYA: Import Facade DB
 
 class MitraPlesirController extends Controller
 {
@@ -15,7 +15,6 @@ class MitraPlesirController extends Controller
     {
         $user = $request->user();
 
-        // --- PERUBAHAN DI SINI: Gunakan MitraPlesir ---
         $cekPlesir = MitraPlesir::where('id_user', $user->id)->first();
         if ($cekPlesir) {
             return response()->json([
@@ -31,7 +30,6 @@ class MitraPlesirController extends Controller
             'deskripsi' => 'nullable|string',
         ]);
 
-        // --- PERUBAHAN DI SINI: Gunakan MitraPlesir ---
         $mitra = MitraPlesir::create([
             'id_user' => $user->id,
             'nama' => $request->nama,
@@ -53,6 +51,7 @@ class MitraPlesirController extends Controller
             'data' => $mitra
         ], 201);
     }
+
     public function getProfil(Request $request)
     {
         $user = $request->user();
@@ -122,5 +121,29 @@ class MitraPlesirController extends Controller
             'message' => 'Profil wisata berhasil diperbarui!',
             'data' => $mitra
         ], 200);
+    }
+
+    // =========================================================================
+    // FUNGSI CEK METODE PEMBAYARAN SEBELUM BUAT TIKET
+    // =========================================================================
+    public function cekMetodePembayaran(Request $request)
+    {
+        // 1. Ambil ID Mitra berdasarkan user yang login
+        $mitra = DB::table('mitra_plesir')->where('id_user', $request->user()->id)->first();
+
+        if (!$mitra) {
+            return response()->json(['status' => 'error', 'has_payment' => false]);
+        }
+
+        // 2. Hitung apakah ada metode pembayaran 
+        $jumlahRekening = DB::table('metode_pembayaran_plesir')
+            ->where('id_mitra', $mitra->id)
+            ->count();
+
+        // 3. Kembalikan status true jika ada (minimal 1), false jika kosong (0)
+        return response()->json([
+            'status' => 'success',
+            'has_payment' => $jumlahRekening > 0
+        ]);
     }
 }

@@ -353,6 +353,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/mitra/metode-pembayaran', [MetodePembayaranPlesirController::class, 'store']);
         Route::post('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'update']);
         Route::delete('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'destroy']);
+        Route::get('/mitra/cek-pembayaran', [MitraPlesirController::class, 'cekMetodePembayaran']);
 
         //analitik mitra plesir
         Route::get('/mitra/analitik', [TransaksiAdminController::class, 'getAnalitik']);
