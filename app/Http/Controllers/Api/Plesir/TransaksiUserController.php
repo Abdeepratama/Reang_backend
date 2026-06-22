@@ -6,31 +6,55 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TransaksiPlesir;
 use App\Models\TiketPlesirUser;
+use App\Models\TiketWisata;
+use App\Models\TiketEvent;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class TransaksiUserController extends Controller
 {
-    // 1. Proses Checkout
+    // =========================================================================
+    // 1. PROSES CHECKOUT (SIMPAN METODE PEMBAYARAN)
+    // =========================================================================
     public function checkout(Request $request)
     {
         $request->validate([
             'kategori_tiket' => 'required|in:wisata,event',
             'jumlah_tiket' => 'required|integer|min:1',
             'total_harga' => 'required|integer',
-            // Field khusus wisata
             'wisata_id' => 'required_if:kategori_tiket,wisata',
-            'tanggal_kunjungan' => 'required_if:kategori_tiket,wisata|date',
-            // Field khusus event
+            'tanggal_kunjungan' => 'required_if:kategori_tiket,wisata|nullable|date',
             'event_id' => 'required_if:kategori_tiket,event',
             'varian_id' => 'required_if:kategori_tiket,event',
+            'metode_pembayaran_id' => 'required|integer', // WAJIB DIISI DARI FLUTTER
         ]);
 
         $user = $request->user();
         $kodeInvoice = 'INV-PLSR-' . strtoupper(Str::random(8));
 
+        // Cari ID Mitra (Penjual)
+        $idMitra = null;
+        if ($request->kategori_tiket == 'wisata') {
+            $wisata = TiketWisata::find($request->wisata_id);
+            if ($wisata) {
+                $idMitra = $wisata->id_mitra;
+            }
+        } elseif ($request->kategori_tiket == 'event') {
+            $event = TiketEvent::find($request->event_id);
+            if ($event) {
+                $idMitra = $event->id_mitra;
+            }
+        }
+
+        if (!$idMitra) {
+            return response()->json(['status' => 'error', 'message' => 'Data mitra penjual tidak ditemukan.'], 404);
+        }
+
+        // Simpan Transaksi Lengkap
         $transaksi = TransaksiPlesir::create([
             'user_id' => $user->id,
+            'id_mitra' => $idMitra,
+            'metode_pembayaran_id' => $request->metode_pembayaran_id,
             'kode_invoice' => $kodeInvoice,
             'kategori_tiket' => $request->kategori_tiket,
             'wisata_id' => $request->wisata_id,
@@ -49,7 +73,9 @@ class TransaksiUserController extends Controller
         ]);
     }
 
-    // 2. Upload Bukti Pembayaran
+    // =========================================================================
+    // 2. UPLOAD BUKTI PEMBAYARAN
+    // =========================================================================
     public function uploadBukti(Request $request, $id)
     {
         $request->validate([
@@ -73,51 +99,100 @@ class TransaksiUserController extends Controller
         ]);
     }
 
-    // 3. Tampilkan Tiket Saya (Hanya yang lunas & aktif)
-    public function tiketSaya(Request $request)
-    {
-        $tiket = TiketPlesirUser::with(['transaksi.wisata', 'transaksi.event'])
-            ->where('user_id', $request->user()->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json(['status' => 'success', 'data' => $tiket]);
-    }
+    // =========================================================================
+    // 3. TAMPILKAN SEMUA TIKET SAYA (5 TAB DI FLUTTER)
+    // =========================================================================
+    // --- 3. TAMPILKAN SEMUA TIKET SAYA (5 TAB DI FLUTTER) ---
     public function getSemuaTiketKu(Request $request)
     {
         $userId = $request->user()->id;
 
-        // A. Ambil data dari tabel TRANSAKSI (untuk Tab 1, 2, 3)
-        // Load relasi wisata/event/varian agar nama destinasi muncul
-        $queryTransaksi = TransaksiPlesir::with(['wisata', 'event', 'varian'])
+        // 👇 KITA HANYA MENGGUNAKAN SATU QUERY DARI TransaksiPlesir
+        $queryTransaksi = TransaksiPlesir::with(['wisata', 'event', 'varian', 'metodePembayaran'])
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc');
 
-        // B. Ambil data dari tabel TIKET DIGITAL (untuk Tab 4, 5)
-        // Load relasi transaksi agar bisa ambil data wisata/event-nya
-        $queryTiketDigital = TiketPlesirUser::with(['transaksi.wisata', 'transaksi.event', 'transaksi.varian'])
-            ->where('user_id', $userId)
-            ->orderBy('created_at', 'desc');
-
-        // Kelompokkan data berdasarkan status
         return response()->json([
             'status' => 'success',
             'data' => [
-                // Tab 1: Menunggu Pembayaran (Status Pembayaran: pending)
                 'pending' => (clone $queryTransaksi)->where('status_pembayaran', 'pending')->get(),
-
-                // Tab 2: Menunggu Verifikasi (Status Pembayaran: menunggu_konfirmasi)
                 'menunggu_verifikasi' => (clone $queryTransaksi)->where('status_pembayaran', 'menunggu_konfirmasi')->get(),
-
-                // Tab 3: Ditolak (Status Pembayaran: ditolak)
                 'ditolak' => (clone $queryTransaksi)->where('status_pembayaran', 'ditolak')->get(),
 
-                // Tab 4: Tiket Aktif (Status Tiket: aktif)
-                'aktif' => (clone $queryTiketDigital)->where('status_tiket', 'aktif')->get(),
-
-                // Tab 5: Sudah Digunakan (Status Tiket: terpakai)
-                'terpakai' => (clone $queryTiketDigital)->where('status_tiket', 'terpakai')->get(),
+                // 👇 PERBAIKAN: Gunakan status_pembayaran dari tabel TransaksiPlesir
+                'aktif' => (clone $queryTransaksi)->where('status_pembayaran', 'aktif')->get(),
+                'terpakai' => (clone $queryTransaksi)->where('status_pembayaran', 'terpakai')->get(),
             ]
+        ]);
+    }
+
+    // =========================================================================
+    // 4. AMBIL DAFTAR METODE PEMBAYARAN MITRA (UNTUK CHECKOUT/GANTI METODE)
+    // =========================================================================
+    public function getMetodeForCheckout(Request $request)
+    {
+        $kategori = $request->query('kategori');
+        $targetId = $request->query('target_id');
+
+        $idMitra = null;
+        if ($kategori == 'wisata') {
+            $wisata = \App\Models\TiketWisata::find($targetId);
+            $idMitra = $wisata ? $wisata->id_mitra : null;
+        } elseif ($kategori == 'event') {
+            $event = \App\Models\TiketEvent::find($targetId);
+            $idMitra = $event ? $event->id_mitra : null;
+        }
+
+        if (!$idMitra) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data mitra penjual tidak ditemukan'
+            ], 404);
+        }
+
+        $metode = \App\Models\MetodePembayaranPlesir::where('id_mitra', $idMitra)
+            ->where('is_active', 1)
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $metode
+        ]);
+    }
+
+    // =========================================================================
+    // 5. GANTI METODE PEMBAYARAN (DARI BOTTOM SHEET FLUTTER)
+    // =========================================================================
+    public function gantiMetodePembayaran(Request $request, $id)
+    {
+        $request->validate([
+            'metode_pembayaran_id' => 'required|integer'
+        ]);
+
+        $transaksi = TransaksiPlesir::find($id);
+
+        if (!$transaksi) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transaksi tidak ditemukan.'
+            ], 404);
+        }
+
+        if ($transaksi->user_id != $request->user()->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transaksi ini bukan milik Anda.'
+            ], 403);
+        }
+
+        $transaksi->update([
+            'metode_pembayaran_id' => $request->metode_pembayaran_id
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Metode berhasil diperbarui',
+            'data' => $transaksi->load('metodePembayaran')
         ]);
     }
 }

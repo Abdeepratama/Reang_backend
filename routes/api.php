@@ -45,6 +45,7 @@ use App\Http\Controllers\Api\Plesir\UserPlesirController;
 use App\Http\Controllers\Api\Plesir\TransaksiUserController;
 use App\Http\Controllers\Api\Plesir\TransaksiAdminController;
 use App\Http\Controllers\Api\Plesir\MetodePembayaranPlesirController;
+use App\Http\Controllers\Api\Plesir\NotifikasiUserController;
 
 
 
@@ -301,21 +302,33 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::get('/jasa-pengiriman', [JasaPengirimanController::class, 'apiIndex']);
 
+// =================================================================
+// 1. ROUTE PUBLIC (TIDAK PERLU LOGIN / TANPA SANCTUM)
+// =================================================================
+Route::prefix('plesir')->group(function () {
+    // API Explore untuk Halaman User (Bebas Akses)
+    Route::get('/explore', [UserPlesirController::class, 'explore']);
+
+    // 👇 Rute untuk mengambil metode pembayaran saat checkout/ganti metode
+    Route::get('/metode-checkout', [TransaksiUserController::class, 'getMetodeForCheckout']);
+});
+
 // =======================================================================
-// ROUTE KHUSUS MITRA PLESIR-YU (BARU)
+// 2. ROUTE KHUSUS PLESIR-YU (WAJIB LOGIN / SANCTUM)
 // =======================================================================
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('plesir')->group(function () {
-        // Endpoint untuk daftar mitra wisata baru (otomatis dapat double role)
+
+        // --- ROUTE REGISTRASI & PROFIL MITRA ---
         Route::post('/register-mitra', [MitraPlesirController::class, 'registerMitra']);
         Route::get('/profil-mitra', [MitraPlesirController::class, 'getProfil']);
         Route::post('/update-mitra', [MitraPlesirController::class, 'updateProfil']);
 
         // --- ROUTE KELOLA TIKET WISATA ---
         Route::get('/mitra/tiket-ku', [TiketEventController::class, 'getTiketKu']);
-        Route::post('/wisata', [TiketWisataController::class, 'createWisata']); // Create
-        Route::post('/wisata/update/{id}', [TiketWisataController::class, 'updateWisata']); // Update (Pakai POST karena ada upload foto)
-        Route::delete('/wisata/delete/{id}', [TiketWisataController::class, 'deleteWisata']); // Delete
+        Route::post('/wisata', [TiketWisataController::class, 'createWisata']);
+        Route::post('/wisata/update/{id}', [TiketWisataController::class, 'updateWisata']);
+        Route::delete('/wisata/delete/{id}', [TiketWisataController::class, 'deleteWisata']);
 
         // --- ROUTE KELOLA TIKET EVENT ---
         Route::post('/event', [TiketEventController::class, 'createEvent']);
@@ -327,24 +340,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/transaksi/{id}/upload-bukti', [TransaksiUserController::class, 'uploadBukti']);
         Route::get('/semua-tiket-ku', [TransaksiUserController::class, 'getSemuaTiketKu']);
 
+        // 👇 PERBAIKAN: Hapus "/plesir" di depan karena sudah ada di prefix()
+        Route::post('/transaksi/{id}/ganti-metode', [TransaksiUserController::class, 'gantiMetodePembayaran']);
+
         // --- TRANSAKSI ADMIN (MITRA) ---
         Route::get('/mitra/pesanan-masuk', [TransaksiAdminController::class, 'pesananMasuk']);
         Route::post('/mitra/transaksi/{id}/konfirmasi', [TransaksiAdminController::class, 'konfirmasiPembayaran']);
         Route::post('/mitra/scan-tiket', [TransaksiAdminController::class, 'scanTiket']);
 
-        // 👇 PINDAHKAN KE SINI 👇
         // --- CRUD METODE PEMBAYARAN MITRA PLESIR ---
         Route::get('/mitra/metode-pembayaran', [MetodePembayaranPlesirController::class, 'index']);
         Route::post('/mitra/metode-pembayaran', [MetodePembayaranPlesirController::class, 'store']);
-        Route::post('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'update']); // Pakai POST untuk bawa form-data
+        Route::post('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'update']);
         Route::delete('/mitra/metode-pembayaran/{id}', [MetodePembayaranPlesirController::class, 'destroy']);
-    });
-});
 
-// =================================================================
-// 1. ROUTE PUBLIC (TIDAK PERLU LOGIN)
-// =================================================================
-Route::prefix('plesir')->group(function () {
-    // API Explore untuk Halaman User (Bebas Akses)
-    Route::get('/explore', [UserPlesirController::class, 'explore']);
+        //analitik mitra plesir
+        Route::get('/mitra/analitik', [TransaksiAdminController::class, 'getAnalitik']);
+        Route::post('/mitra/notifikasi/mark-read', [TransaksiAdminController::class, 'tandaiNotifDibaca']);
+        Route::get('/user/notifikasi', [NotifikasiUserController::class, 'getNotifikasi']);
+        Route::post('/user/notifikasi/mark-read', [NotifikasiUserController::class, 'tandaiDibaca']);
+    });
 });

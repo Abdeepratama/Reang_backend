@@ -9,11 +9,10 @@ class MetodePembayaranPlesir extends Model
 {
     use HasFactory;
 
-    // Pastikan menunjuk ke tabel yang benar agar tidak nyasar ke UMKM
     protected $table = 'metode_pembayaran_plesir';
 
     protected $fillable = [
-        'user_id',
+        'id_mitra',
         'nama_metode',
         'jenis_metode',
         'nama_penerima',
@@ -22,9 +21,21 @@ class MetodePembayaranPlesir extends Model
         'is_active',
     ];
 
-    // Jika kamu ingin menambahkan relasi ke tabel User/Mitra
-    public function user()
+    public function mitra()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'id_mitra');
+    }
+
+    // =========================================================
+    // 👇 NAMA FUNGSI SUDAH DIPERBAIKI SESUAI NAMA KOLOM
+    // =========================================================
+    public function getFotoQrisAttribute($value)
+    {
+        // Cek jika datanya tidak kosong dan belum diawali 'http'
+        if ($value && !str_starts_with($value, 'http')) {
+            return asset('storage/' . $value);
+        }
+
+        return $value;
     }
 }
