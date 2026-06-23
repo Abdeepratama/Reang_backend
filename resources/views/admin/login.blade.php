@@ -2,9 +2,24 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Login admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Login Admin - Wong Reang Apps</title>
+
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="css/simplebar.css">
+    <!-- Fonts CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="css/feather.css">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="css/daterangepicker.css">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/app-light.css" id="lightTheme" disabled>
+    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme">
+    <link rel="icon" href="{{ asset('landing/img/logo_reang.png') }}">
 
     <!-- Tambahkan CSS anti copy di sini -->
     <style>
@@ -18,27 +33,6 @@
     </style>
 </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
-    <title>Tiny Dashboard - A Bootstrap Dashboard Template</title>
-    <!-- Simple bar CSS -->
-    <link rel="stylesheet" href="css/simplebar.css">
-    <!-- Fonts CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <!-- Icons CSS -->
-    <link rel="stylesheet" href="css/feather.css">
-    <!-- Date Range Picker CSS -->
-    <link rel="stylesheet" href="css/daterangepicker.css">
-    <!-- App CSS -->
-    <link rel="stylesheet" href="css/app-light.css" id="lightTheme" disabled>
-    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme">
-    <link rel="icon" href="{{ asset('landing/img/logo_reang.png') }}">
-</head>
-
 <body class="bg-light d-flex align-items-center" style="height: 100vh;">
     <div class="container">
         <div class="row justify-content-center">
@@ -50,20 +44,27 @@
                         </a>
                     </div>
                     <div class="card-body">
-                        @if($errors->any())
-                        <div class="alert alert-danger">{{ $errors->first() }}</div>
+                        <!-- Alert Khusus untuk Error Instansi/Logout Paksa -->
+                        @if(session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
-                        <form method="POST" action="{{ route('admin.login.post') }}">
+                        <form method="POST" action="{{ route('admin.login.post') }}" id="formLogin">
                             @csrf
                             <div class="mb-3">
                                 <label for="name" class="form-label">Nama</label>
-                                <input type="name" name="name" class="form-control" placeholder="Masukkan Nama" required>
+                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" placeholder="Masukkan Nama" value="{{ old('name') }}" required>
+                                @error('name')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan password" required>
+                                <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Masukkan password" required>
+                                @error('password')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="form-check mb-3">
@@ -82,9 +83,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <input type="text" name="captcha" class="form-control" placeholder="Masukkan captcha">
+                                <input type="text" name="captcha" class="form-control @error('captcha') is-invalid @enderror" placeholder="Masukkan captcha" required>
                                 @error('captcha')
-                                <small class="text-danger">{{ $message }}</small>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -122,6 +123,7 @@
     </script>
 
     <script>
+        // --- 1. FITUR REFRESH CAPTCHA AJAX ---
         document.getElementById('refresh-captcha').addEventListener('click', function() {
             fetch("{{ route('captcha.refresh') }}")
                 .then(res => res.json())
@@ -129,14 +131,30 @@
                     document.getElementById('captcha-text').innerText = data.captcha;
                 });
         });
-    </script>
 
-    <script>
+        // --- 2. FITUR TAMPILKAN PASSWORD ---
         document.getElementById('showPassword').addEventListener('change', function() {
             const passwordInput = document.getElementById('password');
             passwordInput.type = this.checked ? 'text' : 'password';
         });
+
+        // --- 3. FITUR PERTAHANKAN PASSWORD SAAT ERROR ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const formLogin = document.getElementById('formLogin');
+
+            const savedPassword = sessionStorage.getItem('reang_temp_pass');
+            if (savedPassword) {
+                passwordInput.value = savedPassword;
+                sessionStorage.removeItem('reang_temp_pass');
+            }
+
+            formLogin.addEventListener('submit', function() {
+                sessionStorage.setItem('reang_temp_pass', passwordInput.value);
+            });
+        });
     </script>
 
 </body>
+
 </html>
