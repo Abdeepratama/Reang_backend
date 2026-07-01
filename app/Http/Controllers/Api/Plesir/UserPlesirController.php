@@ -35,6 +35,8 @@ class UserPlesirController extends Controller
             // 2. Query Event
             $event = TiketEvent::with(['varians', 'galeri'])
                 ->where('is_active', 1)
+                // 👇 INI DIA KUNCI RAHASIANYA: Hanya ambil event yang belum lewat tanggalnya!
+                ->whereDate('tanggal_event', '>=', now())
                 ->when($search, function ($query, $search) {
                     return $query->where(function ($q) use ($search) {
                         $q->where('nama_event', 'like', "%{$search}%")
